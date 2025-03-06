@@ -1,0 +1,25 @@
+{
+  "manifest_version": 3,
+  "name": "Peitho",
+  "version": "1.0",
+  "description": "Clicks buttons on a webpage, captures the generated HTML, and sends it to a backend",
+  "permissions": [
+    "activeTab",
+    "scripting"
+  ],
+  "host_permissions": [
+    "<all_urls>"
+  ],
+  "action": {
+    "default_popup": "index.html"
+  },
+  "background": {
+    "service_worker": "static/js/background.js"
+  },
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["./static/js/content.js"]
+    }
+  ]
+}
