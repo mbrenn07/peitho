@@ -1,4 +1,6 @@
 import config from './config';
+import React from 'react';
+import { createRoot } from 'react-dom/client';
 
 // Content script that runs in the context of the webpage
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
@@ -10,32 +12,26 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
       .catch(error => {
         sendResponse({ success: false, error: error.message });
       });
-    return true; // Indicates we want to send a response asynchronously
+    return true;
   }
 });
 
 async function clickButtonAndGetHTML() {
   return new Promise((resolve, reject) => {
+    console.log(document)
     const button = document.querySelector(config.BUTTON_SELECTOR);
-    
     if (!button) {
       reject(new Error(`Button not found with selector: ${config.BUTTON_SELECTOR}`));
       return;
     }
-    
-    // Create a MutationObserver to watch for DOM changes after the button click
-    const observer = new MutationObserver((mutations, obs) => {
-      // Wait a small amount of time to ensure all DOM changes are completed
+
+    const observer = new MutationObserver((_, obs) => {
       setTimeout(() => {
         obs.disconnect();
-        
-        const html = document.documentElement.outerHTML;
-        resolve(html); // Return the HTML without sending it anywhere
-        
+        resolve(document.documentElement.outerHTML);
       }, 1000);
     });
-    
-    // Start observing changes to the DOM
+
     observer.observe(document.body, {
       childList: true,
       subtree: true,
@@ -46,3 +42,38 @@ async function clickButtonAndGetHTML() {
     button.click();
   });
 }
+
+function getCurrentVideoTime() {
+  const videoElement = document.querySelector('video');
+
+  if (videoElement) {
+    return Math.round(videoElement.currentTime);
+  }
+
+  return 0;
+}
+
+function setupTimeTracking() {
+  setInterval(() => {
+    const currentTime = getCurrentVideoTime();
+
+    chrome.runtime.sendMessage({
+      action: 'UPDATE_VIDEO_TIME',
+      currentTime: currentTime
+    });
+  }, 1000);
+
+}
+
+// Initialize when the page is ready
+function initTimeTracking() {
+  // Check if video element exists
+  if (document.querySelector('video')) {
+    setupTimeTracking();
+  } else {
+    // Try again shortly
+    setTimeout(initTimeTracking, 1000);
+  }
+}
+
+initTimeTracking();

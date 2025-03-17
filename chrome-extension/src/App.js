@@ -1,66 +1,83 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import config from './config';
 
 function App() {
   const [status, setStatus] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [currentVideoTime, setCurrentVideoTime] = useState('0:00');
+
+  useEffect(() => {
+    const handleMessage = (message) => {
+      if (message.action === 'UPDATE_VIDEO_TIME') {
+        console.log(message.currentTime)
+        setCurrentVideoTime(message.currentTime);
+      }
+    };
+
+    chrome.runtime.onMessage.addListener(handleMessage);
+
+    return () => {
+      chrome.runtime.onMessage.removeListener(handleMessage);
+    };
+  }, []);
 
   const handleExtractHTML = async () => {
     setLoading(true);
     setStatus(null);
 
     chrome.runtime.sendMessage(
-        { action: 'triggerButtonClick' },
-        async (response) => {
-            if (chrome.runtime.lastError) {
-                setStatus({
-                    type: 'error',
-                    message: chrome.runtime.lastError.message
-                });
-                setLoading(false);
-                return;
-            }
-
-            if (response && response.success) {
-                axios.post(`${config.BACKEND_URL}/process_transcript`, {
-                 html: response.html 
-                })
-                    .then((data) => {
-                        console.log(data);
-                        setStatus({
-                            type: 'success',
-                            message: 'HTML successfully extracted and sent to backend!'
-                        });
-                    })
-                    .catch((error) => {
-                        console.error(error);
-                        setStatus({
-                            type: 'error',
-                            message: `Error sending to backend: ${error.message}`
-                        });
-                    })
-                    .finally(() => {
-                        setLoading(false);
-                    });
-            } else {
-                setLoading(false);
-            }
+      { action: 'triggerButtonClick' },
+      async (response) => {
+        if (chrome.runtime.lastError) {
+          setStatus({
+            type: 'error',
+            message: chrome.runtime.lastError.message
+          });
+          setLoading(false);
+          return;
         }
+
+        if (response && response.success) {
+          axios.post(`${config.BACKEND_URL}/process_transcript`, {
+            html: response.html
+          })
+            .then((data) => {
+              console.log(data);
+              setStatus({
+                type: 'success',
+                message: 'HTML successfully extracted and sent to backend!'
+              });
+            })
+            .catch((error) => {
+              console.error(error);
+              setStatus({
+                type: 'error',
+                message: `Error sending to backend: ${error.message}`
+              });
+            })
+            .finally(() => {
+              setLoading(false);
+            });
+        } else {
+          setLoading(false);
+        }
+      }
     );
-};
+  };
 
 
   return (
     <div className="App" style={styles.container}>
       <h1 style={styles.title}>Peitho</h1>
-      
+
       <div style={styles.infoBox}>
+        <p>Time: {currentVideoTime}</p>
         <p><strong>Target Button:</strong> {config.BUTTON_SELECTOR}</p>
         <p><strong>Backend URL:</strong> {config.BACKEND_URL}</p>
       </div>
-      
-      <button 
+
+      <button
         style={{
           ...styles.button,
           ...(loading ? styles.buttonDisabled : {})
@@ -70,7 +87,7 @@ function App() {
       >
         {loading ? 'Processing...' : 'Click Button & Extract HTML'}
       </button>
-      
+
       {status && (
         <div style={{
           ...styles.status,
