@@ -77,3 +77,34 @@ function initTimeTracking() {
 }
 
 initTimeTracking();
+
+const CustomComponent = () => {
+  return (
+    <div>
+      <p>test!</p>
+    </div>
+  );
+};
+
+const observer = new MutationObserver((mutations, obs) => {
+  const relatedElement = document.querySelector("#columns").lastElementChild.lastElementChild.lastElementChild;
+
+  if (relatedElement) {
+    relatedElement.style.height = 'calc(100vh - 95px)';
+    relatedElement.style.background = 'red'
+
+    while (relatedElement.firstChild) {
+      relatedElement.removeChild(relatedElement.firstChild);
+    }
+
+    const root = createRoot(relatedElement);
+    root.render(<CustomComponent />);
+
+    obs.disconnect();
+  }
+});
+
+observer.observe(document.body, {
+  childList: true,
+  subtree: true
+});
