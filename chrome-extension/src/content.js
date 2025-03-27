@@ -153,9 +153,13 @@ const CustomComponent = () => {
       const progressBar =
         document.querySelector(".ytp-progress-bar");
       const progressBarBackground = progressBar.firstChild.firstChild.childNodes[1].firstChild;
+      const progressBarScroller =
+        document.querySelector(".ytp-scrubber-button");
     
-      if (progressBar && progressBarBackground) {
+      if (progressBar && progressBarBackground && progressBarScroller) {
         progressBar.style.height = "20px";
+        progressBarScroller.style.width = "4px";
+        progressBarScroller.style.background = "black";
 
         if (utterancesRef.current) {
           let gradient = "linear-gradient(90deg, "
@@ -174,11 +178,11 @@ const CustomComponent = () => {
             const length = timeToSeconds(item.endTime) - timeToSeconds(item.startTime);
             const percentage = (length / currentVideoTimeRef.current) * 100;
             if (index === 0) {
-              currentPercentage = currentPercentage + percentage;
+              currentPercentage = Math.min(currentPercentage + percentage, 100);
               gradient = gradient + `${labelToColor[item.label]} ${currentPercentage}%, `;
             } else {
               gradient = gradient + `${labelToColor[item.label]} ${currentPercentage}%, `;
-              currentPercentage = currentPercentage + percentage;
+              currentPercentage = Math.min(currentPercentage + percentage, 100);
               gradient = gradient + `${labelToColor[item.label]} ${currentPercentage}%, `;
             }
           })
