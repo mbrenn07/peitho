@@ -1,6 +1,14 @@
 import config from "./config";
 import React, { useState, useEffect } from "react";
 import { createRoot } from "react-dom/client";
+import {
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  Tooltip,
+  ResponsiveContainer,
+} from "recharts";
 
 // Content script that runs in the context of the webpage
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
@@ -170,19 +178,68 @@ const CustomComponent = () => {
         .map(([time, text]) => (
           <div key={time} style={styles.utterance}>
             <p style={styles.time}>{time}</p>
-            <h2>"{text}"</h2>
+            <h2>"{text.text}"</h2>
           </div>
         ))}
 
       {/* place holders below */}
-      <h2>Labels:</h2>
+      <h2>Current Labels:</h2>
       <div style={styles.labels}>
-        <p style={styles.label}>Greetings/Salutations</p>
-        <p style={styles.label}>Disagreement</p>
-        <p style={styles.label}>Clarifying Questions</p>
+        {Object.entries(utterances)
+          .filter(([time]) => timeToSeconds(time) <= currentVideoTime)
+          .slice(-1)
+          .map(([_, text]) => (
+            <p style={styles.label}>{text.labels}</p>
+          ))}
       </div>
+    
+      <ResponsiveContainer width="100%" height={300}>
+        <BarChart
+          data={Object.entries(utterances)
+            .filter(([time]) => timeToSeconds(time) <= currentVideoTime)
+            .map(([_, value]) => value.labels)
+            .filter((label, index, self) => self.indexOf(label) === index)
+            .map((label) => ({
+              name: label,
+              value: Object.entries(utterances)
+                .filter(([time]) => timeToSeconds(time) <= currentVideoTime)
+                .filter(([_, text]) => text.labels === label).length,
+            }))
+            .sort((a, b) => b.value - a.value)}
+          margin={{
+            top: 5,
+            right: 5,
+            left: 5,
+            bottom: 60,
+          }}
+        >
+          <XAxis
+            dataKey="name"
+            // label={{
+            //   value: "Categories",
+            //   position: "bottom",
+            //   offset: 0,
+            // }}
+            interval={0}
+            tick={{
+              angle: 60,
+              textAnchor: "start",
+              dx: -5,
+              dy: 10,
+            }}
+          />
 
-      <div style={{ padding: "5rem", border: "1px solid blue" }}> Graph </div>
+          <YAxis
+            label={{
+              value: "Frequency",
+              angle: -90,
+              position: "insideLeft",
+            }}
+          />
+          {/* <Tooltip /> */}
+          <Bar dataKey="value" fill="#3ea6ff" />
+        </BarChart>
+      </ResponsiveContainer>
     </div>
   );
 };
