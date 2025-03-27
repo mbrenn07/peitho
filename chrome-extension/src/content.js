@@ -97,15 +97,39 @@ const CustomComponent = () => {
   }, []);
 
   useEffect(() => {
-    const handleMessage = (message) => {
-      if (message.action === "UPDATE_FROM_POPUP" && message.utterances) {
-        setUtterances(message.utterances);
+    const transcriptObserver = new MutationObserver((mutations, obs) => {
+      const button = document.querySelector(config.BUTTON_SELECTOR);
+    
+    
+      if (button) {
+        clickButtonAndGetHTML()
+    .then((html) => {
+      axios
+      .post(`${config.BACKEND_URL}/process_transcript`, {
+        html: html,
+      })
+      .then((data) => {
+        console.log(data);
+        const utterances = data.data.success;
+        setUtterances(utterances)
+      })
+      .catch((error) => {
+        console.error(error);
+      })
+      const closeButton = document.querySelector('[aria-label="Close transcript"]');
+      if (closeButton) {
+        closeButton.click();
       }
-    };
-    chrome.runtime.onMessage.addListener(handleMessage);
-    return () => {
-      chrome.runtime.onMessage.removeListener(handleMessage);
-    };
+    });
+    
+        obs.disconnect();
+      }
+    });
+    
+    transcriptObserver.observe(document.body, {
+      childList: true,
+      subtree: true,
+    });    
   }, []);
 
   const timeToSeconds = (timeString) => {
@@ -267,43 +291,3 @@ progressBarObserver.observe(document.body, {
   childList: true,
   subtree: true,
 });
-
-const transcriptObserver = new MutationObserver((mutations, obs) => {
-  const button = document.querySelector(config.BUTTON_SELECTOR);
-
-
-  if (button) {
-    clickButtonAndGetHTML()
-.then((html) => {
-  axios
-  .post(`${config.BACKEND_URL}/process_transcript`, {
-    html: html,
-  })
-  .then((data) => {
-    console.log(data);
-    const utterances = data.data.success;
-    chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
-      chrome.tabs.sendMessage(tabs[0].id, {
-        action: "UPDATE_FROM_POPUP",
-        utterances: utterances,
-      });
-    });
-  })
-  .catch((error) => {
-    console.error(error);
-  })
-  const closeButton = document.querySelector('[aria-label="Close transcript"]');
-  if (closeButton) {
-    closeButton.click();
-  }
-});
-
-    obs.disconnect();
-  }
-});
-
-transcriptObserver.observe(document.body, {
-  childList: true,
-  subtree: true,
-});
-
