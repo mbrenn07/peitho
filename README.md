@@ -4,7 +4,7 @@
 
 Ensure you have React's most recent LTS version installed (may work with other versions)
 
-cd `chrome-extension`
+run `cd chrome-extension`
 
 run `npm install`
 
@@ -16,9 +16,8 @@ Finally, `load unpacked` and select the `build` folder
 
 ## Python Server
 
-pip install:
-- flask
-- flask_cors
-- bs4
+run `cd backend`
 
-then run start.sh
+run `pip install -r requirements.txt`
+
+then run start.sh from the main folder

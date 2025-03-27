@@ -10,7 +10,6 @@ import {
   ResponsiveContainer,
 } from "recharts";
 
-// Content script that runs in the context of the webpage
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   if (message.action === "clickButtonAndGetHTML") {
     clickButtonAndGetHTML()
@@ -74,13 +73,10 @@ function setupTimeTracking() {
   }, 1000);
 }
 
-// Initialize when the page is ready
 function initTimeTracking() {
-  // Check if video element exists
   if (document.querySelector("video")) {
     setupTimeTracking();
   } else {
-    // Try again shortly
     setTimeout(initTimeTracking, 1000);
   }
 }
@@ -244,27 +240,43 @@ const CustomComponent = () => {
   );
 };
 
-const observer = new MutationObserver((mutations, obs) => {
-  const relatedElement =
+const recommendationObserver = new MutationObserver((mutations, obs) => {
+  const recommendationBar =
     document.querySelector("#columns").lastElementChild.lastElementChild
       .lastElementChild;
 
-  if (relatedElement) {
-    relatedElement.style.height = "calc(100vh - 95px)";
-    // relatedElement.style.background = "red";
+  if (recommendationBar) {
+    recommendationBar.style.height = "calc(100vh - 95px)";
+    // recommendationBar.style.background = "red";
 
-    while (relatedElement.firstChild) {
-      relatedElement.removeChild(relatedElement.firstChild);
+    while (recommendationBar.firstChild) {
+      recommendationBar.removeChild(recommendationBar.firstChild);
     }
 
-    const root = createRoot(relatedElement);
+    const root = createRoot(recommendationBar);
     root.render(<CustomComponent />);
 
     obs.disconnect();
   }
 });
 
-observer.observe(document.body, {
+recommendationObserver.observe(document.body, {
+  childList: true,
+  subtree: true,
+});
+
+const progressBarObserver = new MutationObserver((mutations, obs) => {
+  const progressBar =
+    document.querySelector(".ytp-progress-bar");
+
+  if (progressBar) {
+    progressBar.style.height = "20px";
+
+    obs.disconnect();
+  }
+});
+
+progressBarObserver.observe(document.body, {
   childList: true,
   subtree: true,
 });
