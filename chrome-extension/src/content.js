@@ -1,19 +1,14 @@
 import config from "./config";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { createRoot } from "react-dom/client";
-
-chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
-  if (message.action === "clickButtonAndGetHTML") {
-    clickButtonAndGetHTML()
-      .then((html) => {
-        sendResponse({ success: true, html: html });
-      })
-      .catch((error) => {
-        sendResponse({ success: false, error: error.message });
-      });
-    return true;
-  }
-});
+import {
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  ResponsiveContainer,
+} from "recharts";
+import axios from "axios";
 
 async function clickButtonAndGetHTML() {
   return new Promise((resolve, reject) => {
@@ -78,7 +73,25 @@ initTimeTracking();
 const CustomComponent = () => {
   const [currentVideoTime, setCurrentVideoTime] = useState("0:00");
   const [utterances, setUtterances] = useState({});
+  const utterancesRef = useRef();
+  const currentVideoTimeRef = useRef();
   const [textColor, setTextColor] = useState("#000"); // fallback color
+
+  const labelToColor = {
+    "Self Claims - Political Track Record": "red",
+    "General Claim Statistical": "blue",
+    "Communicative Metareference": "green",
+    "Gratitude/Congratulations": "purple",
+    "General Claim Non-statistical": "yellow",
+  }
+
+  useEffect(() => {
+    utterancesRef.current = utterances
+  }, [utterances])
+
+  useEffect(() => {
+    currentVideoTimeRef.current = currentVideoTime
+  }, [currentVideoTime])
 
   useEffect(() => {
     const ytElement =
@@ -102,15 +115,87 @@ const CustomComponent = () => {
   }, []);
 
   useEffect(() => {
-    const handleMessage = (message) => {
-      if (message.action === "UPDATE_FROM_POPUP" && message.utterances) {
-        setUtterances(message.utterances);
+    const transcriptObserver = new MutationObserver((mutations, obs) => {
+      const button = document.querySelector(config.BUTTON_SELECTOR);
+    
+    
+      if (button) {
+        clickButtonAndGetHTML()
+    .then((html) => {
+      axios
+      .post(`${config.BACKEND_URL}/process_transcript`, {
+        html: html,
+      })
+      .then((data) => {
+        console.log(data);
+        const utterances = data.data.success;
+        setUtterances(utterances)
+      })
+      .catch((error) => {
+        console.error(error);
+      })
+      const closeButton = document.querySelector('[aria-label="Close transcript"]');
+      if (closeButton) {
+        closeButton.click();
       }
-    };
-    chrome.runtime.onMessage.addListener(handleMessage);
-    return () => {
-      chrome.runtime.onMessage.removeListener(handleMessage);
-    };
+    });
+    
+        obs.disconnect();
+      }
+    });
+    
+    transcriptObserver.observe(document.body, {
+      childList: true,
+      subtree: true,
+    });    
+
+    const progressBarObserver = new MutationObserver((mutations, obs) => {
+      const progressBar =
+        document.querySelector(".ytp-progress-bar");
+      const progressBarBackground = progressBar.firstChild.firstChild.childNodes[1].firstChild;
+      const progressBarScroller =
+        document.querySelector(".ytp-scrubber-button");
+    
+      if (progressBar && progressBarBackground && progressBarScroller) {
+        progressBar.style.height = "20px";
+        progressBarScroller.style.width = "4px";
+        progressBarScroller.style.background = "black";
+
+        if (utterancesRef.current) {
+          let gradient = "linear-gradient(90deg, "
+          const progressBarUtterances = Object.keys(utterancesRef.current)
+          .sort((a, b) => timeToSeconds(a) - timeToSeconds(b))
+          .map((key, index, arr) => {
+            return {
+              startTime: key,
+              endTime: arr[index + 1],
+              label: utterancesRef.current[key].labels,
+            };
+          })
+          let currentPercentage = 0;
+          progressBarUtterances.filter((item) => timeToSeconds(item.startTime) <= currentVideoTimeRef.current)
+          .forEach((item, index) => {
+            const length = timeToSeconds(item.endTime) - timeToSeconds(item.startTime);
+            const percentage = (length / currentVideoTimeRef.current) * 100;
+            if (index === 0) {
+              currentPercentage = Math.min(currentPercentage + percentage, 100);
+              gradient = gradient + `${labelToColor[item.label]} ${currentPercentage}%, `;
+            } else {
+              gradient = gradient + `${labelToColor[item.label]} ${currentPercentage}%, `;
+              currentPercentage = Math.min(currentPercentage + percentage, 100);
+              gradient = gradient + `${labelToColor[item.label]} ${currentPercentage}%, `;
+            }
+          })
+          gradient = gradient.substring(0, gradient.length - 2) + ")"
+          progressBarBackground.style.background = gradient;
+        }
+      }
+    });
+    
+    progressBarObserver.observe(document.body, {
+      childList: true,
+      subtree: true,
+    });
   }, []);
 
   const timeToSeconds = (timeString) => {
@@ -166,19 +251,68 @@ const CustomComponent = () => {
         .map(([time, text]) => (
           <div key={time} style={styles.utterance}>
             <p style={styles.time}>{time}</p>
-            <h2>"{text}"</h2>
+            <h2>"{text.text}"</h2>
           </div>
         ))}
 
       {/* place holders below */}
-      <h2>Labels:</h2>
+      <h2>Current Labels:</h2>
       <div style={styles.labels}>
-        <p style={styles.label}>Greetings/Salutations</p>
-        <p style={styles.label}>Disagreement</p>
-        <p style={styles.label}>Clarifying Questions</p>
+        {Object.entries(utterances)
+          .filter(([time]) => timeToSeconds(time) <= currentVideoTime)
+          .slice(-1)
+          .map(([_, text]) => (
+            <p style={styles.label}>{text.labels}</p>
+          ))}
       </div>
+    
+      <ResponsiveContainer width="100%" height={300}>
+        <BarChart
+          data={Object.entries(utterances)
+            .filter(([time]) => timeToSeconds(time) <= currentVideoTime)
+            .map(([_, value]) => value.labels)
+            .filter((label, index, self) => self.indexOf(label) === index)
+            .map((label) => ({
+              name: label,
+              value: Object.entries(utterances)
+                .filter(([time]) => timeToSeconds(time) <= currentVideoTime)
+                .filter(([_, text]) => text.labels === label).length,
+            }))
+            .sort((a, b) => b.value - a.value)}
+          margin={{
+            top: 5,
+            right: 5,
+            left: 5,
+            bottom: 60,
+          }}
+        >
+          <XAxis
+            dataKey="name"
+            // label={{
+            //   value: "Categories",
+            //   position: "bottom",
+            //   offset: 0,
+            // }}
+            interval={0}
+            tick={{
+              angle: 60,
+              textAnchor: "start",
+              dx: -5,
+              dy: 10,
+            }}
+          />
 
-      <div style={{ padding: "5rem", border: "1px solid blue" }}> Graph </div>
+          <YAxis
+            label={{
+              value: "Frequency",
+              angle: -90,
+              position: "insideLeft",
+            }}
+          />
+          {/* <Tooltip /> */}
+          <Bar dataKey="value" fill="#3ea6ff" />
+        </BarChart>
+      </ResponsiveContainer>
     </div>
   );
 };
@@ -204,22 +338,6 @@ const recommendationObserver = new MutationObserver((mutations, obs) => {
 });
 
 recommendationObserver.observe(document.body, {
-  childList: true,
-  subtree: true,
-});
-
-const progressBarObserver = new MutationObserver((mutations, obs) => {
-  const progressBar =
-    document.querySelector(".ytp-progress-bar");
-
-  if (progressBar) {
-    progressBar.style.height = "20px";
-
-    obs.disconnect();
-  }
-});
-
-progressBarObserver.observe(document.body, {
   childList: true,
   subtree: true,
 });
