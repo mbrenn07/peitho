@@ -1,5 +1,5 @@
 import config from "./config";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { createRoot } from "react-dom/client";
 import {
   BarChart,
@@ -73,7 +73,25 @@ initTimeTracking();
 const CustomComponent = () => {
   const [currentVideoTime, setCurrentVideoTime] = useState("0:00");
   const [utterances, setUtterances] = useState({});
+  const utterancesRef = useRef();
+  const currentVideoTimeRef = useRef();
   const [textColor, setTextColor] = useState("#000"); // fallback color
+
+  const labelToColor = {
+    "Self Claims - Political Track Record": "red",
+    "General Claim Statistical": "blue",
+    "Communicative Metareference": "green",
+    "Gratitude/Congratulations": "purple",
+    "General Claim Non-statistical": "yellow",
+  }
+
+  useEffect(() => {
+    utterancesRef.current = utterances
+  }, [utterances])
+
+  useEffect(() => {
+    currentVideoTimeRef.current = currentVideoTime
+  }, [currentVideoTime])
 
   useEffect(() => {
     const ytElement =
@@ -130,6 +148,50 @@ const CustomComponent = () => {
       childList: true,
       subtree: true,
     });    
+
+    const progressBarObserver = new MutationObserver((mutations, obs) => {
+      const progressBar =
+        document.querySelector(".ytp-progress-bar");
+      const progressBarBackground = progressBar.firstChild.firstChild.childNodes[1].firstChild;
+    
+      if (progressBar && progressBarBackground) {
+        progressBar.style.height = "20px";
+
+        if (utterancesRef.current) {
+          let gradient = "linear-gradient(90deg, "
+          const progressBarUtterances = Object.keys(utterancesRef.current)
+          .sort((a, b) => timeToSeconds(a) - timeToSeconds(b))
+          .map((key, index, arr) => {
+            return {
+              startTime: key,
+              endTime: arr[index + 1],
+              label: utterancesRef.current[key].labels,
+            };
+          })
+          let currentPercentage = 0;
+          progressBarUtterances.filter((item) => timeToSeconds(item.startTime) <= currentVideoTimeRef.current)
+          .forEach((item, index) => {
+            const length = timeToSeconds(item.endTime) - timeToSeconds(item.startTime);
+            const percentage = (length / currentVideoTimeRef.current) * 100;
+            if (index === 0) {
+              currentPercentage = currentPercentage + percentage;
+              gradient = gradient + `${labelToColor[item.label]} ${currentPercentage}%, `;
+            } else {
+              gradient = gradient + `${labelToColor[item.label]} ${currentPercentage}%, `;
+              currentPercentage = currentPercentage + percentage;
+              gradient = gradient + `${labelToColor[item.label]} ${currentPercentage}%, `;
+            }
+          })
+          gradient = gradient.substring(0, gradient.length - 2) + ")"
+          progressBarBackground.style.background = gradient;
+        }
+      }
+    });
+    
+    progressBarObserver.observe(document.body, {
+      childList: true,
+      subtree: true,
+    });
   }, []);
 
   const timeToSeconds = (timeString) => {
@@ -272,22 +334,6 @@ const recommendationObserver = new MutationObserver((mutations, obs) => {
 });
 
 recommendationObserver.observe(document.body, {
-  childList: true,
-  subtree: true,
-});
-
-const progressBarObserver = new MutationObserver((mutations, obs) => {
-  const progressBar =
-    document.querySelector(".ytp-progress-bar");
-
-  if (progressBar) {
-    progressBar.style.height = "20px";
-
-    obs.disconnect();
-  }
-});
-
-progressBarObserver.observe(document.body, {
   childList: true,
   subtree: true,
 });
