@@ -1,15 +1,15 @@
-import config from './config';
-import React from 'react';
-import { createRoot } from 'react-dom/client';
+import config from "./config";
+import React, { useState, useEffect } from "react";
+import { createRoot } from "react-dom/client";
 
 // Content script that runs in the context of the webpage
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   if (message.action === "clickButtonAndGetHTML") {
     clickButtonAndGetHTML()
-      .then(html => {
+      .then((html) => {
         sendResponse({ success: true, html: html });
       })
-      .catch(error => {
+      .catch((error) => {
         sendResponse({ success: false, error: error.message });
       });
     return true;
@@ -18,10 +18,12 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
 
 async function clickButtonAndGetHTML() {
   return new Promise((resolve, reject) => {
-    console.log(document)
+    console.log(document);
     const button = document.querySelector(config.BUTTON_SELECTOR);
     if (!button) {
-      reject(new Error(`Button not found with selector: ${config.BUTTON_SELECTOR}`));
+      reject(
+        new Error(`Button not found with selector: ${config.BUTTON_SELECTOR}`)
+      );
       return;
     }
 
@@ -36,7 +38,7 @@ async function clickButtonAndGetHTML() {
       childList: true,
       subtree: true,
       attributes: true,
-      characterData: true
+      characterData: true,
     });
 
     button.click();
@@ -44,7 +46,7 @@ async function clickButtonAndGetHTML() {
 }
 
 function getCurrentVideoTime() {
-  const videoElement = document.querySelector('video');
+  const videoElement = document.querySelector("video");
 
   if (videoElement) {
     return Math.round(videoElement.currentTime);
@@ -58,17 +60,16 @@ function setupTimeTracking() {
     const currentTime = getCurrentVideoTime();
 
     chrome.runtime.sendMessage({
-      action: 'UPDATE_VIDEO_TIME',
-      currentTime: currentTime
+      action: "UPDATE_VIDEO_TIME",
+      currentTime: currentTime,
     });
   }, 1000);
-
 }
 
 // Initialize when the page is ready
 function initTimeTracking() {
   // Check if video element exists
-  if (document.querySelector('video')) {
+  if (document.querySelector("video")) {
     setupTimeTracking();
   } else {
     // Try again shortly
@@ -79,19 +80,121 @@ function initTimeTracking() {
 initTimeTracking();
 
 const CustomComponent = () => {
+  const [currentVideoTime, setCurrentVideoTime] = useState("0:00");
+  const [utterances, setUtterances] = useState({});
+  const [textColor, setTextColor] = useState("#000"); // fallback color
+
+  useEffect(() => {
+    const ytElement =
+      document.querySelector("#container h1") ||
+      document.querySelector("#title");
+    if (ytElement) {
+      const computedColor = window.getComputedStyle(ytElement).color;
+      setTextColor(computedColor);
+    }
+  }, []);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      const video = document.querySelector("video");
+      if (video) {
+        setCurrentVideoTime(Math.floor(video.currentTime));
+      }
+    }, 500);
+
+    return () => clearInterval(interval);
+  }, []);
+
+  useEffect(() => {
+    const handleMessage = (message) => {
+      if (message.action === "UPDATE_FROM_POPUP" && message.utterances) {
+        setUtterances(message.utterances);
+      }
+    };
+    chrome.runtime.onMessage.addListener(handleMessage);
+    return () => {
+      chrome.runtime.onMessage.removeListener(handleMessage);
+    };
+  }, []);
+
+  const timeToSeconds = (timeString) => {
+    const [minutes, seconds] = timeString.split(":").map(Number);
+    return minutes * 60 + seconds;
+  };
+
+  const styles = {
+    container: {
+      padding: "2rem",
+      color: textColor,
+      borderRadius: "12px",
+      border:
+        textColor === "rgb(15, 15, 15)"
+          ? "1px solid rgba(0,0,0,0.1)"
+          : "1px solid rgba(255,255,255,0.2)",
+      background: textColor === "rgb(15, 15, 15)" ? "#FFF" : "#212121",
+      fontFamily: "Arial, sans-serif",
+      display: "flex",
+      flexDirection: "column",
+      justifyContent: "flex-start",
+      alignItems: "flex-start",
+      gap: "1rem",
+    },
+    time: {
+      color: "#3ea6ff",
+      padding: "0 4px",
+      fontSize: "1.3rem",
+      fontWeight: "500",
+      lineHeight: "1.8rem",
+      background: "#263850",
+      borderRadius: "4px",
+      width: "fit-content",
+      height: "fit-content",
+    },
+    utterance: { display: "flex", gap: "1rem" },
+    labels: { display: "flex", gap: ".5rem", flexWrap: "wrap" },
+    label: {
+      padding: "0.5rem",
+      background: "#3ea6ff",
+      borderRadius: "4px",
+    },
+  };
+
   return (
-    <div>
-      <p>test!</p>
+    <div style={styles.container}>
+      <h1>AI Utterance Analysis</h1>
+
+      {/* <p>Current Video Time: {currentVideoTime} seconds</p> */}
+      {Object.entries(utterances)
+        .filter(([time]) => timeToSeconds(time) <= currentVideoTime)
+        .slice(-1)
+        .map(([time, text]) => (
+          <div key={time} style={styles.utterance}>
+            <p style={styles.time}>{time}</p>
+            <h2>"{text}"</h2>
+          </div>
+        ))}
+
+      {/* place holders below */}
+      <h2>Labels:</h2>
+      <div style={styles.labels}>
+        <p style={styles.label}>Greetings/Salutations</p>
+        <p style={styles.label}>Disagreement</p>
+        <p style={styles.label}>Clarifying Questions</p>
+      </div>
+
+      <div style={{ padding: "5rem", border: "1px solid blue" }}> Graph </div>
     </div>
   );
 };
 
 const observer = new MutationObserver((mutations, obs) => {
-  const relatedElement = document.querySelector("#columns").lastElementChild.lastElementChild.lastElementChild;
+  const relatedElement =
+    document.querySelector("#columns").lastElementChild.lastElementChild
+      .lastElementChild;
 
   if (relatedElement) {
-    relatedElement.style.height = 'calc(100vh - 95px)';
-    relatedElement.style.background = 'red'
+    relatedElement.style.height = "calc(100vh - 95px)";
+    // relatedElement.style.background = "red";
 
     while (relatedElement.firstChild) {
       relatedElement.removeChild(relatedElement.firstChild);
@@ -106,5 +209,5 @@ const observer = new MutationObserver((mutations, obs) => {
 
 observer.observe(document.body, {
   childList: true,
-  subtree: true
+  subtree: true,
 });
