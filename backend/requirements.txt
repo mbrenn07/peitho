@@ -1,3 +1,5 @@
 flask
 flask-cors
-beautifulsoup4
+yt-dlp
+assemblyai
+python-dotenv

@@ -1,7 +1,10 @@
+import assemblyai as aai
+import yt_dlp
 from flask import Flask, request
 from flask_cors import CORS
-from bs4 import BeautifulSoup
 import random
+import os
+import json
 
 app = Flask(__name__)
 cors = CORS(app)
@@ -16,23 +19,44 @@ LABELS = [
 
 @app.route("/process_transcript", methods=["POST"])
 def process_transcript():
-    soup = BeautifulSoup(request.get_json()["html"], "html.parser")
-    transcript_container = soup.find("ytd-transcript-segment-list-renderer")
-    if transcript_container:
-        segments = transcript_container.find_all("ytd-transcript-segment-renderer")
-        transcript_dict = {}
+    url = request.get_json()["url"]
+    utterances = []
 
-        for segment in segments:
-            timestamp = segment.find("div", class_="segment-timestamp").text.strip()
-            transcript_text = segment.find(
-                "yt-formatted-string", class_="segment-text"
-            ).text.strip()
-            transcript_dict[timestamp] = {
-                "text": transcript_text,
-                "labels": random.choice(LABELS),
-            }
+    options = {
+        'format': 'bestaudio[ext=webm]',
+        'outtmpl': 'videos/%(title)s.%(ext)s',
+    }
+
+    with yt_dlp.YoutubeDL(options) as ydl:
+        info_dict = ydl.extract_info(url, download=True)
+        file_path = ydl.prepare_filename(info_dict)
+
+    aai.settings.api_key = os.getenv("ASSEMBLY_AI_API")
+    config = aai.TranscriptionConfig(speaker_labels=True)
+    transcriber = aai.Transcriber()
+    transcript = transcriber.transcribe(file_path, config=config)
+    utterances = [
+        {
+            "speaker": utterance.speaker,
+            "text": utterance.text,
+            "start": utterance.start,
+            "end": utterance.end,
+            "label": random.choice(LABELS),
+        }
+        for utterance in transcript.utterances
+    ]
+
+    speakers_set = set()
+    for utterance in utterances:
+        speakers_set.add(utterance["speaker"])
 
     with open("output_formatted.txt", "w", encoding="utf-8") as file:
-        print(transcript_dict, file=file)
+        json.dump({"utterances": utterances, "speakers": list(
+            speakers_set)}, file, indent=4)
 
-    return {"success": transcript_dict}
+    try:
+        os.remove(file_path)
+    except Exception as e:
+        print(f"An error occurred: {e}")
+
+    return {"utterances": utterances, "speakers": list(speakers_set)}

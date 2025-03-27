@@ -12,7 +12,6 @@ import axios from "axios";
 
 async function clickButtonAndGetHTML() {
   return new Promise((resolve, reject) => {
-    console.log(document);
     const button = document.querySelector(config.BUTTON_SELECTOR);
     if (!button) {
       reject(
@@ -71,8 +70,8 @@ function initTimeTracking() {
 initTimeTracking();
 
 const CustomComponent = () => {
-  const [currentVideoTime, setCurrentVideoTime] = useState("0:00");
-  const [utterances, setUtterances] = useState({});
+  const [currentVideoTime, setCurrentVideoTime] = useState(0);
+  const [utterances, setUtterances] = useState([]);
   const utterancesRef = useRef();
   const currentVideoTimeRef = useRef();
   const [textColor, setTextColor] = useState("#000"); // fallback color
@@ -107,7 +106,7 @@ const CustomComponent = () => {
     const interval = setInterval(() => {
       const video = document.querySelector("video");
       if (video) {
-        setCurrentVideoTime(Math.floor(video.currentTime));
+        setCurrentVideoTime(video.currentTime * 1000);
       }
     }, 500);
 
@@ -115,47 +114,27 @@ const CustomComponent = () => {
   }, []);
 
   useEffect(() => {
-    const transcriptObserver = new MutationObserver((mutations, obs) => {
-      const button = document.querySelector(config.BUTTON_SELECTOR);
-    
-    
-      if (button) {
-        clickButtonAndGetHTML()
-    .then((html) => {
-      axios
+    axios
       .post(`${config.BACKEND_URL}/process_transcript`, {
-        html: html,
+        url: window.location.href,
       })
       .then((data) => {
-        console.log(data);
-        const utterances = data.data.success;
+        const utterances = data.data.utterances.sort((a, b) => a.start - b.start);
         setUtterances(utterances)
       })
       .catch((error) => {
         console.error(error);
       })
-      const closeButton = document.querySelector('[aria-label="Close transcript"]');
-      if (closeButton) {
-        closeButton.click();
-      }
-    });
-    
-        obs.disconnect();
-      }
-    });
-    
-    transcriptObserver.observe(document.body, {
-      childList: true,
-      subtree: true,
-    });    
+  }, [window.location.href])
 
+  useEffect(() => {
     const progressBarObserver = new MutationObserver((mutations, obs) => {
       const progressBar =
         document.querySelector(".ytp-progress-bar");
       const progressBarBackground = progressBar.firstChild.firstChild.childNodes[1].firstChild;
       const progressBarScroller =
         document.querySelector(".ytp-scrubber-button");
-    
+
       if (progressBar && progressBarBackground && progressBarScroller) {
         progressBar.style.height = "20px";
         progressBarScroller.style.width = "4px";
@@ -163,45 +142,31 @@ const CustomComponent = () => {
 
         if (utterancesRef.current) {
           let gradient = "linear-gradient(90deg, "
-          const progressBarUtterances = Object.keys(utterancesRef.current)
-          .sort((a, b) => timeToSeconds(a) - timeToSeconds(b))
-          .map((key, index, arr) => {
-            return {
-              startTime: key,
-              endTime: arr[index + 1],
-              label: utterancesRef.current[key].labels,
-            };
-          })
           let currentPercentage = 0;
-          progressBarUtterances.filter((item) => timeToSeconds(item.startTime) <= currentVideoTimeRef.current)
-          .forEach((item, index) => {
-            const length = timeToSeconds(item.endTime) - timeToSeconds(item.startTime);
-            const percentage = (length / currentVideoTimeRef.current) * 100;
-            if (index === 0) {
-              currentPercentage = Math.min(currentPercentage + percentage, 100);
-              gradient = gradient + `${labelToColor[item.label]} ${currentPercentage}%, `;
-            } else {
-              gradient = gradient + `${labelToColor[item.label]} ${currentPercentage}%, `;
-              currentPercentage = Math.min(currentPercentage + percentage, 100);
-              gradient = gradient + `${labelToColor[item.label]} ${currentPercentage}%, `;
-            }
-          })
+          utterancesRef.current.filter((item) => item.start <= currentVideoTimeRef.current)
+            .forEach((item, index) => {
+              const length = item.end - item.start;
+              const percentage = (length / currentVideoTimeRef.current) * 100;
+              if (index === 0) {
+                currentPercentage = Math.min(currentPercentage + percentage, 100);
+                gradient = gradient + `${labelToColor[item.label]} ${currentPercentage}%, `;
+              } else {
+                gradient = gradient + `${labelToColor[item.label]} ${currentPercentage}%, `;
+                currentPercentage = Math.min(currentPercentage + percentage, 100);
+                gradient = gradient + `${labelToColor[item.label]} ${currentPercentage}%, `;
+              }
+            })
           gradient = gradient.substring(0, gradient.length - 2) + ")"
           progressBarBackground.style.background = gradient;
         }
       }
     });
-    
+
     progressBarObserver.observe(document.body, {
       childList: true,
       subtree: true,
     });
   }, []);
-
-  const timeToSeconds = (timeString) => {
-    const [minutes, seconds] = timeString.split(":").map(Number);
-    return minutes * 60 + seconds;
-  };
 
   const styles = {
     container: {
@@ -240,43 +205,55 @@ const CustomComponent = () => {
     },
   };
 
+  const formatTime = (ms) => {
+    const hours = Math.floor(ms / 3600000);
+    const minutes = Math.floor((ms % 3600000) / 60000);
+    const seconds = Math.floor((ms % 60000) / 1000);
+
+    if (hours > 0) {
+      return `${hours}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+    } else {
+      return `${minutes}:${String(seconds).padStart(2, '0')}`;
+    }
+  }
+
   return (
     <div style={styles.container}>
       <h1>AI Utterance Analysis</h1>
 
       {/* <p>Current Video Time: {currentVideoTime} seconds</p> */}
-      {Object.entries(utterances)
-        .filter(([time]) => timeToSeconds(time) <= currentVideoTime)
+      {utterances
+        .filter((utterance) => utterance.start <= currentVideoTime)
         .slice(-1)
-        .map(([time, text]) => (
-          <div key={time} style={styles.utterance}>
-            <p style={styles.time}>{time}</p>
-            <h2>"{text.text}"</h2>
+        .map((utterance) => (
+          <div key={utterance.start} style={styles.utterance}>
+            <p style={styles.time}>{formatTime(utterance.start)}</p>
+            <h2>"{utterance.text}"</h2>
           </div>
         ))}
 
       {/* place holders below */}
       <h2>Current Labels:</h2>
       <div style={styles.labels}>
-        {Object.entries(utterances)
-          .filter(([time]) => timeToSeconds(time) <= currentVideoTime)
+        {utterances
+          .filter((utterance) => utterance.start <= currentVideoTime)
           .slice(-1)
-          .map(([_, text]) => (
-            <p style={styles.label}>{text.labels}</p>
+          .map((utterance) => (
+            <p style={styles.label}>{utterance.label}</p>
           ))}
       </div>
-    
+
       <ResponsiveContainer width="100%" height={300}>
         <BarChart
-          data={Object.entries(utterances)
-            .filter(([time]) => timeToSeconds(time) <= currentVideoTime)
-            .map(([_, value]) => value.labels)
+          data={utterances
+            .filter((utterance) => utterance.start <= currentVideoTime)
+            .map((utterance) => utterance.label)
             .filter((label, index, self) => self.indexOf(label) === index)
             .map((label) => ({
               name: label,
-              value: Object.entries(utterances)
-                .filter(([time]) => timeToSeconds(time) <= currentVideoTime)
-                .filter(([_, text]) => text.labels === label).length,
+              value: utterances
+                .filter((utterance) => utterance.start <= currentVideoTime)
+                .filter((utterance) => utterance.label === label).length,
             }))
             .sort((a, b) => b.value - a.value)}
           margin={{

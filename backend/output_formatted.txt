@@ -1,1 +1,354 @@
-{'0:00': {'text': 'United States of America.', 'labels': 'Gratitude/Congratulations'}, '0:02': {'text': 'who stood up at press conferences', 'labels': 'Gratitude/Congratulations'}, '0:04': {'text': 'and talked tough about Vladimir Putin.', 'labels': 'Self Claims - Political Track Record'}, '0:06': {'text': 'And then Putin invaded', 'labels': 'Communicative Metareference'}, '0:08': {'text': 'Ukraine and destroyed', 'labels': 'Communicative Metareference'}, '0:09': {'text': 'a significant chunk of the country.', 'labels': 'Communicative Metareference'}, '0:11': {'text': 'The path to peace', 'labels': 'Self Claims - Political Track Record'}, '0:13': {'text': 'and the path to prosperity', 'labels': 'General Claim Statistical'}, '0:14': {'text': 'is maybe engaging in diplomacy.', 'labels': 'General Claim Non-statistical'}, '0:17': {'text': 'We tried the pathway of Joe Biden', 'labels': 'Gratitude/Congratulations'}, '0:20': {'text': 'thumping our chest', 'labels': 'General Claim Non-statistical'}, '0:21': {'text': 'and pretending that the president', 'labels': 'General Claim Non-statistical'}, '0:23': {'text': 'of the United States,', 'labels': 'General Claim Non-statistical'}, '0:24': {'text': 'his words', 'labels': 'General Claim Statistical'}, '0:25': {'text': 'mattered more than the president', 'labels': 'General Claim Non-statistical'}, '0:26': {'text': 'of the United States. His actions.', 'labels': 'Gratitude/Congratulations'}, '0:28': {'text': 'What makes America a good country?', 'labels': 'General Claim Statistical'}, '0:30': {'text': 'Is America engaging in diplomacy?', 'labels': 'Communicative Metareference'}, '0:32': {'text': "That's what President Trump is doing.", 'labels': 'Gratitude/Congratulations'}, '0:34': {'text': 'Can I ask you?', 'labels': 'Self Claims - Political Track Record'}, '0:36': {'text': 'Sure. Yeah, yeah. Okay.', 'labels': 'General Claim Non-statistical'}, '0:38': {'text': 'So he occupied, our part.', 'labels': 'Self Claims - Political Track Record'}, '0:42': {'text': 'Big parts', 'labels': 'General Claim Statistical'}, '0:43': {'text': 'of Ukraine, parts of East and Crimea.', 'labels': 'General Claim Statistical'}, '0:47': {'text': 'so he occupied it on 2014.', 'labels': 'Gratitude/Congratulations'}, '0:51': {'text': 'So', 'labels': 'General Claim Non-statistical'}, '0:52': {'text': 'during a lot of', 'labels': 'General Claim Statistical'}, '0:54': {'text': "years, I'm not speaking about Joe Biden,", 'labels': 'Communicative Metareference'}, '0:56': {'text': 'but those time.', 'labels': 'Self Claims - Political Track Record'}, '0:57': {'text': 'Was Obama, then President Obama,', 'labels': 'Self Claims - Political Track Record'}, '1:00': {'text': 'then President Trump,', 'labels': 'General Claim Statistical'}, '1:01': {'text': 'then President Biden, now', 'labels': 'General Claim Non-statistical'}, '1:02': {'text': 'President Trump. And God bless.', 'labels': 'General Claim Statistical'}, '1:05': {'text': 'Now President Trump was stop him.', 'labels': 'Gratitude/Congratulations'}, '1:07': {'text': 'But during 2014, nobody stopped him.', 'labels': 'General Claim Statistical'}, '1:09': {'text': 'He just occupied and took.', 'labels': 'General Claim Non-statistical'}, '1:11': {'text': 'He killed the people.', 'labels': 'Gratitude/Congratulations'}, '1:12': {'text': 'You know what the context', 'labels': 'General Claim Non-statistical'}, '1:13': {'text': '2015 2420 14 to 2024.', 'labels': 'General Claim Statistical'}, '1:17': {'text': 'Yeah. So how would he is not here?', 'labels': 'General Claim Statistical'}, '1:20': {'text': "Yeah, that's exactly right.", 'labels': 'Communicative Metareference'}, '1:21': {'text': 'But during 2014 till 2022,', 'labels': 'General Claim Non-statistical'}, '1:25': {'text': 'you know what the situation became that', 'labels': 'General Claim Non-statistical'}, '1:28': {'text': 'people, been dying on the contact line.', 'labels': 'General Claim Non-statistical'}, '1:31': {'text': 'Nobody stopped him.', 'labels': 'Self Claims - Political Track Record'}, '1:33': {'text': 'You know that we had conversations', 'labels': 'Communicative Metareference'}, '1:35': {'text': 'with him.', 'labels': 'General Claim Non-statistical'}, '1:36': {'text': 'My bilateral conversation.', 'labels': 'General Claim Statistical'}, '1:38': {'text': 'And we signed with him. Me?', 'labels': 'General Claim Non-statistical'}, '1:41': {'text': 'Like a new president in 2019.', 'labels': 'General Claim Statistical'}, '1:43': {'text': 'I signed with him the deal', 'labels': 'Communicative Metareference'}, '1:46': {'text': 'I signed with him.', 'labels': 'Self Claims - Political Track Record'}, '1:47': {'text': 'Macron and Merkel.', 'labels': 'Gratitude/Congratulations'}, '1:49': {'text': 'We signed ceasefire.', 'labels': 'General Claim Statistical'}, '1:51': {'text': 'Ceasefire.', 'labels': 'Gratitude/Congratulations'}, '1:52': {'text': 'All of them told me', 'labels': 'General Claim Non-statistical'}, '1:54': {'text': 'that he will never go.', 'labels': 'General Claim Non-statistical'}, '1:55': {'text': 'We signed him.', 'labels': 'General Claim Statistical'}, '1:57': {'text': 'Guest contract. Guest contract?', 'labels': 'Communicative Metareference'}, '2:00': {'text': 'But after that, he broken the ceasefire.', 'labels': 'General Claim Non-statistical'}, '2:03': {'text': 'He killed our people', 'labels': 'Self Claims - Political Track Record'}, '2:05': {'text': "and he didn't exchange prisoners.", 'labels': 'General Claim Non-statistical'}, '2:07': {'text': 'We signed the exchange of prisoners.', 'labels': 'Self Claims - Political Track Record'}, '2:09': {'text': "But he didn't do it.", 'labels': 'General Claim Statistical'}, '2:11': {'text': 'What kind of diplomacy?', 'labels': 'Communicative Metareference'}, '2:13': {'text': 'Gigi, you are speaking about?', 'labels': 'Gratitude/Congratulations'}, '2:15': {'text': 'What what what what do you mean?', 'labels': 'Communicative Metareference'}, '2:17': {'text': "I'm talking about the kind of diplomacy", 'labels': 'General Claim Statistical'}, '2:18': {'text': "that's going to end the destruction", 'labels': 'Communicative Metareference'}, '2:20': {'text': 'of your country.', 'labels': 'Self Claims - Political Track Record'}, '2:21': {'text': 'But, Mr. President, Mr.', 'labels': 'Communicative Metareference'}, '2:22': {'text': 'president, with respect,', 'labels': 'General Claim Non-statistical'}, '2:23': {'text': "I think it's disrespectful", 'labels': 'Communicative Metareference'}, '2:24': {'text': 'for you to come into the Oval Office', 'labels': 'General Claim Statistical'}, '2:25': {'text': 'to try to litigate this', 'labels': 'General Claim Statistical'}, '2:26': {'text': 'in front of the American media.', 'labels': 'Self Claims - Political Track Record'}, '2:28': {'text': 'Right now, you guys are going around', 'labels': 'General Claim Statistical'}, '2:30': {'text': 'and forcing conscripts to the front lines', 'labels': 'Gratitude/Congratulations'}, '2:32': {'text': 'because you have manpower problems.', 'labels': 'General Claim Statistical'}, '2:34': {'text': 'You should be thanking the president', 'labels': 'Self Claims - Political Track Record'}, '2:35': {'text': 'for trying to bring an end', 'labels': 'General Claim Non-statistical'}, '2:37': {'text': 'to this conflict', 'labels': 'General Claim Non-statistical'}, '2:38': {'text': 'into Ukraine, that you say', 'labels': 'Communicative Metareference'}, '2:39': {'text': 'what problems we have.', 'labels': 'General Claim Statistical'}, '2:40': {'text': 'I have been to count one.', 'labels': 'Self Claims - Political Track Record'}, '2:42': {'text': "I have actually, I've actually watched", 'labels': 'General Claim Statistical'}, '2:45': {'text': 'and seen the stories,', 'labels': 'Gratitude/Congratulations'}, '2:46': {'text': 'and I know that what happens', 'labels': 'General Claim Statistical'}, '2:47': {'text': 'is you bring people,', 'labels': 'General Claim Non-statistical'}, '2:49': {'text': 'you bring them on a propaganda tour. Mr.', 'labels': 'General Claim Non-statistical'}, '2:51': {'text': 'Art, do you disagree', 'labels': 'Gratitude/Congratulations'}, '2:52': {'text': "that you've had problems", 'labels': 'Communicative Metareference'}, '2:54': {'text': 'bringing people into your military have,', 'labels': 'Communicative Metareference'}, '2:56': {'text': "and do you think that it's", 'labels': 'General Claim Statistical'}, '2:57': {'text': 'respectful alliance', 'labels': 'Gratitude/Congratulations'}, '2:58': {'text': 'to come to the Oval Office', 'labels': 'Communicative Metareference'}, '2:59': {'text': 'of the United States of America', 'labels': 'General Claim Statistical'}, '3:01': {'text': 'and attack the administration', 'labels': 'Gratitude/Congratulations'}, '3:02': {'text': 'that is trying to trying to prevent', 'labels': 'Gratitude/Congratulations'}, '3:04': {'text': 'the destruction of your country?', 'labels': 'Gratitude/Congratulations'}, '3:05': {'text': 'A lot of questions.', 'labels': 'General Claim Non-statistical'}, '3:06': {'text': "Let's start from the beginning.", 'labels': 'Self Claims - Political Track Record'}, '3:08': {'text': 'First of all, during the war,', 'labels': 'Communicative Metareference'}, '3:10': {'text': 'everybody has problems, even you.', 'labels': 'Communicative Metareference'}, '3:12': {'text': 'But you have nice ocean', 'labels': 'Gratitude/Congratulations'}, '3:14': {'text': "and don't feel now,", 'labels': 'Gratitude/Congratulations'}, '3:15': {'text': 'but you will feel it in the future.', 'labels': 'General Claim Statistical'}, '3:18': {'text': "God bless you don't know that", 'labels': 'General Claim Statistical'}, '3:19': {'text': 'God bless you. God bless you.', 'labels': 'General Claim Statistical'}, '3:21': {'text': 'You got to war.', 'labels': 'Communicative Metareference'}, '3:22': {'text': "Don't tell us what we're going to feel.", 'labels': 'Self Claims - Political Track Record'}, '3:24': {'text': "We're trying to solve a problem.", 'labels': 'Self Claims - Political Track Record'}, '3:25': {'text': "Don't tell us what we're going to feel.", 'labels': 'General Claim Statistical'}, '3:27': {'text': "I'm not telling you", 'labels': 'Self Claims - Political Track Record'}, '3:28': {'text': "because you're in no position", 'labels': 'Gratitude/Congratulations'}, '3:29': {'text': 'to dictate that.', 'labels': 'General Claim Statistical'}, '3:31': {'text': "No, you're in no position to dictate", 'labels': 'General Claim Non-statistical'}, '3:34': {'text': "what we're going to feel. You.", 'labels': 'General Claim Statistical'}, '3:36': {'text': 'very good, feel infinite.', 'labels': 'Gratitude/Congratulations'}, '3:38': {'text': "We're going to feel very good,", 'labels': 'General Claim Statistical'}, '3:39': {'text': 'very strong influence.', 'labels': 'Communicative Metareference'}, '3:41': {'text': "You're right now", 'labels': 'General Claim Non-statistical'}, '3:42': {'text': 'not in a very good position.', 'labels': 'Self Claims - Political Track Record'}, '3:44': {'text': "You've allowed", 'labels': 'Gratitude/Congratulations'}, '3:45': {'text': 'to be in a very bad position', 'labels': 'Self Claims - Political Track Record'}, '3:46': {'text': "that he's happens to be right up", 'labels': 'Communicative Metareference'}, '3:48': {'text': 'from the very beginning of the war.', 'labels': 'General Claim Statistical'}, '3:50': {'text': 'Not in a good position.', 'labels': 'Self Claims - Political Track Record'}, '3:51': {'text': "You don't have the cards right now", 'labels': 'General Claim Statistical'}, '3:53': {'text': 'with us.', 'labels': 'Self Claims - Political Track Record'}, '3:54': {'text': 'You start having right now, you', 'labels': 'Communicative Metareference'}, '3:57': {'text': 'suppress', 'labels': 'Gratitude/Congratulations'}, '3:59': {'text': 'your gambling with the lives', 'labels': 'General Claim Statistical'}, '4:00': {'text': 'and millions of people think', 'labels': 'Self Claims - Political Track Record'}, '4:02': {'text': 'you gambling with World War three.', 'labels': 'Gratitude/Congratulations'}, '4:04': {'text': "You're gambling with World War Three.", 'labels': 'Communicative Metareference'}, '4:07': {'text': "And what you're doing", 'labels': 'Gratitude/Congratulations'}, '4:08': {'text': 'is very dis disrespectful to the country.', 'labels': 'Gratitude/Congratulations'}, '4:11': {'text': "This country that's bad.", 'labels': 'Communicative Metareference'}, '4:14': {'text': 'Far more than a lot of people said', 'labels': 'General Claim Non-statistical'}, '4:16': {'text': 'they should have.', 'labels': 'Self Claims - Political Track Record'}, '4:17': {'text': 'Have you said thank you once for meeting?', 'labels': 'Self Claims - Political Track Record'}, '4:19': {'text': 'No. In this entire media?', 'labels': 'Gratitude/Congratulations'}, '4:21': {'text': 'Have you said thank you?', 'labels': 'Communicative Metareference'}, '4:22': {'text': 'You went to Pennsylvania', 'labels': 'General Claim Statistical'}, '4:23': {'text': 'and campaigned for the opposition', 'labels': 'Self Claims - Political Track Record'}, '4:25': {'text': 'in October,', 'labels': 'Communicative Metareference'}, '4:26': {'text': 'offer some words of appreciation', 'labels': 'General Claim Statistical'}, '4:28': {'text': 'for the United States of America', 'labels': 'General Claim Statistical'}, '4:30': {'text': "and the president who's", 'labels': 'Gratitude/Congratulations'}, '4:31': {'text': 'trying to save your country', 'labels': 'Self Claims - Political Track Record'}, '4:34': {'text': 'palace.', 'labels': 'Gratitude/Congratulations'}, '4:35': {'text': "You're saying that", 'labels': 'Self Claims - Political Track Record'}, '4:37': {'text': 'if you will speak', 'labels': 'General Claim Statistical'}, '4:38': {'text': 'very loudly about the war,', 'labels': 'General Claim Non-statistical'}, '4:39': {'text': 'you cannot speaking loudly.', 'labels': 'Communicative Metareference'}, '4:41': {'text': "He's not speaking loudly.", 'labels': 'General Claim Non-statistical'}, '4:42': {'text': 'Your country is in big trouble.', 'labels': 'Gratitude/Congratulations'}, '4:44': {'text': "No, no, you've done a lot of talking.", 'labels': 'Gratitude/Congratulations'}, '4:46': {'text': 'Your country is in big trouble.', 'labels': 'Gratitude/Congratulations'}, '4:48': {'text': "I know you're not winning.", 'labels': 'Gratitude/Congratulations'}, '4:49': {'text': "You're not winning this, I.", 'labels': 'General Claim Non-statistical'}, '4:51': {'text': 'You have a damn good chance', 'labels': 'Communicative Metareference'}, '4:53': {'text': 'of coming out, okay?', 'labels': 'Self Claims - Political Track Record'}, '4:54': {'text': 'Because of the president, we are staying.', 'labels': 'Communicative Metareference'}, '4:55': {'text': 'You know, our country is staying strong.', 'labels': 'Self Claims - Political Track Record'}, '4:57': {'text': 'From the very beginning of the war,', 'labels': 'Gratitude/Congratulations'}, '4:59': {'text': "we've been alone,", 'labels': 'Gratitude/Congratulations'}, '5:00': {'text': 'and we are thankful I said things.', 'labels': 'Self Claims - Political Track Record'}, '5:02': {'text': "You haven't been this cabinet.", 'labels': 'Communicative Metareference'}, '5:03': {'text': "They haven't been alone.", 'labels': 'Communicative Metareference'}, '5:04': {'text': 'We gave you three', 'labels': 'General Claim Non-statistical'}, '5:05': {'text': 'that said stupid president $350 billion.', 'labels': 'Gratitude/Congratulations'}, '5:09': {'text': 'You. We gave you military equipment.', 'labels': 'Self Claims - Political Track Record'}, '5:11': {'text': 'You and your men are brave,', 'labels': 'Gratitude/Congratulations'}, '5:12': {'text': 'but they had to use our military.', 'labels': 'Communicative Metareference'}, '5:14': {'text': 'What about us?', 'labels': 'Communicative Metareference'}, '5:15': {'text': "If you didn't have", 'labels': 'General Claim Statistical'}, '5:16': {'text': 'our military equipment,', 'labels': 'General Claim Non-statistical'}, '5:17': {'text': "you didn't have our military equipment.", 'labels': 'Communicative Metareference'}, '5:20': {'text': 'This war would have been over', 'labels': 'General Claim Statistical'}, '5:22': {'text': 'in two weeks in three days?', 'labels': 'General Claim Non-statistical'}, '5:23': {'text': 'I heard it from Putin in three days.', 'labels': 'Gratitude/Congratulations'}, '5:26': {'text': 'Maybe less in two weeks. Of course. Yes.', 'labels': 'General Claim Non-statistical'}, '5:29': {'text': "It's going to be a very hard thing", 'labels': 'Communicative Metareference'}, '5:30': {'text': 'to do business like this.', 'labels': 'General Claim Non-statistical'}, '5:31': {'text': 'I tell you to say thank you.', 'labels': 'General Claim Statistical'}, '5:33': {'text': 'I said,', 'labels': 'General Claim Non-statistical'}, '5:34': {'text': "I accept that they're accepting American,", 'labels': 'Self Claims - Political Track Record'}, '5:37': {'text': 'accept that there are disagreements,', 'labels': 'General Claim Statistical'}, '5:39': {'text': "and let's go litigate those disagreements", 'labels': 'Gratitude/Congratulations'}, '5:41': {'text': 'rather than trying to fight it out', 'labels': 'General Claim Non-statistical'}, '5:42': {'text': 'in the American media.', 'labels': 'General Claim Non-statistical'}, '5:43': {'text': "When you're wrong,", 'labels': 'Gratitude/Congratulations'}, '5:45': {'text': "we know that you're wrong.", 'labels': 'General Claim Statistical'}, '5:46': {'text': "I think it's good for the American people", 'labels': 'Gratitude/Congratulations'}, '5:48': {'text': "to see what's going on.", 'labels': 'Gratitude/Congratulations'}, '5:50': {'text': "That's why I kept this going so long.", 'labels': 'Communicative Metareference'}, '5:53': {'text': 'You have to be thankful', 'labels': 'Self Claims - Political Track Record'}, '5:55': {'text': "you don't have the cards.", 'labels': 'General Claim Statistical'}, '5:57': {'text': "You're buried there. You.", 'labels': 'Self Claims - Political Track Record'}, '5:58': {'text': 'You people are dying.', 'labels': 'Gratitude/Congratulations'}, '5:59': {'text': "Tell you you're running late. Soldiers.", 'labels': 'Gratitude/Congratulations'}, '6:01': {'text': "You don't play.", 'labels': 'General Claim Statistical'}, '6:02': {'text': "You're running slow on soldiers.", 'labels': 'Gratitude/Congratulations'}, '6:04': {'text': 'It would be a damn good thing.', 'labels': 'General Claim Statistical'}, '6:06': {'text': 'Then you tell us.', 'labels': 'Communicative Metareference'}, '6:07': {'text': "I don't want a ceasefire.", 'labels': 'General Claim Non-statistical'}, '6:09': {'text': "I don't want a ceasefire.", 'labels': 'Gratitude/Congratulations'}, '6:10': {'text': 'I want to go. And I wanted this.', 'labels': 'General Claim Statistical'}, '6:12': {'text': 'Look,', 'labels': 'Self Claims - Political Track Record'}, '6:13': {'text': 'if you could get a ceasefire right now,', 'labels': 'General Claim Non-statistical'}, '6:15': {'text': 'I tell you, you take it.', 'labels': 'General Claim Statistical'}, '6:16': {'text': 'So the bullets stopped flying', 'labels': 'Communicative Metareference'}, '6:18': {'text': 'and you meant stuff', 'labels': 'General Claim Statistical'}, '6:19': {'text': 'because we want to stop the war.', 'labels': 'Gratitude/Congratulations'}, '6:21': {'text': "But you're saying you don't want to say.", 'labels': 'Communicative Metareference'}, '6:22': {'text': 'I said to you,', 'labels': 'Gratitude/Congratulations'}, '6:23': {'text': 'I want to cease these guarantees', 'labels': 'Self Claims - Political Track Record'}, '6:24': {'text': "because you'll get", 'labels': 'General Claim Statistical'}, '6:25': {'text': 'a ceasefire faster than I did.', 'labels': 'Gratitude/Congratulations'}, '6:26': {'text': 'Ask our people about ceasefire.', 'labels': 'General Claim Statistical'}, '6:28': {'text': 'What they saying?', 'labels': 'Gratitude/Congratulations'}, '6:29': {'text': 'That was me for you.', 'labels': 'Communicative Metareference'}, '6:31': {'text': 'That was it with me.', 'labels': 'Self Claims - Political Track Record'}, '6:33': {'text': 'That was with a guy named Biden', 'labels': 'General Claim Non-statistical'}, '6:35': {'text': 'who was not a smart person.', 'labels': 'Communicative Metareference'}, '6:37': {'text': 'That was your.', 'labels': 'Self Claims - Political Track Record'}, '6:38': {'text': 'That was with Obama. It was your bread.', 'labels': 'Self Claims - Political Track Record'}, '6:39': {'text': 'Excuse me?', 'labels': 'Self Claims - Political Track Record'}, '6:40': {'text': 'That was with Obama.', 'labels': 'Gratitude/Congratulations'}, '6:41': {'text': 'Who gave you a Sheetz', 'labels': 'General Claim Statistical'}, '6:42': {'text': 'and I gave you javelins. Yes.', 'labels': 'General Claim Non-statistical'}, '6:44': {'text': 'I gave you the javelins', 'labels': 'General Claim Non-statistical'}, '6:45': {'text': 'to take out all those tanks.', 'labels': 'General Claim Non-statistical'}, '6:47': {'text': 'Obama gave you sheets.', 'labels': 'Self Claims - Political Track Record'}, '6:50': {'text': 'the statement is Obama gave', 'labels': 'Self Claims - Political Track Record'}, '6:52': {'text': 'sheets and Trump gave javelins.', 'labels': 'Communicative Metareference'}, '6:55': {'text': 'You got to be more', 'labels': 'General Claim Statistical'}, '6:56': {'text': 'thankful', 'labels': 'Communicative Metareference'}, '6:57': {'text': 'because let me tell you,', 'labels': 'Communicative Metareference'}, '6:58': {'text': "you don't have the cards with us.", 'labels': 'General Claim Statistical'}, '7:00': {'text': 'You have the cards,', 'labels': 'Gratitude/Congratulations'}, '7:02': {'text': "but without us, you don't have any cards.", 'labels': 'Gratitude/Congratulations'}, '7:04': {'text': 'Caitlin,', 'labels': 'General Claim Statistical'}, '7:05': {'text': 'I do want to,', 'labels': 'Self Claims - Political Track Record'}, '7:06': {'text': 'because there were a lot of things', 'labels': 'Self Claims - Political Track Record'}, '7:07': {'text': 'that were just not true.', 'labels': 'Self Claims - Political Track Record'}, '7:09': {'text': 'Aside from just the tone and tenor', 'labels': 'General Claim Non-statistical'}, '7:10': {'text': 'and the monumental, historic', 'labels': 'Self Claims - Political Track Record'}, '7:13': {'text': 'not in a good Way historic,', 'labels': 'General Claim Statistical'}, '7:15': {'text': 'event that we saw in the', 'labels': 'Self Claims - Political Track Record'}, '7:17': {'text': 'in the Oval Office.', 'labels': 'General Claim Statistical'}, '7:18': {'text': 'Caitlin, it really did seem to devolve', 'labels': 'Self Claims - Political Track Record'}, '7:22': {'text': 'when the vice president said to Zelensky,', 'labels': 'Gratitude/Congratulations'}, '7:27': {'text': 'we just want diplomacy.', 'labels': 'General Claim Statistical'}, '7:28': {'text': 'And what Zelensky was trying to do', 'labels': 'Gratitude/Congratulations'}, '7:30': {'text': 'was say,', 'labels': 'Communicative Metareference'}, '7:31': {'text': 'we had that we had a deal with Russia,', 'labels': 'Communicative Metareference'}, '7:34': {'text': 'we had an agreement,', 'labels': 'Communicative Metareference'}, '7:35': {'text': 'the Minsk agreement,', 'labels': 'General Claim Non-statistical'}, '7:36': {'text': "and Russia didn't abide by it.", 'labels': 'Self Claims - Political Track Record'}, '7:39': {'text': 'So I want some guarantees', 'labels': 'General Claim Statistical'}, '7:41': {'text': "that that won't happen again.", 'labels': 'Communicative Metareference'}, '7:43': {'text': 'And then it devolved in a way that is it', 'labels': 'Self Claims - Political Track Record'}, '7:47': {'text': 'is really, really remarkable.', 'labels': 'Communicative Metareference'}, '7:52': {'text': 'the screaming I mean,', 'labels': 'General Claim Non-statistical'}, '7:53': {'text': 'you have been with Donald Trump a lot.', 'labels': 'Communicative Metareference'}, '7:55': {'text': 'we have seen', 'labels': 'Communicative Metareference'}, '7:56': {'text': 'and heard', 'labels': 'Communicative Metareference'}, '7:57': {'text': 'about Trump getting upset', 'labels': 'Communicative Metareference'}, '7:59': {'text': 'and losing his temper.', 'labels': 'Communicative Metareference'}, '8:00': {'text': 'I think this is probably the first time', 'labels': 'Gratitude/Congratulations'}, '8:02': {'text': 'we have seen it like this on camera.', 'labels': 'Gratitude/Congratulations'}, '8:05': {'text': 'say, Caitlin, that,', 'labels': 'Gratitude/Congratulations'}, '8:06': {'text': "that let's just be clear.", 'labels': 'Communicative Metareference'}, '8:09': {'text': "I'm not saying that there wasn't genuine,", 'labels': 'Self Claims - Political Track Record'}, '8:12': {'text': 'anger here, but he understands', 'labels': 'Communicative Metareference'}, '8:15': {'text': 'when the television cameras are', 'labels': 'Gratitude/Congratulations'}, '8:16': {'text': 'there, as does JD Vance.', 'labels': 'Self Claims - Political Track Record'}, '8:18': {'text': "And we can't lose sight", 'labels': 'Communicative Metareference'}, '8:19': {'text': 'of the performance aspect of this.', 'labels': 'General Claim Statistical'}, '8:23': {'text': 'It was incredibly genuine, though.', 'labels': 'Communicative Metareference'}, '8:24': {'text': 'I mean, JD Vance said that', 'labels': 'General Claim Statistical'}, '8:25': {'text': "that this shouldn't be litigated", 'labels': 'Self Claims - Political Track Record'}, '8:26': {'text': 'in front of the press.', 'labels': 'General Claim Statistical'}, '8:27': {'text': 'Trump said, actually, no, it should be.', 'labels': 'General Claim Statistical'}, '8:29': {'text': "I'm glad that this is happening.", 'labels': 'Self Claims - Political Track Record'}, '8:30': {'text': 'And, you know, the way that this bill,', 'labels': 'General Claim Non-statistical'}, '8:32': {'text': 'just to give context of the 40 minutes', 'labels': 'General Claim Non-statistical'}, '8:34': {'text': 'that happened before,', 'labels': 'Communicative Metareference'}, '8:35': {'text': 'what you just watched,', 'labels': 'Self Claims - Political Track Record'}, '8:36': {'text': 'the most remarkable', 'labels': 'Communicative Metareference'}, '8:37': {'text': 'part of this interaction was', 'labels': 'Communicative Metareference'}, '8:38': {'text': 'there were moments', 'labels': 'Gratitude/Congratulations'}, '8:39': {'text': 'where President Zelensky', 'labels': 'General Claim Non-statistical'}, '8:40': {'text': 'would do what we saw.', 'labels': 'General Claim Non-statistical'}, '8:41': {'text': 'The other European leaders do this week', 'labels': 'General Claim Non-statistical'}, '8:43': {'text': 'where they step in to', 'labels': 'General Claim Statistical'}, '8:44': {'text': 'to correct either', 'labels': 'General Claim Non-statistical'}, '8:45': {'text': 'on aid to Ukraine or to talk about Putin', 'labels': 'General Claim Non-statistical'}, '8:48': {'text': "in the fact that he can't be trusted.", 'labels': 'Self Claims - Political Track Record'}, '8:50': {'text': 'At one point,', 'labels': 'Gratitude/Congratulations'}, '8:51': {'text': 'Zelensky called him a killer', 'labels': 'Gratitude/Congratulations'}, '8:52': {'text': 'and saying that', 'labels': 'Self Claims - Political Track Record'}, '8:53': {'text': 'there should be no compromises with them.', 'labels': 'Gratitude/Congratulations'}, '8:55': {'text': 'officials were sitting there', 'labels': 'Gratitude/Congratulations'}, '8:57': {'text': 'just kind of listening to this.', 'labels': 'General Claim Non-statistical'}, '8:58': {'text': 'And it was at that point, though,', 'labels': 'General Claim Statistical'}, '8:59': {'text': 'where where', 'labels': 'Communicative Metareference'}, '9:00': {'text': 'Vice President Vance', 'labels': 'General Claim Non-statistical'}, '9:01': {'text': 'stepped in, Trump was silent', 'labels': 'General Claim Non-statistical'}, '9:03': {'text': 'at the beginning of that.', 'labels': 'Gratitude/Congratulations'}, '9:04': {'text': 'And then Trump also got involved.', 'labels': 'General Claim Non-statistical'}, '9:05': {'text': 'And then they were just essentially', 'labels': 'General Claim Non-statistical'}, '9:06': {'text': 'yelling at one another in this.', 'labels': 'Self Claims - Political Track Record'}, '9:08': {'text': 'And with Trump, all of his diplomacy', 'labels': 'Communicative Metareference'}, '9:10': {'text': 'we know, is personal.', 'labels': 'Gratitude/Congratulations'}, '9:11': {'text': "That's why the world leaders", 'labels': 'General Claim Statistical'}, '9:12': {'text': 'who have come here', 'labels': 'Self Claims - Political Track Record'}, '9:13': {'text': 'this week have tried to flatter him,', 'labels': 'Communicative Metareference'}, '9:15': {'text': 'to essentially get what they want', 'labels': 'Gratitude/Congratulations'}, '9:16': {'text': 'when it comes to negotiating', 'labels': 'General Claim Non-statistical'}, '9:17': {'text': 'the end of this.', 'labels': 'General Claim Statistical'}, '9:18': {'text': 'And that was not what we just saw.', 'labels': 'Gratitude/Congratulations'}, '9:20': {'text': 'The tack that Zelenskyy took here.', 'labels': 'Gratitude/Congratulations'}, '9:21': {'text': 'He was, as Zelensky', 'labels': 'Self Claims - Political Track Record'}, '9:23': {'text': 'typically is, straightforward', 'labels': 'General Claim Statistical'}, '9:24': {'text': 'in his opinions.', 'labels': 'Communicative Metareference'}, '9:25': {'text': 'And what is the reality on the ground.', 'labels': 'Self Claims - Political Track Record'}, '9:27': {'text': 'It was kind of chastising,', 'labels': 'Self Claims - Political Track Record'}, '9:29': {'text': 'president Vice President Vance', 'labels': 'General Claim Non-statistical'}, '9:30': {'text': 'for not having come to Ukraine.', 'labels': 'General Claim Non-statistical'}, '9:32': {'text': 'And at one point earlier,', 'labels': 'Self Claims - Political Track Record'}, '9:33': {'text': 'when Trump was asked', 'labels': 'Self Claims - Political Track Record'}, '9:34': {'text': 'if he would go to Ukraine,', 'labels': 'General Claim Statistical'}, '9:35': {'text': 'Zelensky was saying', 'labels': 'Self Claims - Political Track Record'}, '9:36': {'text': 'that was what he was going to ask', 'labels': 'Gratitude/Congratulations'}, '9:37': {'text': "Trump as well. He's been very,", 'labels': 'General Claim Statistical'}, '9:40': {'text': "he's emphasized a lot", 'labels': 'Self Claims - Political Track Record'}, '9:41': {'text': 'officials need to be there.', 'labels': 'General Claim Non-statistical'}, '9:43': {'text': 'But to give you a sense', 'labels': 'General Claim Statistical'}, '9:44': {'text': 'of how this negotiation is going', 'labels': 'Communicative Metareference'}, '9:46': {'text': 'they are meeting behind closed doors.', 'labels': 'General Claim Non-statistical'}, '9:48': {'text': 'to come up for a press conference', 'labels': 'Gratitude/Congratulations'}, '9:49': {'text': 'any minute now.', 'labels': 'Communicative Metareference'}, '9:50': {'text': "And that's where they're signing", 'labels': 'Communicative Metareference'}, '9:51': {'text': 'that minerals agreement', 'labels': 'General Claim Statistical'}, '9:53': {'text': "that they've been touting", 'labels': 'Gratitude/Congratulations'}, '9:54': {'text': 'as a big first step here.', 'labels': 'Gratitude/Congratulations'}, '9:55': {'text': 'There are real questions', 'labels': 'Self Claims - Political Track Record'}, '9:56': {'text': 'about what this looks like going forward.', 'labels': 'Communicative Metareference'}, '9:57': {'text': 'Because you heard what President', 'labels': 'Communicative Metareference'}, '9:58': {'text': 'Trump said to me there at the end.', 'labels': 'Self Claims - Political Track Record'}, '10:00': {'text': 'can the two of you', 'labels': 'Communicative Metareference'}, '10:01': {'text': 'still go in a room and negotiate', 'labels': 'Self Claims - Political Track Record'}, '10:03': {'text': 'after what just happened?', 'labels': 'Self Claims - Political Track Record'}, '10:05': {'text': "And he said, we'll see, essentially.", 'labels': 'General Claim Non-statistical'}, '10:07': {'text': 'there was one moment', 'labels': 'General Claim Non-statistical'}, '10:08': {'text': 'where I looked around the room', 'labels': 'General Claim Statistical'}, '10:10': {'text': 'at the officials who were there.', 'labels': 'Self Claims - Political Track Record'}, '10:11': {'text': 'advisors, the secretary of state', 'labels': 'General Claim Non-statistical'}, '10:13': {'text': 'to President Trump, the Treasury', 'labels': 'General Claim Statistical'}, '10:15': {'text': 'President Vance, obviously,', 'labels': 'General Claim Non-statistical'}, '10:17': {'text': 'the Ukrainian ambassador', 'labels': 'Communicative Metareference'}, '10:18': {'text': 'to the United States', 'labels': 'Gratitude/Congratulations'}, '10:19': {'text': 'had her head buried in her hands', 'labels': 'Gratitude/Congratulations'}, '10:21': {'text': 'as this shouting match was going on', 'labels': 'General Claim Non-statistical'}, '10:23': {'text': 'between the three of them.', 'labels': 'Self Claims - Political Track Record'}, '10:24': {'text': 'Yes, I saw you put that on social media.', 'labels': 'General Claim Statistical'}, '10:27': {'text': 'it is one of the many. There you go.', 'labels': 'General Claim Statistical'}, '10:29': {'text': "We're putting it up on the screen now.", 'labels': 'Communicative Metareference'}, '10:31': {'text': 'that is the Ukrainian ambassador,', 'labels': 'General Claim Statistical'}, '10:33': {'text': 'as you said. And she.', 'labels': 'Self Claims - Political Track Record'}, '10:35': {'text': 'I mean, talk about her worst nightmare.', 'labels': 'Self Claims - Political Track Record'}, '10:37': {'text': 'She was literally watching it unfold', 'labels': 'Gratitude/Congratulations'}, '10:39': {'text': 'before her eyes in the Oval Office.', 'labels': 'Communicative Metareference'}}
+{
+    "utterances": [
+        {
+            "speaker": "A",
+            "text": "For four years in the United States of America, we had a president who stood up at press conferences and talked tough about Vladimir Putin. And then Putin invaded Ukraine and destroyed a significant chunk of the country. The path to peace and the path to prosperity is maybe engaging in diplomacy. We tried the pathway of Joe Biden of thumping our chest and pretending that the President of the United States words mattered more than the President of the United States actions. What makes America a good country is America engaging in diplomacy. That's what President Trump is doing.",
+            "start": 320,
+            "end": 34284,
+            "label": "Gratitude/Congratulations"
+        },
+        {
+            "speaker": "B",
+            "text": "Can I ask you? Sure, yeah. Yeah. Okay. So he occupied our parts, big parts of Ukraine, part of east and Crimea. So he occupied it on 2014. So during a lot of years, I'm not speaking about just Biden, but those time was Obama, then President Obama, then President Trump, then President Biden, now President Trump and God bless. Now President Trump will stop him. But during 2014, nobody stopped him. He just occupied and took. He killed people. You know what the contact was? 2015, 2014, 2014 and 2014. Yeah.",
+            "start": 34372,
+            "end": 78270,
+            "label": "Gratitude/Congratulations"
+        },
+        {
+            "speaker": "C",
+            "text": "So I was not here.",
+            "start": 78350,
+            "end": 79966,
+            "label": "Communicative Metareference"
+        },
+        {
+            "speaker": "B",
+            "text": "Yeah, that's exactly right. Yes. But during 2014 till 2022, was the situation the same? The people been dying on the contact line? Nobody stopped him. You know that. We had conversations with him. A lot of conversations. My bilateral conversation. And we signed with him. Me like a new president. In 2019, I signed with him the deal. I signed with him Macron and Merkel, we signed ceasefire. Ceasefire. All of them told me that he will never go. We signed him with gas contract. Gas contract, yes. But after that he broken the ceasefire. He killed our people and he didn't exchange prisoners. We signed the exchange of prisoners, but he didn't do it. What kind of diplomacy, jd, you are speaking about? What do you mean?",
+            "start": 80038,
+            "end": 137040,
+            "label": "General Claim Non-statistical"
+        },
+        {
+            "speaker": "A",
+            "text": "I'm talking about the kind of diplomacy that's going to end the destruction of your country.",
+            "start": 137160,
+            "end": 140704,
+            "label": "General Claim Non-statistical"
+        },
+        {
+            "speaker": "B",
+            "text": "Yes, but if you.",
+            "start": 140792,
+            "end": 141568,
+            "label": "General Claim Statistical"
+        },
+        {
+            "speaker": "A",
+            "text": "Mr. President. Mr. President, with respect, I think it's disrespectful for you to come into the Oval Office and try to litigate this in front of the American media. Media, right now you guys are going around and forcing conscripts to the front lines because you have manpower problems. You should be thanking the President for trying to bring an end to this conflict.",
+            "start": 141624,
+            "end": 157804,
+            "label": "General Claim Non-statistical"
+        },
+        {
+            "speaker": "B",
+            "text": "Have you ever been to Ukraine that you say what problems we have?",
+            "start": 157852,
+            "end": 160812,
+            "label": "General Claim Statistical"
+        },
+        {
+            "speaker": "A",
+            "text": "I have been to come once. I've actually watched and seen the stories. And I know what happens is you bring people, you bring them on a propaganda tour. Mr. President, do you disagree that you've had problems bringing people into your military and do you think that it's respectful to come to the Oval Office of the United States of America and attack the administration that is trying to prevent the destruction of your country?",
+            "start": 160916,
+            "end": 185566,
+            "label": "General Claim Statistical"
+        },
+        {
+            "speaker": "B",
+            "text": "A lot of questions. Let's start from the beginning.",
+            "start": 185718,
+            "end": 187934,
+            "label": "Communicative Metareference"
+        },
+        {
+            "speaker": "D",
+            "text": "Sure.",
+            "start": 187982,
+            "end": 188238,
+            "label": "Gratitude/Congratulations"
+        },
+        {
+            "speaker": "B",
+            "text": "First of all, during the war, everybody has problems, even you. But you have nice ocean and don't feel now, but you will feel it in the future. God bless.",
+            "start": 188294,
+            "end": 199022,
+            "label": "Gratitude/Congratulations"
+        },
+        {
+            "speaker": "C",
+            "text": "You don't know that.",
+            "start": 199086,
+            "end": 199630,
+            "label": "General Claim Statistical"
+        },
+        {
+            "speaker": "B",
+            "text": "God bless. God bless. You will not have war.",
+            "start": 199670,
+            "end": 202408,
+            "label": "Self Claims - Political Track Record"
+        },
+        {
+            "speaker": "C",
+            "text": "Don't tell us what we're going to feel. We're trying to solve a problem. Don't tell us what we're going to feel.",
+            "start": 202494,
+            "end": 207316,
+            "label": "General Claim Statistical"
+        },
+        {
+            "speaker": "B",
+            "text": "I'm not telling you because you're in.",
+            "start": 207388,
+            "end": 208804,
+            "label": "Communicative Metareference"
+        },
+        {
+            "speaker": "C",
+            "text": "No position to dictate that.",
+            "start": 208812,
+            "end": 210324,
+            "label": "General Claim Non-statistical"
+        },
+        {
+            "speaker": "B",
+            "text": "Remember this.",
+            "start": 210412,
+            "end": 211316,
+            "label": "Gratitude/Congratulations"
+        },
+        {
+            "speaker": "C",
+            "text": "You're in no position to dictate what we're going to feel. We're going to feel very good, feel influenced. We're going to feel very good and very strong.",
+            "start": 211468,
+            "end": 220596,
+            "label": "Communicative Metareference"
+        },
+        {
+            "speaker": "B",
+            "text": "You will feel influenced.",
+            "start": 220668,
+            "end": 221812,
+            "label": "Gratitude/Congratulations"
+        },
+        {
+            "speaker": "C",
+            "text": "You're right now not in a very good position. You've allowed yourself to be in a very bad position. And he happens to be right about.",
+            "start": 221876,
+            "end": 228308,
+            "label": "Gratitude/Congratulations"
+        },
+        {
+            "speaker": "B",
+            "text": "From the very beginning of the war.",
+            "start": 228364,
+            "end": 229988,
+            "label": "Communicative Metareference"
+        },
+        {
+            "speaker": "C",
+            "text": "You're not in a good position. You don't have the cards right now with us. You start having cars right now. You don't miss the president. You're gambling with the lives of millions of people. You're gambling with World War Three. You're gambling with World War Three. And what you're doing is very disrespectful to the country, this country that's backed you far more than a lot of people said they should have.",
+            "start": 230044,
+            "end": 257348,
+            "label": "General Claim Statistical"
+        },
+        {
+            "speaker": "A",
+            "text": "Have you said thank you once this entire meeting? No. In this entire meeting. Have you said thank you? You went to Pennsylvania and campaigned for the opposition in October. Offer some words of appreciation for the United States of America and the president who's trying to save your country.",
+            "start": 257404,
+            "end": 274000,
+            "label": "General Claim Statistical"
+        },
+        {
+            "speaker": "B",
+            "text": "Please. You think that if you will speak very loudly about the war, you.",
+            "start": 274940,
+            "end": 279796,
+            "label": "Gratitude/Congratulations"
+        },
+        {
+            "speaker": "C",
+            "text": "He's not speaking loudly. He's not speaking loudly. Your country is in big trouble.",
+            "start": 279868,
+            "end": 283748,
+            "label": "Communicative Metareference"
+        },
+        {
+            "speaker": "B",
+            "text": "Can I help you? Wait a minute.",
+            "start": 283844,
+            "end": 284740,
+            "label": "General Claim Statistical"
+        },
+        {
+            "speaker": "C",
+            "text": "No, no. You've done a lot of talking. Can I. Your country is in big trouble.",
+            "start": 284780,
+            "end": 288286,
+            "label": "General Claim Non-statistical"
+        },
+        {
+            "speaker": "B",
+            "text": "I know.",
+            "start": 288398,
+            "end": 288974,
+            "label": "General Claim Statistical"
+        },
+        {
+            "speaker": "C",
+            "text": "You're not winning. You're not winning this. You have a damn good chance of coming out okay? Because of us, Mr. President, we are.",
+            "start": 289062,
+            "end": 295742,
+            "label": "Communicative Metareference"
+        },
+        {
+            "speaker": "B",
+            "text": "Staying in our country, staying strong. From the very beginning of the war, we've been alone, and we are thankful. I said thanks.",
+            "start": 295766,
+            "end": 302270,
+            "label": "Communicative Metareference"
+        },
+        {
+            "speaker": "C",
+            "text": "You haven't been alone in this Cabinet.",
+            "start": 302350,
+            "end": 303582,
+            "label": "Gratitude/Congratulations"
+        },
+        {
+            "speaker": "B",
+            "text": "You haven't been alone.",
+            "start": 303646,
+            "end": 304670,
+            "label": "Gratitude/Congratulations"
+        },
+        {
+            "speaker": "C",
+            "text": "We gave you, through this stupid president, $350 billion. We gave you military equipment and your men are brave, but they had to use our military. If you didn't have our military equipment.",
+            "start": 304830,
+            "end": 317422,
+            "label": "General Claim Statistical"
+        },
+        {
+            "speaker": "B",
+            "text": "You invited me to.",
+            "start": 317486,
+            "end": 318393,
+            "label": "General Claim Statistical"
+        },
+        {
+            "speaker": "C",
+            "text": "If we didn't have our military equipment, this war would have been over in two weeks.",
+            "start": 318394,
+            "end": 323034,
+            "label": "General Claim Non-statistical"
+        },
+        {
+            "speaker": "B",
+            "text": "In three days. I heard it from Putin. In three days. This is something maybe less. In two weeks. Of course, yes.",
+            "start": 323122,
+            "end": 329082,
+            "label": "Communicative Metareference"
+        },
+        {
+            "speaker": "C",
+            "text": "It's going to be a very hard thing to do, business like this.",
+            "start": 329146,
+            "end": 332070,
+            "label": "General Claim Non-statistical"
+        },
+        {
+            "speaker": "A",
+            "text": "Say thank you. Except that there are disagreements, and let's go litigate those disagreements rather than trying to fight it out in the American media. When you're wrong, we know that you're wrong.",
+            "start": 332690,
+            "end": 346140,
+            "label": "Gratitude/Congratulations"
+        },
+        {
+            "speaker": "C",
+            "text": "But you see, I think it's good for the American people to see what's going on. I think it's very important. That's why I kept this going so long. You have to be thankful you don't have the cards. You're buried there. People are dying. You're running low on soldiers. Listen, you're running low on soldiers. It would be a damn good thing. Then you tell us, I don't want a ceasefire. I don't want a ceasefire. I want to go and I want this. Look, if you could get a ceasefire right now, I tell you, you take it so the bullets stop flying. And you meant stop getting killed.",
+            "start": 346180,
+            "end": 379684,
+            "label": "General Claim Non-statistical"
+        },
+        {
+            "speaker": "B",
+            "text": "Of course we want to stop the war.",
+            "start": 379732,
+            "end": 381060,
+            "label": "General Claim Statistical"
+        },
+        {
+            "speaker": "C",
+            "text": "But you're saying you don't want to cease to. I want a ceasefire with guarantees. Because you'll get a ceasefire faster than any. Great.",
+            "start": 381100,
+            "end": 386996,
+            "label": "General Claim Statistical"
+        },
+        {
+            "speaker": "B",
+            "text": "Ask our people about ceasefire, what they think.",
+            "start": 387068,
+            "end": 389748,
+            "label": "General Claim Non-statistical"
+        },
+        {
+            "speaker": "C",
+            "text": "That was for you. That wasn't with me. That was with a guy named Biden who was not a smart person. That was your. That was with Obama.",
+            "start": 389884,
+            "end": 399108,
+            "label": "General Claim Statistical"
+        },
+        {
+            "speaker": "B",
+            "text": "It was your president.",
+            "start": 399204,
+            "end": 399908,
+            "label": "General Claim Statistical"
+        },
+        {
+            "speaker": "C",
+            "text": "Excuse me. That was with Obama. Who gave you sheets. And I gave you javelins. Yes, I gave you the javelins to take out all those tanks. Obama gave you sheets. In fact, the statement is Obama gave sheets and Trump gave javelins. You got to be more thankful because let me tell you, you don't have the cards. With us, you have the cards, but without us, you don't have any cards.",
+            "start": 399964,
+            "end": 424134,
+            "label": "Gratitude/Congratulations"
+        },
+        {
+            "speaker": "E",
+            "text": "Caitlin. I do want to, because there were a lot of things that were just not true, aside from just the tone and tenor and the Monum. Monumental, historic, not in a good way, historic event that we just saw in the Oval Office. Caitlin. It really did seem to devolve when the vice president said to Zelensky, we just want diplomacy. And what Zelenskyy was trying to do was say, we had that. We had a deal with Russia. We had an agreement. The Minsk agreement, and Russia didn't abide by it. So I want some guarantees that that won't happen again. And then it devolved in a way that is really, really remarkable, the screaming. I mean, you have been with Donald Trump a lot. We have seen and heard about Trump getting upset and losing his temper. I think this is probably the first time we have seen it like this on camera. We also should say, Caitlin, that let's just be clear. I'm not saying that there wasn't genuine anger here, but he understands when the television cameras are there, as does J.D. vance, and we can't lose sight of the performance aspect of this.",
+            "start": 424262,
+            "end": 502320,
+            "label": "Self Claims - Political Track Record"
+        },
+        {
+            "speaker": "D",
+            "text": "It was incredibly genuine, though. I mean, J.D. vance said that this shouldn't be litigated in front of the press. Trump said, actually, no, it should be. I'm glad that this is happening. And, you know, the way that this built. Just to give context of the 40 minutes that happened before what you just watched, the most remarkable part of this interaction was there were moments where President Zelensky would do what we saw the other European leaders do this week, where they step in to, to correct either on aid to Ukraine or to talk about Putin and the fact that he can't be trusted. At one point, Zelensky called him a killer and saying that there should be no compromises with him. And the US Officials were sitting, sitting there just kind of listening to this. And it was at that point, though, where, where Vice President Vance stepped in. Trump was silent at the beginning of that. And then Trump also got involved, and then they were just essentially yelling another in this. And with Trump, all of his diplomacy, we know, is personal. That's why the world leaders who have come here this week have tried to flatter him, to essentially get what they want when it comes to negotiating the end of this. And that was not what we just saw. The tack that Zelinsky took here. He was, as Zelinsky typically is, straightforward in his opinions and what is the reality on the ground, and was kind of chastising President Vice President Vance for not having come to Ukraine. And at one point earlier when Trump was asked if he would go to Ukraine, Zelensky was saying that was what he was going to ask Trump as well. He's been very. He's emphasized a lot that he thinks these US Officials need to be there. But to give you a sense of how this negotiation is going right now, they are meeting behind closed doors. They're supposed to come out for a press conference any minute now, and that's where they're signing that minerals agreement that they've been touting as a big first step here. There are real questions about what this looks like going forward because you heard what President Trump said to me there at the end. I asked, can the two of you still go in a room and negotiate after what just happened? And he said, we'll see, essentially. And Dana, there was one moment where I looked around the room at the officials who were there. It's the top Ukrainian advisers, the secretary of state to President Trump, the Treasury secretary, Vice President Vance, obviously the Ukrainian ambassador to the United States had her head buried in her hands as this shouting match was going on between the three of them.",
+            "start": 503020,
+            "end": 624984,
+            "label": "General Claim Non-statistical"
+        },
+        {
+            "speaker": "E",
+            "text": "Yes, I saw you put that on social media. It is one of the many. There you go. We're putting it up on the screen now. That is the Ukrainian ambassador, as you said, and she, I mean, talk about her worst nightmare. She was literally watching it unfold before her eyes in the Oval Office.",
+            "start": 625072,
+            "end": 641500,
+            "label": "General Claim Statistical"
+        }
+    ],
+    "speakers": [
+        "C",
+        "B",
+        "D",
+        "A",
+        "E"
+    ]
+}
