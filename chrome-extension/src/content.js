@@ -8,8 +8,7 @@ import {
   YAxis,
   ResponsiveContainer,
 } from "recharts";
-import { IconButton, Stack } from "@mui/material";
-import { Close } from '@mui/icons-material';
+import { IconButton, Stack, Button } from "@mui/material";
 import axios from "axios";
 
 function getCurrentVideoTime() {
@@ -47,11 +46,14 @@ const CustomComponent = (props) => {
   const { recommendationBar, container } = props;
   const [currentVideoTime, setCurrentVideoTime] = useState(0);
   const [utterances, setUtterances] = useState([]);
+  const [hoveredBar, setHoveredBar] = useState(null);
   const utterancesRef = useRef();
   const currentVideoTimeRef = useRef();
+  const hoveredBarRef = useRef();
   const [textColor, setTextColor] = useState("#000"); // fallback color
   const [viewComponent, setViewComponent] = useState(true);
   const [currentChip, setCurrentChip] = useState();
+
 
   const labelToColor = {
     "Self Claims - Political Track Record": "red",
@@ -82,6 +84,10 @@ const CustomComponent = (props) => {
   useEffect(() => {
     currentVideoTimeRef.current = currentVideoTime
   }, [currentVideoTime])
+
+  useEffect(() => {
+    hoveredBarRef.current = hoveredBar
+  }, [hoveredBar])
 
   useEffect(() => {
     if (currentChip) {
@@ -150,39 +156,52 @@ const CustomComponent = (props) => {
     }
   }, [window.location.href, viewComponent])
 
+  const updateProgressBar = () => {
+    const progressBar =
+      document.querySelector(".ytp-progress-bar");
+    const progressBarBackground = progressBar.firstChild.firstChild.childNodes[1].firstChild;
+    const progressBarScroller =
+      document.querySelector(".ytp-scrubber-button");
+
+    if (progressBar && progressBarBackground && progressBarScroller) {
+      progressBar.style.height = "20px";
+      progressBarScroller.style.width = "4px";
+      progressBarScroller.style.background = "black";
+
+      if (utterancesRef.current) {
+        let gradient = "linear-gradient(90deg, "
+        let currentPercentage = 0;
+        utterancesRef.current.filter((item) => item.start <= currentVideoTimeRef.current)
+          .forEach((item, index) => {
+            const length = item.end - item.start;
+            const percentage = (length / currentVideoTimeRef.current) * 100;
+            let color = labelToColor[item.label]
+            if (hoveredBarRef?.current && hoveredBarRef.current !== item.label) {
+              color = "gray"
+            }
+
+            if (index === 0) {
+              currentPercentage = Math.min(currentPercentage + percentage, 100);
+              gradient = gradient + `${color} ${currentPercentage}%, `;
+            } else {
+              gradient = gradient + `${color} ${currentPercentage}%, `;
+              currentPercentage = Math.min(currentPercentage + percentage, 100);
+              gradient = gradient + `${color} ${currentPercentage}%, `;
+            }
+          })
+        gradient = gradient.substring(0, gradient.length - 2) + ")"
+        progressBarBackground.style.background = gradient;
+      }
+    }
+  }
+
+  useEffect(() => {
+    updateProgressBar()
+  }, [hoveredBar])
+
   useEffect(() => {
     const progressBarObserver = new MutationObserver((mutations, obs) => {
-      const progressBar =
-        document.querySelector(".ytp-progress-bar");
-      const progressBarBackground = progressBar.firstChild.firstChild.childNodes[1].firstChild;
-      const progressBarScroller =
-        document.querySelector(".ytp-scrubber-button");
-
-      if (progressBar && progressBarBackground && progressBarScroller) {
-        progressBar.style.height = "20px";
-        progressBarScroller.style.width = "4px";
-        progressBarScroller.style.background = "black";
-
-        if (utterancesRef.current) {
-          let gradient = "linear-gradient(90deg, "
-          let currentPercentage = 0;
-          utterancesRef.current.filter((item) => item.start <= currentVideoTimeRef.current)
-            .forEach((item, index) => {
-              const length = item.end - item.start;
-              const percentage = (length / currentVideoTimeRef.current) * 100;
-              if (index === 0) {
-                currentPercentage = Math.min(currentPercentage + percentage, 100);
-                gradient = gradient + `${labelToColor[item.label]} ${currentPercentage}%, `;
-              } else {
-                gradient = gradient + `${labelToColor[item.label]} ${currentPercentage}%, `;
-                currentPercentage = Math.min(currentPercentage + percentage, 100);
-                gradient = gradient + `${labelToColor[item.label]} ${currentPercentage}%, `;
-              }
-            })
-          gradient = gradient.substring(0, gradient.length - 2) + ")"
-          progressBarBackground.style.background = gradient;
-        }
-      }
+      updateProgressBar()
     });
 
     progressBarObserver.observe(document.body, {
@@ -237,6 +256,54 @@ const CustomComponent = (props) => {
       return `${hours}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
     } else {
       return `${minutes}:${String(seconds).padStart(2, '0')}`;
+    }
+  }
+
+  function setProgressBarVisibility(visible) {
+    const css = visible ? `
+    .ytp-progress-bar-container,
+    .ytp-chrome-bottom {
+      opacity: 1 !important;
+      visibility: visible !important;
+    }
+    .ytp-autohide .ytp-progress-bar-container,
+    .ytp-autohide .ytp-chrome-bottom {
+      opacity: 1 !important;
+      visibility: visible !important;
+    }
+    .ytp-gradient-bottom {
+      opacity: 1 !important;
+      visibility: visible !important;
+      display: initial !important;
+    }
+  ` : `
+    /* Restore default YouTube behavior */
+    .ytp-progress-bar-container {
+      opacity: 0 !important;
+      transition: opacity .1s cubic-bezier(0.4,0,1,1) !important;
+    }
+    .ytp-autohide .ytp-progress-bar-container {
+      opacity: 0 !important;
+    }
+    .ytp-gradient-bottom {
+      opacity: 0 !important;
+      visibility: hidden !important;
+      display: none !important;
+    }
+  `;
+
+    // Remove existing style if it exists
+    const existingStyle = document.getElementById('progress-bar-toggle-style');
+    if (existingStyle) {
+      existingStyle.remove();
+    }
+
+    // Add new style
+    if (visible) {
+      const style = document.createElement('style');
+      style.id = 'progress-bar-toggle-style';
+      style.textContent = css;
+      document.head.appendChild(style);
     }
   }
 
@@ -323,7 +390,14 @@ const CustomComponent = (props) => {
             }}
           />
           {/* <Tooltip /> */}
-          <Bar dataKey="value" fill="#3ea6ff" />
+          <Bar dataKey="value" fill="#3ea6ff" onMouseEnter={(e) => {
+            setHoveredBar(e.name)
+            setProgressBarVisibility(true);
+          }}
+            onMouseLeave={() => {
+              setHoveredBar(null);
+              setProgressBarVisibility(false);
+            }} />
         </BarChart>
       </ResponsiveContainer>
     </div>
