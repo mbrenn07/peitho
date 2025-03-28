@@ -51,7 +51,7 @@ const CustomComponent = (props) => {
   const currentVideoTimeRef = useRef();
   const hoveredBarRef = useRef();
   const [textColor, setTextColor] = useState("#000"); // fallback color
-  const [viewComponent, setViewComponent] = useState(true);
+  const [viewComponent, setViewComponent] = useState(false);
   const [currentChip, setCurrentChip] = useState();
 
 
