@@ -5,6 +5,9 @@ from flask_cors import CORS
 import random
 import os
 import json
+from urllib.parse import urlparse, parse_qs
+from pymongo.mongo_client import MongoClient
+from pymongo.server_api import ServerApi
 
 app = Flask(__name__)
 cors = CORS(app)
@@ -16,10 +19,28 @@ LABELS = [
     "Self Claims - Political Track Record",
 ]
 
+uri = os.getenv("MONGO_URI")
+client = MongoClient(uri, server_api=ServerApi('1'))
+db = client['user-paths']
+videos_collection = db['videos']
+
 
 @app.route("/process_transcript", methods=["POST"])
 def process_transcript():
-    url = request.get_json()["url"]
+    raw_url = request.get_json()["url"]
+    parsed_url = urlparse(raw_url)
+    query_params = parse_qs(parsed_url.query)
+    video_id = query_params.get("v", [None])[0]
+
+    if not video_id:
+        return {"error": "Invalid YouTube URL"}, 400
+
+    url = f"{parsed_url.scheme}://{parsed_url.netloc}/watch?v={video_id}"
+
+    existing_video = videos_collection.find_one({"url": url})
+    if existing_video:
+        return {"utterances": existing_video["utterances"], "speakers": existing_video["speakers"]}
+
     utterances = []
 
     options = {
@@ -50,9 +71,16 @@ def process_transcript():
     for utterance in utterances:
         speakers_set.add(utterance["speaker"])
 
-    with open("output_formatted.txt", "w", encoding="utf-8") as file:
-        json.dump({"utterances": utterances, "speakers": list(
-            speakers_set)}, file, indent=4)
+    # with open("output_formatted.txt", "w", encoding="utf-8") as file:
+    #     json.dump({"utterances": utterances, "speakers": list(
+    #         speakers_set)}, file, indent=4)
+
+    video_data = {
+        "url": url,
+        "utterances": utterances,
+        "speakers": list(speakers_set)
+    }
+    videos_collection.insert_one(video_data)
 
     try:
         os.remove(file_path)
