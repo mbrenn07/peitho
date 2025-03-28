@@ -8,35 +8,9 @@ import {
   YAxis,
   ResponsiveContainer,
 } from "recharts";
+import { IconButton, Stack } from "@mui/material";
+import { Close } from '@mui/icons-material';
 import axios from "axios";
-
-async function clickButtonAndGetHTML() {
-  return new Promise((resolve, reject) => {
-    const button = document.querySelector(config.BUTTON_SELECTOR);
-    if (!button) {
-      reject(
-        new Error(`Button not found with selector: ${config.BUTTON_SELECTOR}`)
-      );
-      return;
-    }
-
-    const observer = new MutationObserver((_, obs) => {
-      setTimeout(() => {
-        obs.disconnect();
-        resolve(document.documentElement.outerHTML);
-      }, 1000);
-    });
-
-    observer.observe(document.body, {
-      childList: true,
-      subtree: true,
-      attributes: true,
-      characterData: true,
-    });
-
-    button.click();
-  });
-}
 
 function getCurrentVideoTime() {
   const videoElement = document.querySelector("video");
@@ -69,12 +43,15 @@ function initTimeTracking() {
 
 initTimeTracking();
 
-const CustomComponent = () => {
+const CustomComponent = (props) => {
+  const { recommendationBar, container } = props;
   const [currentVideoTime, setCurrentVideoTime] = useState(0);
   const [utterances, setUtterances] = useState([]);
   const utterancesRef = useRef();
   const currentVideoTimeRef = useRef();
   const [textColor, setTextColor] = useState("#000"); // fallback color
+  const [viewComponent, setViewComponent] = useState(true);
+  const [currentChip, setCurrentChip] = useState();
 
   const labelToColor = {
     "Self Claims - Political Track Record": "red",
@@ -85,12 +62,56 @@ const CustomComponent = () => {
   }
 
   useEffect(() => {
+    if (viewComponent) {
+      Array.from(recommendationBar.children).forEach((child) => {
+        child.style.display = "none";
+      });
+      container.style.display = "initial";
+    } else {
+      Array.from(recommendationBar.children).forEach((child) => {
+        child.style.display = "initial";
+      });
+      container.style.display = "none";
+    }
+  }, [viewComponent])
+
+  useEffect(() => {
     utterancesRef.current = utterances
   }, [utterances])
 
   useEffect(() => {
     currentVideoTimeRef.current = currentVideoTime
   }, [currentVideoTime])
+
+  useEffect(() => {
+    if (currentChip) {
+      currentChip.remove();
+    }
+
+    const chipContainer = recommendationBar.childNodes[3].childNodes[5].firstChild.childNodes[3].firstChild.childNodes[3].childNodes[3].childNodes[1]
+    const chip = chipContainer.childNodes[2]
+    const ourChip = chip.cloneNode(true);
+    ourChip.childNodes[5].childNodes[3].remove()
+    ourChip.childNodes[5].appendChild(document.createTextNode('Utterance Analysis'))
+    ourChip.addEventListener('click', function () {
+      setViewComponent(true);
+    });
+    ourChip.style.border = 'double 2px transparent';
+    ourChip.style.borderRadius = '10px';
+    ourChip.style.backgroundImage = `linear-gradient(${textColor === "rgb(15, 15, 15)" ? "#FFF" : "#171717"}, ${textColor === "rgb(15, 15, 15)" ? "#FFF" : "#171717"}), linear-gradient(to right, #f03 80%, #ff2791 100%)`;
+    ourChip.style.backgroundOrigin = 'border-box';
+    ourChip.style.backgroundClip = 'content-box, border-box';
+    if (textColor === "rgb(15, 15, 15)") {
+      ourChip.childNodes[5].style.backgroundColor = "black";
+      ourChip.childNodes[5].style.color = "white";
+    } else {
+      ourChip.childNodes[5].style.backgroundColor = "white";
+      ourChip.childNodes[5].style.color = "black";
+    }
+    chipContainer.insertBefore(ourChip, chipContainer.childNodes[1])
+
+    setCurrentChip(ourChip);
+  }, [textColor])
 
   useEffect(() => {
     const ytElement =
@@ -114,18 +135,20 @@ const CustomComponent = () => {
   }, []);
 
   useEffect(() => {
-    axios
-      .post(`${config.BACKEND_URL}/process_transcript`, {
-        url: window.location.href,
-      })
-      .then((data) => {
-        const utterances = data.data.utterances.sort((a, b) => a.start - b.start);
-        setUtterances(utterances)
-      })
-      .catch((error) => {
-        console.error(error);
-      })
-  }, [window.location.href])
+    if (viewComponent) {
+      axios
+        .post(`${config.BACKEND_URL}/process_transcript`, {
+          url: window.location.href,
+        })
+        .then((data) => {
+          const utterances = data.data.utterances.sort((a, b) => a.start - b.start);
+          setUtterances(utterances)
+        })
+        .catch((error) => {
+          console.error(error);
+        })
+    }
+  }, [window.location.href, viewComponent])
 
   useEffect(() => {
     const progressBarObserver = new MutationObserver((mutations, obs) => {
@@ -219,7 +242,20 @@ const CustomComponent = () => {
 
   return (
     <div style={styles.container}>
-      <h1>AI Utterance Analysis</h1>
+      <Stack direction="row" justifyContent="space-between" sx={{ width: "100%" }}>
+        <h1>AI Utterance Analysis</h1>
+        <IconButton sx={{
+          mt: -1.5, mr: -2, padding: 1, '&:hover': {
+            backgroundColor: textColor === "rgb(15, 15, 15)" ? 'rgba(0, 0, 0, 0.1)' : 'rgba(255, 255, 255, 0.15)',
+          }
+        }} size="large" onClick={() => {
+          setViewComponent(false)
+        }}>
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" height="24" width="24" focusable="false" aria-hidden="true" style={{ pointerEvents: 'none', display: 'inherit', width: '100%', height: '100%', stroke: textColor === "rgb(15, 15, 15)" ? "#a2a2a2" : "#868686", fill: textColor === "rgb(15, 15, 15)" ? "#0f0f0f" : "#f1f1f1" }}>
+            <path d="m12.71 12 8.15 8.15-.71.71L12 12.71l-8.15 8.15-.71-.71L11.29 12 3.15 3.85l.71-.71L12 11.29l8.15-8.15.71.71L12.71 12z"></path>
+          </svg>
+        </IconButton >
+      </Stack>
 
       {/* <p>Current Video Time: {currentVideoTime} seconds</p> */}
       {utterances
@@ -301,14 +337,12 @@ const recommendationObserver = new MutationObserver((mutations, obs) => {
 
   if (recommendationBar) {
     recommendationBar.style.height = "calc(100vh - 95px)";
-    // recommendationBar.style.background = "red";
 
-    while (recommendationBar.firstChild) {
-      recommendationBar.removeChild(recommendationBar.firstChild);
-    }
+    const container = document.createElement("div");
+    recommendationBar.appendChild(container);
 
-    const root = createRoot(recommendationBar);
-    root.render(<CustomComponent />);
+    const root = createRoot(container);
+    root.render(<CustomComponent recommendationBar={recommendationBar} container={container} />);
 
     obs.disconnect();
   }

@@ -6,7 +6,6 @@ function App() {
   useEffect(() => {
     const handleMessage = (message) => {
       if (message.action === "UPDATE_VIDEO_TIME") {
-        console.log(message.currentTime);
         setCurrentVideoTime(message.currentTime);
       }
     };
@@ -23,7 +22,7 @@ function App() {
       <h1 style={styles.title}>Peitho</h1>
 
       <div style={styles.infoBox}>
-        <p>Time: {currentVideoTime}</p> 
+        <p>Time: {currentVideoTime}</p>
       </div>
     </div>
   );
