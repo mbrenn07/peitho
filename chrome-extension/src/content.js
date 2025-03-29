@@ -47,11 +47,12 @@ const CustomComponent = (props) => {
   const [currentVideoTime, setCurrentVideoTime] = useState(0);
   const [utterances, setUtterances] = useState([]);
   const [hoveredBar, setHoveredBar] = useState(null);
+  const [viewComponent, setViewComponent] = useState(false);
   const utterancesRef = useRef();
   const currentVideoTimeRef = useRef();
   const hoveredBarRef = useRef();
+  const viewComponentRef = useRef();
   const [textColor, setTextColor] = useState("#000"); // fallback color
-  const [viewComponent, setViewComponent] = useState(false);
   const [currentChip, setCurrentChip] = useState();
 
 
@@ -88,6 +89,10 @@ const CustomComponent = (props) => {
   useEffect(() => {
     hoveredBarRef.current = hoveredBar
   }, [hoveredBar])
+
+  useEffect(() => {
+    viewComponentRef.current = viewComponent
+  }, [viewComponent])
 
   useEffect(() => {
     if (currentChip) {
@@ -164,34 +169,42 @@ const CustomComponent = (props) => {
       document.querySelector(".ytp-scrubber-button");
 
     if (progressBar && progressBarBackground && progressBarScroller) {
-      progressBar.style.height = "20px";
-      progressBarScroller.style.width = "4px";
-      progressBarScroller.style.background = "black";
+      if (viewComponentRef.current === true) {
+        progressBar.style.height = "20px";
+        progressBarScroller.style.width = "4px";
+        progressBarScroller.style.background = "black";
 
-      if (utterancesRef.current) {
-        let gradient = "linear-gradient(90deg, "
-        let currentPercentage = 0;
-        utterancesRef.current.filter((item) => item.start <= currentVideoTimeRef.current)
-          .forEach((item, index) => {
-            const length = item.end - item.start;
-            const percentage = (length / currentVideoTimeRef.current) * 100;
-            let color = labelToColor[item.label]
-            if (hoveredBarRef?.current && hoveredBarRef.current !== item.label) {
-              color = "gray"
-            }
+        if (utterancesRef.current) {
+          let gradient = "linear-gradient(90deg, "
+          let currentPercentage = 0;
+          utterancesRef.current.filter((item) => item.start <= currentVideoTimeRef.current)
+            .forEach((item, index) => {
+              const length = item.end - item.start;
+              const percentage = (length / currentVideoTimeRef.current) * 100;
+              let color = labelToColor[item.label]
+              if (hoveredBarRef?.current && hoveredBarRef.current !== item.label) {
+                color = "gray"
+              }
 
-            if (index === 0) {
-              currentPercentage = Math.min(currentPercentage + percentage, 100);
-              gradient = gradient + `${color} ${currentPercentage}%, `;
-            } else {
-              gradient = gradient + `${color} ${currentPercentage}%, `;
-              currentPercentage = Math.min(currentPercentage + percentage, 100);
-              gradient = gradient + `${color} ${currentPercentage}%, `;
-            }
-          })
-        gradient = gradient.substring(0, gradient.length - 2) + ")"
-        progressBarBackground.style.background = gradient;
+              if (index === 0) {
+                currentPercentage = Math.min(currentPercentage + percentage, 100);
+                gradient = gradient + `${color} ${currentPercentage}%, `;
+              } else {
+                gradient = gradient + `${color} ${currentPercentage}%, `;
+                currentPercentage = Math.min(currentPercentage + percentage, 100);
+                gradient = gradient + `${color} ${currentPercentage}%, `;
+              }
+            })
+          gradient = gradient.substring(0, gradient.length - 2) + ")"
+          progressBarBackground.style.background = gradient;
+        }
+      } else {
+        progressBar.style.height = "100%";
+        progressBarScroller.style.width = "13px";
+        progressBarScroller.style.background = "var(--yt-spec-static-brand-red,#f03)";
+        progressBarBackground.style.background = "linear-gradient(to right,#f03 80%,#ff2791 100%)";
       }
+
     }
   }
 
