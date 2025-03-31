@@ -120,11 +120,9 @@ const CustomComponent = (props) => {
     });
     ourChip.style.border = "double 2px transparent";
     ourChip.style.borderRadius = "10px";
-    ourChip.style.backgroundImage = `linear-gradient(${
-      textColor === "rgb(15, 15, 15)" ? "#FFF" : "#171717"
-    }, ${
-      textColor === "rgb(15, 15, 15)" ? "#FFF" : "#171717"
-    }), linear-gradient(to right, #f03 80%, #ff2791 100%)`;
+    ourChip.style.backgroundImage = `linear-gradient(${textColor === "rgb(15, 15, 15)" ? "#FFF" : "#171717"
+      }, ${textColor === "rgb(15, 15, 15)" ? "#FFF" : "#171717"
+      }), linear-gradient(to right, #f03 80%, #ff2791 100%)`;
     ourChip.style.backgroundOrigin = "border-box";
     ourChip.style.backgroundClip = "content-box, border-box";
     if (textColor === "rgb(15, 15, 15)") {
@@ -532,17 +530,17 @@ const CustomComponent = (props) => {
               utterances
                 .filter((utterance) => utterance.start <= currentVideoTime)
                 .slice(-1)[0]?.speaker && (
-              <span
-                style={{
-                  position: "absolute",
-                  right: "0.5rem",
-                  color: "#fff",
-                  pointerEvents: "none",
-                }}
-              >
-                🔊
-              </span>
-            )}
+                <span
+                  style={{
+                    position: "absolute",
+                    right: "0.5rem",
+                    color: "#fff",
+                    pointerEvents: "none",
+                  }}
+                >
+                  🔊
+                </span>
+              )}
           </div>
         ))}
       </div>
@@ -640,12 +638,28 @@ const CustomComponent = (props) => {
             fill="#8884d8"
             stackId="stack"
             onClick={handleBarClick}
+            onMouseEnter={(e) => {
+              setHoveredBar(e.name)
+              setProgressBarVisibility(true);
+            }}
+            onMouseLeave={() => {
+              setHoveredBar(null);
+              setProgressBarVisibility(false);
+            }}
           />
           <Bar
             dataKey="speaker2"
             fill="#82ca9d"
             stackId="stack"
             onClick={handleBarClick}
+            onMouseEnter={(e) => {
+              setHoveredBar(e.name)
+              setProgressBarVisibility(true);
+            }}
+            onMouseLeave={() => {
+              setHoveredBar(null);
+              setProgressBarVisibility(false);
+            }}
           />
         </BarChart>
       </ResponsiveContainer>
