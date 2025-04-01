@@ -45,7 +45,6 @@ def convert_cookies(cookies):
         domain = cookie['domain']
         path = cookie.get('path', '/')
         secure = 'TRUE' if cookie.get('secure', False) else 'FALSE'
-        http_only = 'TRUE' if cookie.get('httpOnly', False) else 'FALSE'
         expiry = cookie.get('expirationDate', None)
         name = cookie['name']
         value = cookie['value']
@@ -58,7 +57,6 @@ def convert_cookies(cookies):
         else:
             expiry = int(time.time()) + 31536000
 
-        # `domain_specified` should be TRUE if domain starts with dot, otherwise FALSE
         domain_specified = 'TRUE' if domain.startswith('.') else 'FALSE'
         cookie_line = f"{domain}\t{domain_specified}\t{path}\t{secure}\t{expiry}\t{name}\t{value}"
         cookie_file_lines.append(cookie_line)
