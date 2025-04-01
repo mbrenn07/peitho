@@ -51,11 +51,12 @@ const CustomComponent = (props) => {
   const [utterances, setUtterances] = useState([]);
   const [hoveredBar, setHoveredBar] = useState(null);
   const [viewComponent, setViewComponent] = useState(false);
+  const [textColor, setTextColor] = useState("#000"); // fallback color
   const utterancesRef = useRef();
   const currentVideoTimeRef = useRef();
   const hoveredBarRef = useRef();
   const viewComponentRef = useRef();
-  const [textColor, setTextColor] = useState("#000"); // fallback color
+  const textColorRef = useRef();
   const [currentChip, setCurrentChip] = useState();
 
   const labelToColor = {
@@ -101,6 +102,10 @@ const CustomComponent = (props) => {
     viewComponentRef.current = viewComponent;
   }, [viewComponent]);
 
+  useEffect(() => {
+    textColorRef.current = textColor;
+  }, [textColor]);
+
   const addChip = () => {
     if (currentChip) {
       currentChip.remove();
@@ -120,12 +125,12 @@ const CustomComponent = (props) => {
     });
     ourChip.style.border = "double 2px transparent";
     ourChip.style.borderRadius = "10px";
-    ourChip.style.backgroundImage = `linear-gradient(${textColor === "rgb(15, 15, 15)" ? "#FFF" : "#171717"
-      }, ${textColor === "rgb(15, 15, 15)" ? "#FFF" : "#171717"
+    ourChip.style.backgroundImage = `linear-gradient(${textColorRef.current === "rgb(15, 15, 15)" ? "#FFF" : "#171717"
+      }, ${textColorRef.current === "rgb(15, 15, 15)" ? "#FFF" : "#171717"
       }), linear-gradient(to right, #f03 80%, #ff2791 100%)`;
     ourChip.style.backgroundOrigin = "border-box";
     ourChip.style.backgroundClip = "content-box, border-box";
-    if (textColor === "rgb(15, 15, 15)") {
+    if (textColorRef.current === "rgb(15, 15, 15)") {
       ourChip.childNodes[5].style.backgroundColor = "black";
       ourChip.childNodes[5].style.color = "white";
     } else {
@@ -147,7 +152,7 @@ const CustomComponent = (props) => {
       childList: true,
       subtree: true,
     });
-  }, []);
+  }, [textColor]);
 
   useEffect(() => {
     const ytElement =
