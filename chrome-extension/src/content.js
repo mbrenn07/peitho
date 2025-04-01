@@ -131,11 +131,9 @@ const CustomComponent = (props) => {
     ourChip.style.border = "double 2px transparent";
     ourChip.style.borderRadius = "10px";
 
-    ourChip.style.backgroundImage = `linear-gradient(${
-      textColorRef.current === "rgb(15, 15, 15)" ? "#FFF" : "#171717"
-    }, ${
-      textColorRef.current === "rgb(15, 15, 15)" ? "#FFF" : "#171717"
-    }), linear-gradient(to right, #f03 80%, #ff2791 100%)`;
+    ourChip.style.backgroundImage = `linear-gradient(${textColorRef.current === "rgb(15, 15, 15)" ? "#FFF" : "#171717"
+      }, ${textColorRef.current === "rgb(15, 15, 15)" ? "#FFF" : "#171717"
+      }), linear-gradient(to right, #f03 80%, #ff2791 100%)`;
     ourChip.style.backgroundOrigin = "border-box";
     ourChip.style.backgroundClip = "content-box, border-box";
     if (textColorRef.current === "rgb(15, 15, 15)") {
@@ -185,6 +183,11 @@ const CustomComponent = (props) => {
 
   useEffect(() => {
     setUtterances([]);
+    setSpeakers([
+      { title: "Speaker A", nickname: "Nickname A" },
+      { title: "Speaker B", nickname: "Nickname B" },
+      { title: "Speaker C", nickname: "Nickname C" },
+    ]);
     chrome.runtime.sendMessage({ action: "getYouTubeCookies" }, (response) => {
       if (viewComponent && response?.cookies) {
         axios
@@ -708,17 +711,17 @@ const CustomComponent = (props) => {
               utterances
                 .filter((utterance) => utterance.start <= currentVideoTime)
                 .slice(-1)[0]?.speaker && (
-              <span
-                style={{
-                  position: "absolute",
-                  right: "0.5rem",
-                  color: "#fff",
-                  pointerEvents: "none",
-                }}
-              >
-                🔊
-              </span>
-            )}
+                <span
+                  style={{
+                    position: "absolute",
+                    right: "0.5rem",
+                    color: "#fff",
+                    pointerEvents: "none",
+                  }}
+                >
+                  🔊
+                </span>
+              )}
           </div>
         ))}
       </div>
