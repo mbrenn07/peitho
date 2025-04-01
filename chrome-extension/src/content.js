@@ -439,8 +439,20 @@ const CustomComponent = (props) => {
             ?.nickname || "All Speakers"}
         </h3>
         <div style={styles.labels}>
-          {data.speaker1Times.map((time) => (
-            <p style={styles.time}>{formatTime(time)}</p>
+          {data.speaker1Times.map((time, i) => (
+            <button
+              key={`speaker1-${i}`}
+              style={{ ...styles.time, cursor: "pointer", border: "none", background: "none" }}
+              onClick={() => {
+                const video = document.querySelector("video");
+                if (video) {
+                  video.currentTime = time / 1000; // convert ms to seconds
+                  video.play();
+                }
+              }}
+            >
+              {formatTime(time)}
+            </button>
           ))}
         </div>
         <h3>
@@ -448,8 +460,20 @@ const CustomComponent = (props) => {
             ?.nickname || "All Speakers"}
         </h3>
         <div style={styles.labels}>
-          {data.speaker2Times.map((time) => (
-            <p style={styles.time}>{formatTime(time)}</p>
+          {data.speaker2Times.map((time, i) => (
+            <button
+              key={`speaker2-${i}`}
+              style={{ ...styles.time, cursor: "pointer", border: "none", background: "none" }}
+              onClick={() => {
+                const video = document.querySelector("video");
+                if (video) {
+                  video.currentTime = time / 1000;
+                  video.play();
+                }
+              }}
+            >
+              {formatTime(time)}
+            </button>
           ))}
         </div>
       </div>
