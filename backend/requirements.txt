@@ -5,3 +5,4 @@ assemblyai
 python-dotenv
 pymongo
 nltk
+requests
