@@ -439,42 +439,74 @@ const CustomComponent = (props) => {
             ?.nickname || "All Speakers"}
         </h3>
         <div style={styles.labels}>
-          {data.speaker1Times.map((time, i) => (
-            <p
-              key={`speaker1-${i}`}
-              style={{ ...styles.time, cursor: "pointer", border: "none" }}
-              onClick={() => {
-                const video = document.querySelector("video");
-                if (video) {
-                  video.currentTime = time / 1000; // convert ms to seconds
-                  video.play();
-                }
-              }}
-            >
-              {formatTime(time)}
-            </p>
-          ))}
+          {data.speaker1Times.map((time, i) => {
+            const utteranceText =
+              utterances.find(
+                (u) =>
+                  u.start === time &&
+                  u.label === data.name &&
+                  String(u.speaker) === String(speaker1)
+              )?.text || "";
+
+            return (
+              <button
+                key={`speaker1-${i}`}
+                style={{
+                  ...styles.time,
+                  cursor: "pointer",
+                  border: "none",
+                  background: "none",
+                }}
+                title={utteranceText}
+                onClick={() => {
+                  const video = document.querySelector("video");
+                  if (video) {
+                    video.currentTime = time / 1000;
+                    video.play();
+                  }
+                }}
+              >
+                {formatTime(time)}
+              </button>
+            );
+          })}
         </div>
         <h3>
           {speakers.find((s) => String(s.title) === String(speaker2))
             ?.nickname || "All Speakers"}
         </h3>
         <div style={styles.labels}>
-          {data.speaker2Times.map((time, i) => (
-            <p
-              key={`speaker2-${i}`}
-              style={{ ...styles.time, cursor: "pointer", border: "none" }}
-              onClick={() => {
-                const video = document.querySelector("video");
-                if (video) {
-                  video.currentTime = time / 1000;
-                  video.play();
-                }
-              }}
-            >
-              {formatTime(time)}
-            </p>
-          ))}
+          {data.speaker2Times.map((time, i) => {
+            const utteranceText =
+              utterances.find(
+                (u) =>
+                  u.start === time &&
+                  u.label === data.name &&
+                  String(u.speaker) === String(speaker2)
+              )?.text || "";
+
+            return (
+              <button
+                key={`speaker2-${i}`}
+                style={{
+                  ...styles.time,
+                  cursor: "pointer",
+                  border: "none",
+                  background: "none",
+                }}
+                title={utteranceText}
+                onClick={() => {
+                  const video = document.querySelector("video");
+                  if (video) {
+                    video.currentTime = time / 1000;
+                    video.play();
+                  }
+                }}
+              >
+                {formatTime(time)}
+              </button>
+            );
+          })}
         </div>
       </div>
     );
