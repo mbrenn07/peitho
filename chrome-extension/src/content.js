@@ -309,7 +309,7 @@ const CustomComponent = (props) => {
       fontSize: "1.3rem",
       fontWeight: "500",
       lineHeight: "1.8rem",
-      background: "#263850",
+      backgroundColor: "#263850",
       borderRadius: "4px",
       width: "fit-content",
       height: "fit-content",
@@ -440,9 +440,9 @@ const CustomComponent = (props) => {
         </h3>
         <div style={styles.labels}>
           {data.speaker1Times.map((time, i) => (
-            <button
+            <p
               key={`speaker1-${i}`}
-              style={{ ...styles.time, cursor: "pointer", border: "none", background: "none" }}
+              style={{ ...styles.time, cursor: "pointer", border: "none" }}
               onClick={() => {
                 const video = document.querySelector("video");
                 if (video) {
@@ -452,7 +452,7 @@ const CustomComponent = (props) => {
               }}
             >
               {formatTime(time)}
-            </button>
+            </p>
           ))}
         </div>
         <h3>
@@ -461,9 +461,9 @@ const CustomComponent = (props) => {
         </h3>
         <div style={styles.labels}>
           {data.speaker2Times.map((time, i) => (
-            <button
+            <p
               key={`speaker2-${i}`}
-              style={{ ...styles.time, cursor: "pointer", border: "none", background: "none" }}
+              style={{ ...styles.time, cursor: "pointer", border: "none" }}
               onClick={() => {
                 const video = document.querySelector("video");
                 if (video) {
@@ -473,7 +473,7 @@ const CustomComponent = (props) => {
               }}
             >
               {formatTime(time)}
-            </button>
+            </p>
           ))}
         </div>
       </div>
