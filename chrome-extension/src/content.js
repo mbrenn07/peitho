@@ -62,15 +62,15 @@ const CustomComponent = (props) => {
 
   const labelToColor = {
     "Procedural Act": "#808080",
-    "Question": "#007BFF",
+    Question: "#007BFF",
     "Gratitude/Congratulations": "#800080",
     "Self Claim": "#DC143C",
     "Unattributed Claim": "#FFD700",
     "Attributed Claim": "#008B8B",
     "Accusatory Claim": "#8B0000",
     "Position Taking": "#FF8C00",
-    "Miscellaneous": "#D3D3D3",
-    "Promise/Commitment": "#228B22"
+    Miscellaneous: "#D3D3D3",
+    "Promise/Commitment": "#228B22",
   };
 
   useEffect(() => {
@@ -130,18 +130,12 @@ const CustomComponent = (props) => {
     });
     ourChip.style.border = "double 2px transparent";
     ourChip.style.borderRadius = "10px";
-<<<<<<< HEAD
-<<<<<<< HEAD
-    ourChip.style.backgroundImage = `linear-gradient(${textColor === "rgb(15, 15, 15)" ? "#FFF" : "#171717"
-      }, ${textColor === "rgb(15, 15, 15)" ? "#FFF" : "#171717"
+
+    ourChip.style.backgroundImage = `linear-gradient(${
+      textColorRef.current === "rgb(15, 15, 15)" ? "#FFF" : "#171717"
+    }, ${
+      textColorRef.current === "rgb(15, 15, 15)" ? "#FFF" : "#171717"
     }), linear-gradient(to right, #f03 80%, #ff2791 100%)`;
-=======
-=======
->>>>>>> 9c96b2c028419acd6dc7979d00bc27979f0b9b43
-    ourChip.style.backgroundImage = `linear-gradient(${textColorRef.current === "rgb(15, 15, 15)" ? "#FFF" : "#171717"
-      }, ${textColorRef.current === "rgb(15, 15, 15)" ? "#FFF" : "#171717"
-      }), linear-gradient(to right, #f03 80%, #ff2791 100%)`;
->>>>>>> 9c96b2c028419acd6dc7979d00bc27979f0b9b43
     ourChip.style.backgroundOrigin = "border-box";
     ourChip.style.backgroundClip = "content-box, border-box";
     if (textColorRef.current === "rgb(15, 15, 15)") {
@@ -154,7 +148,7 @@ const CustomComponent = (props) => {
     chipContainer.insertBefore(ourChip, chipContainer.childNodes[1]);
 
     setCurrentChip(ourChip);
-  }
+  };
 
   useEffect(() => {
     const chipObserver = new MutationObserver((mutations, obs) => {
@@ -190,13 +184,13 @@ const CustomComponent = (props) => {
   }, []);
 
   useEffect(() => {
-    setUtterances([])
+    setUtterances([]);
     chrome.runtime.sendMessage({ action: "getYouTubeCookies" }, (response) => {
       if (viewComponent && response?.cookies) {
         axios
           .post(`${config.BACKEND_URL}/process_transcript`, {
             url: window.location.href,
-            cookies: response.cookies
+            cookies: response.cookies,
           })
           .then((data) => {
             const utterances = data.data.utterances.sort(
@@ -441,8 +435,8 @@ const CustomComponent = (props) => {
       <div style={styles.barInfo}>
         <h2>{data.name}</h2>
         <h3>
-          {speakers.find((s) => s.title === speaker1)?.nickname ||
-            "All Speakers"}
+          {speakers.find((s) => String(s.title) === String(speaker1))
+            ?.nickname || "All Speakers"}
         </h3>
         <div style={styles.labels}>
           {data.speaker1Times.map((time) => (
@@ -450,8 +444,8 @@ const CustomComponent = (props) => {
           ))}
         </div>
         <h3>
-          {speakers.find((s) => s.title === speaker2)?.nickname ||
-            "All Speakers"}
+          {speakers.find((s) => String(s.title) === String(speaker2))
+            ?.nickname || "All Speakers"}
         </h3>
         <div style={styles.labels}>
           {data.speaker2Times.map((time) => (
@@ -472,26 +466,34 @@ const CustomComponent = (props) => {
         utterances
           .filter((utterance) => utterance.start <= currentVideoTime)
           .filter((utterance) =>
-            speaker1 === "Everyone" ? true : String(utterance.speaker) === String(speaker1)
+            speaker1 === "Everyone"
+              ? true
+              : String(utterance.speaker) === String(speaker1)
           )
           .filter((utterance) => utterance.label === label).length * -1,
       speaker2: utterances
         .filter((utterance) => utterance.start <= currentVideoTime)
         .filter((utterance) =>
-          speaker2 === "Everyone" ? true : String(utterance.speaker) === String(speaker2)
+          speaker2 === "Everyone"
+            ? true
+            : String(utterance.speaker) === String(speaker2)
         )
         .filter((utterance) => utterance.label === label).length,
       speaker1Times: utterances
         .filter((utterance) => utterance.start <= currentVideoTime)
         .filter((utterance) =>
-          speaker1 === "Everyone" ? true : String(utterance.speaker) === String(speaker1)
+          speaker1 === "Everyone"
+            ? true
+            : String(utterance.speaker) === String(speaker1)
         )
         .filter((utterance) => utterance.label === label)
         .map((utterance) => utterance.start),
       speaker2Times: utterances
         .filter((utterance) => utterance.start <= currentVideoTime)
         .filter((utterance) =>
-          speaker2 === "Everyone" ? true : String(utterance.speaker) === String(speaker2)
+          speaker2 === "Everyone"
+            ? true
+            : String(utterance.speaker) === String(speaker2)
         )
         .filter((utterance) => utterance.label === label)
         .map((utterance) => utterance.start),
@@ -499,9 +501,12 @@ const CustomComponent = (props) => {
     .sort((a, b) => a.speaker1 - b.speaker1);
 
   const darkenHexColor = (hex, factor = 0.8) => {
-    hex = hex.replace(/^#/, '');
+    hex = hex.replace(/^#/, "");
     if (hex.length === 3) {
-      hex = hex.split('').map(c => c + c).join('');
+      hex = hex
+        .split("")
+        .map((c) => c + c)
+        .join("");
     }
 
     let r = parseInt(hex.substring(0, 2), 16);
@@ -512,8 +517,10 @@ const CustomComponent = (props) => {
     g = Math.max(0, Math.floor(g * factor));
     b = Math.max(0, Math.floor(b * factor));
 
-    return `#${r.toString(16).padStart(2, '0')}${g.toString(16).padStart(2, '0')}${b.toString(16).padStart(2, '0')}`;
-  }
+    return `#${r.toString(16).padStart(2, "0")}${g
+      .toString(16)
+      .padStart(2, "0")}${b.toString(16).padStart(2, "0")}`;
+  };
 
   return (
     <div style={styles.container}>
@@ -594,20 +601,23 @@ const CustomComponent = (props) => {
             .filter((utterance) => utterance.start <= currentVideoTime)
             .slice(-1)
             .map((utterance) => {
-              let sentimentColor = "grey"
+              let sentimentColor = "grey";
               if (utterance.sentiment === "positive") {
-                sentimentColor = "green"
+                sentimentColor = "green";
               } else if (utterance.sentiment === "negative") {
-                sentimentColor = "red"
+                sentimentColor = "red";
               }
 
-              const sentiment = utterance.sentiment.charAt(0).toUpperCase() + utterance.sentiment.slice(1);
+              const sentiment =
+                utterance.sentiment.charAt(0).toUpperCase() +
+                utterance.sentiment.slice(1);
 
               return (
-                <p style={{ ...styles.label, backgroundColor: sentimentColor }}>{sentiment}</p>
-              )
-            }
-            )}
+                <p style={{ ...styles.label, backgroundColor: sentimentColor }}>
+                  {sentiment}
+                </p>
+              );
+            })}
         </div>
       </Stack>
 
@@ -708,7 +718,7 @@ const CustomComponent = (props) => {
             stackId="stack"
             onClick={handleBarClick}
             onMouseEnter={(e) => {
-              setHoveredBar(e.name)
+              setHoveredBar(e.name);
               setProgressBarVisibility(true);
             }}
             onMouseLeave={() => {
@@ -719,7 +729,7 @@ const CustomComponent = (props) => {
             {chartData.map((entry, index) => {
               return (
                 <Cell key={`cell-${index}`} fill={labelToColor[entry.name]} />
-              )
+              );
             })}
           </Bar>
           <Bar
@@ -727,7 +737,7 @@ const CustomComponent = (props) => {
             stackId="stack"
             onClick={handleBarClick}
             onMouseEnter={(e) => {
-              setHoveredBar(e.name)
+              setHoveredBar(e.name);
               setProgressBarVisibility(true);
             }}
             onMouseLeave={() => {
@@ -737,8 +747,11 @@ const CustomComponent = (props) => {
           >
             {chartData.map((entry, index) => {
               return (
-                <Cell key={`cell-${index}`} fill={darkenHexColor(labelToColor[entry.name])} />
-              )
+                <Cell
+                  key={`cell-${index}`}
+                  fill={darkenHexColor(labelToColor[entry.name])}
+                />
+              );
             })}
           </Bar>
         </BarChart>
