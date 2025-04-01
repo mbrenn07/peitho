@@ -563,14 +563,36 @@ const CustomComponent = (props) => {
 
       {/* place holders below */}
       <h2>Current Labels:</h2>
-      <div style={styles.labels}>
-        {utterances
-          .filter((utterance) => utterance.start <= currentVideoTime)
-          .slice(-1)
-          .map((utterance) => (
-            <p style={styles.label}>{utterance.label}</p>
-          ))}
-      </div>
+      <Stack direction="row" spacing={1}>
+        <div style={styles.labels}>
+          {utterances
+            .filter((utterance) => utterance.start <= currentVideoTime)
+            .slice(-1)
+            .map((utterance) => (
+              <p style={styles.label}>{utterance.label}</p>
+            ))}
+        </div>
+        <div style={styles.labels}>
+          {utterances
+            .filter((utterance) => utterance.start <= currentVideoTime)
+            .slice(-1)
+            .map((utterance) => {
+              let sentimentColor = "grey"
+              if (utterance.sentiment === "positive") {
+                sentimentColor = "green"
+              } else if (utterance.sentiment === "negative") {
+                sentimentColor = "red"
+              }
+
+              const sentiment = utterance.sentiment.charAt(0).toUpperCase() + utterance.sentiment.slice(1);
+
+              return (
+                <p style={{ ...styles.label, backgroundColor: sentimentColor }}>{sentiment}</p>
+              )
+            }
+            )}
+        </div>
+      </Stack>
 
       <h2>Speakers:</h2>
       <div style={styles.labels}>
