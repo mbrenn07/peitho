@@ -230,9 +230,7 @@ def process_transcript():
     parsed_url = urlparse(raw_url)
     query_params = parse_qs(parsed_url.query)
     video_id = query_params.get("v", [None])[0]
-
     save_cookies_to_file(request.get_json()["cookies"])
-
     if not video_id:
         return {"error": "Invalid YouTube URL"}, 400
 
@@ -241,7 +239,7 @@ def process_transcript():
     existing_video = videos_collection.find_one({"url": url})
     if existing_video:
         return {"utterances": existing_video["utterances"], "speakers": existing_video["speakers"]}
-
+    print("hi")
     options = {
         'format': 'bestaudio[ext=webm]',
         'outtmpl': 'videos/%(title)s.%(ext)s',
@@ -278,11 +276,15 @@ def process_transcript():
         "speakers": list(speakers_set)
     })
 
+    print(separated_data)
     # Call classification APIs for each utterance
-    for utterance in separated_data["utterances"]:
-        text = utterance["text"]
-        utterance["label"] = call_dialog_classifier(text)
-        utterance["sentiment"] = call_sentiment_classifier(text)
+    utterance_texts = [utt["text"] for utt in separated_data["utterances"]]
+    dialog_preds = call_dialog_classifier_batch(utterance_texts)
+    sentiment_preds = call_sentiment_classifier_batch(utterance_texts)
+
+    for i, utterance in enumerate(separated_data["utterances"]):
+        utterance["label"] = dialog_preds[i]
+        utterance["sentiment"] = sentiment_preds[i]
 
     video_data = {
         "url": url,
@@ -305,47 +307,44 @@ def process_transcript():
     return {"utterances": separated_data["utterances"], "speakers": separated_data["speakers"]}
 
 
-def call_dialog_classifier(text):
-    data = {"inputs": text}
-    response = requests.post(DIALOG_CLASSIFIER_URL,
-                             headers=hf_headers, json=data)
+def call_dialog_classifier_batch(text_list):
+    data = {"inputs": text_list}
+    response = requests.post(DIALOG_CLASSIFIER_URL, headers=hf_headers, json=data)
 
-    print("Dialog classifier response status:", response.status_code)
-    print("Dialog classifier response body:", response.text)
+    print("Dialog classifier batch response status:", response.status_code)
 
     if response.status_code == 200:
         try:
-            prediction = response.json()
-
-            # Handles your current format
-            if isinstance(prediction, dict) and "predictions" in prediction:
-                return prediction["predictions"][0]["label"]
-
-            # Fallbacks for other formats
-            elif isinstance(prediction, list) and "label" in prediction[0]:
-                return prediction[0]["label"]
-
-            elif isinstance(prediction, dict) and "label" in prediction:
-                return prediction["label"]
-
-            raise ValueError(
-                f"Unexpected dialog classifier format: {prediction}")
+            predictions = response.json()
+            if isinstance(predictions, dict) and "predictions" in predictions:
+                return [p["label"] for p in predictions["predictions"]]
+            elif isinstance(predictions, list) and "label" in predictions[0]:
+                return [p["label"] for p in predictions]
+            raise ValueError(f"Unexpected dialog classifier format: {predictions}")
         except Exception as e:
-            print("Error parsing dialog classifier:", e)
-            return "Miscellaneous"
+            print("Error parsing dialog classifier response:", e)
+            return ["Miscellaneous"] * len(text_list)
     else:
-        print(
-            f"Dialog classification failed: {response.status_code}, {response.text}")
-        return "Miscellaneous"
+        print(f"Dialog classification failed: {response.status_code}, {response.text}")
+        return ["Miscellaneous"] * len(text_list)
 
 
-def call_sentiment_classifier(text):
-    data = {"inputs": text}
+def call_sentiment_classifier_batch(text_list):
+    data = {"inputs": text_list}
     response = requests.post(SENTIMENT_URL, headers=hf_headers, json=data)
+
     if response.status_code == 200:
-        prediction = response.json()
-        print("Sentiment classifier response status:", response.status_code)
-        return prediction[0]['label'] if isinstance(prediction, list) else prediction['label']
+        try:
+            predictions = response.json()
+            if isinstance(predictions, list) and "label" in predictions[0]:
+                return [p["label"] for p in predictions]
+            elif isinstance(predictions, dict) and "predictions" in predictions:
+                return [p["label"] for p in predictions["predictions"]]
+            raise ValueError(f"Unexpected sentiment classifier format: {predictions}")
+        except Exception as e:
+            print("Error parsing sentiment classifier response:", e)
+            return ["neutral"] * len(text_list)
     else:
         print(f"Sentiment classification failed: {response.text}")
-        return "neutral"  # Fallback sentiment
+        return ["neutral"] * len(text_list)
+
