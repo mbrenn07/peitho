@@ -309,7 +309,7 @@ const CustomComponent = (props) => {
       fontSize: "1.3rem",
       fontWeight: "500",
       lineHeight: "1.8rem",
-      background: "#263850",
+      backgroundColor: "#263850",
       borderRadius: "4px",
       width: "fit-content",
       height: "fit-content",
