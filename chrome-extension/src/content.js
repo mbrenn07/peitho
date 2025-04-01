@@ -61,7 +61,7 @@ const CustomComponent = (props) => {
   const currentChipRef = useRef();
 
   const labelToColor = {
-    "Procedural Act": "#808080",
+    "Procedural Act": "#FF69B4",
     Question: "#007BFF",
     "Gratitude/Congratulations": "#800080",
     "Self Claim": "#DC143C",
@@ -430,7 +430,7 @@ const CustomComponent = (props) => {
     setSpeaker2(event.target.value);
   };
 
-  const [collapse, setCollapse] = useState(false);
+  const [collapse, setCollapse] = useState(true);
 
   const [barInfo, setBarInfo] = useState("");
   const handleBarClick = (data) => {
@@ -768,7 +768,7 @@ const CustomComponent = (props) => {
         >
           <CartesianGrid strokeDasharray="3 3" />
           <XAxis type="number" tickFormatter={(value) => Math.abs(value)} />
-          <YAxis dataKey="name" type="category" />
+          <YAxis dataKey="name" type="category" tickFormatter={(name) => name.replace(/\//g, '/ ')} />
           {/* <Tooltip />
           <Legend /> */}
           <ReferenceLine x={0} stroke="#000" />
