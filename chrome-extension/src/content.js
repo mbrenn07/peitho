@@ -7,17 +7,12 @@ import {
   XAxis,
   YAxis,
   CartesianGrid,
-  Tooltip,
-  Legend,
+  Cell,
   ReferenceLine,
   ResponsiveContainer,
 } from "recharts";
-import { IconButton, Stack, Button, Collapse } from "@mui/material";
+import { IconButton, Stack, Collapse } from "@mui/material";
 import axios from "axios";
-import InputLabel from "@mui/material/InputLabel";
-import MenuItem from "@mui/material/MenuItem";
-import FormControl from "@mui/material/FormControl";
-import Select from "@mui/material/Select";
 
 function getCurrentVideoTime() {
   const videoElement = document.querySelector("video");
@@ -64,11 +59,16 @@ const CustomComponent = (props) => {
   const [currentChip, setCurrentChip] = useState();
 
   const labelToColor = {
-    "Self Claims - Political Track Record": "red",
-    "General Claim Statistical": "blue",
-    "Communicative Metareference": "green",
-    "Gratitude/Congratulations": "purple",
-    "General Claim Non-statistical": "yellow",
+    "Procedural Act": "#808080",
+    "Question": "#007BFF",
+    "Gratitude/Congratulations": "#800080",
+    "Self Claim": "#DC143C",
+    "Unattributed Claim": "#FFD700",
+    "Attributed Claim": "#008B8B",
+    "Accusatory Claim": "#8B0000",
+    "Position Taking": "#FF8C00",
+    "Miscellaneous": "#D3D3D3",
+    "Promise/Commitment": "#228B22"
   };
 
   useEffect(() => {
@@ -437,6 +437,67 @@ const CustomComponent = (props) => {
     );
   };
 
+  const chartData = utterances
+    .filter((utterance) => utterance.start <= currentVideoTime)
+    .map((utterance) => utterance.label)
+    .filter((label, index, self) => self.indexOf(label) === index)
+    .map((label) => ({
+      name: label,
+      speaker1:
+        utterances
+          .filter((utterance) => utterance.start <= currentVideoTime)
+          .filter((utterance) =>
+            speaker1 === "Everyone"
+              ? true
+              : utterance.speaker === speaker1
+          )
+          .filter((utterance) => utterance.label === label).length * -1,
+      speaker2: utterances
+        .filter((utterance) => utterance.start <= currentVideoTime)
+        .filter((utterance) =>
+          speaker2 === "Everyone"
+            ? true
+            : utterance.speaker === speaker2
+        )
+        .filter((utterance) => utterance.label === label).length,
+      speaker1Times: utterances
+        .filter((utterance) => utterance.start <= currentVideoTime)
+        .filter((utterance) =>
+          speaker1 === "Everyone"
+            ? true
+            : utterance.speaker === speaker1
+        )
+        .filter((utterance) => utterance.label === label)
+        .map((utterance) => utterance.start),
+      speaker2Times: utterances
+        .filter((utterance) => utterance.start <= currentVideoTime)
+        .filter((utterance) =>
+          speaker2 === "Everyone"
+            ? true
+            : utterance.speaker === speaker2
+        )
+        .filter((utterance) => utterance.label === label)
+        .map((utterance) => utterance.start),
+    }))
+    .sort((a, b) => a.speaker1 - b.speaker1);
+
+  const darkenHexColor = (hex, factor = 0.8) => {
+    hex = hex.replace(/^#/, '');
+    if (hex.length === 3) {
+      hex = hex.split('').map(c => c + c).join('');
+    }
+
+    let r = parseInt(hex.substring(0, 2), 16);
+    let g = parseInt(hex.substring(2, 4), 16);
+    let b = parseInt(hex.substring(4, 6), 16);
+
+    r = Math.max(0, Math.floor(r * factor));
+    g = Math.max(0, Math.floor(g * factor));
+    b = Math.max(0, Math.floor(b * factor));
+
+    return `#${r.toString(16).padStart(2, '0')}${g.toString(16).padStart(2, '0')}${b.toString(16).padStart(2, '0')}`;
+  }
+
   return (
     <div style={styles.container}>
       <Stack
@@ -502,14 +563,36 @@ const CustomComponent = (props) => {
 
       {/* place holders below */}
       <h2>Current Labels:</h2>
-      <div style={styles.labels}>
-        {utterances
-          .filter((utterance) => utterance.start <= currentVideoTime)
-          .slice(-1)
-          .map((utterance) => (
-            <p style={styles.label}>{utterance.label}</p>
-          ))}
-      </div>
+      <Stack direction="row" spacing={1}>
+        <div style={styles.labels}>
+          {utterances
+            .filter((utterance) => utterance.start <= currentVideoTime)
+            .slice(-1)
+            .map((utterance) => (
+              <p style={styles.label}>{utterance.label}</p>
+            ))}
+        </div>
+        <div style={styles.labels}>
+          {utterances
+            .filter((utterance) => utterance.start <= currentVideoTime)
+            .slice(-1)
+            .map((utterance) => {
+              let sentimentColor = "grey"
+              if (utterance.sentiment === "positive") {
+                sentimentColor = "green"
+              } else if (utterance.sentiment === "negative") {
+                sentimentColor = "red"
+              }
+
+              const sentiment = utterance.sentiment.charAt(0).toUpperCase() + utterance.sentiment.slice(1);
+
+              return (
+                <p style={{ ...styles.label, backgroundColor: sentimentColor }}>{sentiment}</p>
+              )
+            }
+            )}
+        </div>
+      </Stack>
 
       <h2>Speakers:</h2>
       <div style={styles.labels}>
@@ -588,49 +671,7 @@ const CustomComponent = (props) => {
           layout="vertical"
           width={500}
           height={300}
-          data={utterances
-            .filter((utterance) => utterance.start <= currentVideoTime)
-            .map((utterance) => utterance.label)
-            .filter((label, index, self) => self.indexOf(label) === index)
-            .map((label) => ({
-              name: label,
-              speaker1:
-                utterances
-                  .filter((utterance) => utterance.start <= currentVideoTime)
-                  .filter((utterance) =>
-                    speaker1 === "Everyone"
-                      ? true
-                      : utterance.speaker === speaker1
-                  )
-                  .filter((utterance) => utterance.label === label).length * -1,
-              speaker2: utterances
-                .filter((utterance) => utterance.start <= currentVideoTime)
-                .filter((utterance) =>
-                  speaker2 === "Everyone"
-                    ? true
-                    : utterance.speaker === speaker2
-                )
-                .filter((utterance) => utterance.label === label).length,
-              speaker1Times: utterances
-                .filter((utterance) => utterance.start <= currentVideoTime)
-                .filter((utterance) =>
-                  speaker1 === "Everyone"
-                    ? true
-                    : utterance.speaker === speaker1
-                )
-                .filter((utterance) => utterance.label === label)
-                .map((utterance) => utterance.start),
-              speaker2Times: utterances
-                .filter((utterance) => utterance.start <= currentVideoTime)
-                .filter((utterance) =>
-                  speaker2 === "Everyone"
-                    ? true
-                    : utterance.speaker === speaker2
-                )
-                .filter((utterance) => utterance.label === label)
-                .map((utterance) => utterance.start),
-            }))
-            .sort((a, b) => a.speaker1 - b.speaker1)}
+          data={chartData}
           stackOffset="sign"
           margin={{
             top: 5,
@@ -647,7 +688,6 @@ const CustomComponent = (props) => {
           <ReferenceLine x={0} stroke="#000" />
           <Bar
             dataKey="speaker1"
-            fill="#8884d8"
             stackId="stack"
             onClick={handleBarClick}
             onMouseEnter={(e) => {
@@ -658,10 +698,15 @@ const CustomComponent = (props) => {
               setHoveredBar(null);
               setProgressBarVisibility(false);
             }}
-          />
+          >
+            {chartData.map((entry, index) => {
+              return (
+                <Cell key={`cell-${index}`} fill={labelToColor[entry.name]} />
+              )
+            })}
+          </Bar>
           <Bar
             dataKey="speaker2"
-            fill="#82ca9d"
             stackId="stack"
             onClick={handleBarClick}
             onMouseEnter={(e) => {
@@ -672,60 +717,17 @@ const CustomComponent = (props) => {
               setHoveredBar(null);
               setProgressBarVisibility(false);
             }}
-          />
+          >
+            {chartData.map((entry, index) => {
+              return (
+                <Cell key={`cell-${index}`} fill={darkenHexColor(labelToColor[entry.name])} />
+              )
+            })}
+          </Bar>
         </BarChart>
       </ResponsiveContainer>
 
       {barInfo}
-
-      {/* <ResponsiveContainer width="100%" height={300}>
-        <BarChart
-          data={utterances
-            .filter((utterance) => utterance.start <= currentVideoTime)
-            .map((utterance) => utterance.label)
-            .filter((label, index, self) => self.indexOf(label) === index)
-            .map((label) => ({
-              name: label,
-              value: utterances
-                .filter((utterance) => utterance.start <= currentVideoTime)
-                .filter((utterance) => utterance.label === label).length,
-            }))
-            .sort((a, b) => b.value - a.value)}
-          margin={{
-            top: 5,
-            right: 5,
-            left: 5,
-            bottom: 60,
-          }}
-        >
-          <XAxis
-            dataKey="name"
-            interval={0}
-            tick={{
-              angle: 60,
-              textAnchor: "start",
-              dx: -5,
-              dy: 10,
-            }}
-          />
-
-          <YAxis
-            label={{
-              value: "Frequency",
-              angle: -90,
-              position: "insideLeft",
-            }}
-          />
-          <Bar dataKey="value" fill="#3ea6ff" onMouseEnter={(e) => {
-            setHoveredBar(e.name)
-            setProgressBarVisibility(true);
-          }}
-            onMouseLeave={() => {
-              setHoveredBar(null);
-              setProgressBarVisibility(false);
-            }} />
-        </BarChart>
-      </ResponsiveContainer> */}
     </div>
   );
 };
