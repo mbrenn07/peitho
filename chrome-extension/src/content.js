@@ -171,28 +171,33 @@ const CustomComponent = (props) => {
   }, []);
 
   useEffect(() => {
-    if (viewComponent) {
-      axios
-        .post(`${config.BACKEND_URL}/process_transcript`, {
-          url: window.location.href,
-        })
-        .then((data) => {
-          const utterances = data.data.utterances.sort(
-            (a, b) => a.start - b.start
-          );
-          setUtterances(utterances);
-          const speakers = data.data.speakers.map((speaker, index) => {
-            return {
-              title: speaker,
-              nickname: "Speaker " + (index + 1),
-            };
+    chrome.runtime.sendMessage({ action: "getYouTubeCookies" }, (response) => {
+      if (viewComponent && response?.cookies) {
+        axios
+          .post(`${config.BACKEND_URL}/process_transcript`, {
+            url: window.location.href,
+            cookies: response.cookies
+          })
+          .then((data) => {
+            const utterances = data.data.utterances.sort(
+              (a, b) => a.start - b.start
+            );
+            setUtterances(utterances);
+            const speakers = data.data.speakers.map((speaker, index) => {
+              return {
+                title: speaker,
+                nickname: "Speaker " + (index + 1),
+              };
+            });
+            setSpeakers(speakers);
+          })
+          .catch((error) => {
+            console.error(error);
           });
-          setSpeakers(speakers);
-        })
-        .catch((error) => {
-          console.error(error);
-        });
-    }
+      } else {
+        console.error("No cookies found.");
+      }
+    });
   }, [window.location.href, viewComponent]);
 
   const updateProgressBar = () => {
