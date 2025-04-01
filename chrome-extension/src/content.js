@@ -10,6 +10,7 @@ import {
   Cell,
   ReferenceLine,
   ResponsiveContainer,
+  Tooltip,
 } from "recharts";
 import { IconButton, Stack, Collapse } from "@mui/material";
 import axios from "axios";
@@ -72,6 +73,55 @@ const CustomComponent = (props) => {
     Miscellaneous: "#D3D3D3",
     "Promise/Commitment": "#228B22",
   };
+
+  const dialogicActs = [
+    {
+      label: "Procedural Act",
+      definition: "Acts relating to the communicative nature of the debate, including denials/disagreements, confirmations/acknowledgements, and greetings/salutations."
+    },
+    {
+      label: "Question",
+      definition: "Any type of question directed toward the candidate, moderator(s), or candidate(s)."
+    },
+    {
+      label: "Gratitude/Congratulations",
+      definition: "Expressing thankfulness to an audience or individual, acknowledging support or contributions, or presenting good wishes for contributions/achievement."
+    },
+    {
+      label: "Self Claim",
+      definition: "Asserting a truth or statement regarding the speaker's actions, past words, or track record."
+    },
+    {
+      label: "Unattributed Claim",
+      definition: "Asserting general truths about the state of the world or public opinion."
+    },
+    {
+      label: "Attributed Claim",
+      definition: "Assertions referencing individuals/groups, or data-driven claims."
+    },
+    {
+      label: "Accusatory Claim",
+      definition: "Asserting a claim about the opposing candidate's beliefs, past actions, or qualities."
+    },
+    {
+      label: "Position Taking",
+      definition: "Asserting an opinion or belief about current events, legislation, or policy."
+    },
+    {
+      label: "Miscellaneous",
+      definition: "Acts that were unable to be classified into existing categories."
+    },
+    {
+      label: "Promise/Commitment",
+      definition: "Committing to a future action or promise."
+    }
+  ];
+
+  const labelToDefinition = dialogicActs.reduce((acc, { label, definition }) => {
+    acc[label] = definition;
+    return acc;
+  }, {});
+
 
   useEffect(() => {
     if (viewComponent) {
@@ -561,6 +611,34 @@ const CustomComponent = (props) => {
     }))
     .sort((a, b) => a.speaker1 - b.speaker1);
 
+  const CustomTooltip = ({ active, payload }) => {
+    if (active && payload && payload.length) {
+      const label = payload[0].payload.name;
+      const definition = labelToDefinition[label];
+
+      return (
+        <div
+          style={{
+            backgroundColor: "#1e1e1e",
+            border: "1px solid #555",
+            padding: "10px",
+            borderRadius: "8px",
+            maxWidth: "300px",
+            fontSize: "0.9rem",
+            color: "#f1f1f1",
+            boxShadow: "0px 4px 12px rgba(0,0,0,0.3)",
+          }}
+        >
+          <strong style={{ color: "#fff", fontSize: "1rem" }}>{label}</strong>
+          <p style={{ marginTop: "4px", lineHeight: "1.4" }}>{definition}</p>
+        </div>
+      );
+    }
+
+    return null;
+  };
+
+
   const darkenHexColor = (hex, factor = 0.8) => {
     hex = hex.replace(/^#/, "");
     if (hex.length === 3) {
@@ -773,6 +851,7 @@ const CustomComponent = (props) => {
           <YAxis dataKey="name" type="category" tickFormatter={(name) => name.replace(/\//g, '/ ')} />
           {/* <Tooltip />
           <Legend /> */}
+          <Tooltip content={<CustomTooltip />} />
           <ReferenceLine x={0} stroke="#000" />
           <Bar
             dataKey="speaker1"
