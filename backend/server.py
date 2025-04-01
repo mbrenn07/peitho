@@ -50,6 +50,9 @@ def convert_cookies(cookies):
         name = cookie['name']
         value = cookie['value']
 
+        if name == "SID" or name == "HSID" or name == "APISID" or name == "LOGIN_INFO" or "ST" in name or name == "SIDCC":
+            continue
+
         if expiry is not None:
             expiry = int(expiry)
         else:
