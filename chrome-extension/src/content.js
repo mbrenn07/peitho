@@ -122,7 +122,7 @@ const CustomComponent = (props) => {
     ourChip.style.borderRadius = "10px";
     ourChip.style.backgroundImage = `linear-gradient(${textColor === "rgb(15, 15, 15)" ? "#FFF" : "#171717"
       }, ${textColor === "rgb(15, 15, 15)" ? "#FFF" : "#171717"
-      }), linear-gradient(to right, #f03 80%, #ff2791 100%)`;
+    }), linear-gradient(to right, #f03 80%, #ff2791 100%)`;
     ourChip.style.backgroundOrigin = "border-box";
     ourChip.style.backgroundClip = "content-box, border-box";
     if (textColor === "rgb(15, 15, 15)") {
@@ -452,34 +452,26 @@ const CustomComponent = (props) => {
         utterances
           .filter((utterance) => utterance.start <= currentVideoTime)
           .filter((utterance) =>
-            speaker1 === "Everyone"
-              ? true
-              : utterance.speaker === speaker1
+            speaker1 === "Everyone" ? true : String(utterance.speaker) === String(speaker1)
           )
           .filter((utterance) => utterance.label === label).length * -1,
       speaker2: utterances
         .filter((utterance) => utterance.start <= currentVideoTime)
         .filter((utterance) =>
-          speaker2 === "Everyone"
-            ? true
-            : utterance.speaker === speaker2
+          speaker2 === "Everyone" ? true : String(utterance.speaker) === String(speaker2)
         )
         .filter((utterance) => utterance.label === label).length,
       speaker1Times: utterances
         .filter((utterance) => utterance.start <= currentVideoTime)
         .filter((utterance) =>
-          speaker1 === "Everyone"
-            ? true
-            : utterance.speaker === speaker1
+          speaker1 === "Everyone" ? true : String(utterance.speaker) === String(speaker1)
         )
         .filter((utterance) => utterance.label === label)
         .map((utterance) => utterance.start),
       speaker2Times: utterances
         .filter((utterance) => utterance.start <= currentVideoTime)
         .filter((utterance) =>
-          speaker2 === "Everyone"
-            ? true
-            : utterance.speaker === speaker2
+          speaker2 === "Everyone" ? true : String(utterance.speaker) === String(speaker2)
         )
         .filter((utterance) => utterance.label === label)
         .map((utterance) => utterance.start),
@@ -630,17 +622,17 @@ const CustomComponent = (props) => {
               utterances
                 .filter((utterance) => utterance.start <= currentVideoTime)
                 .slice(-1)[0]?.speaker && (
-                <span
-                  style={{
-                    position: "absolute",
-                    right: "0.5rem",
-                    color: "#fff",
-                    pointerEvents: "none",
-                  }}
-                >
-                  🔊
-                </span>
-              )}
+              <span
+                style={{
+                  position: "absolute",
+                  right: "0.5rem",
+                  color: "#fff",
+                  pointerEvents: "none",
+                }}
+              >
+                🔊
+              </span>
+            )}
           </div>
         ))}
       </div>
