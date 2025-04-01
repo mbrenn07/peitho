@@ -239,7 +239,6 @@ def process_transcript():
     existing_video = videos_collection.find_one({"url": url})
     if existing_video:
         return {"utterances": existing_video["utterances"], "speakers": existing_video["speakers"]}
-    print("hi")
     options = {
         'format': 'bestaudio[ext=webm]',
         'outtmpl': 'videos/%(title)s.%(ext)s',
@@ -292,6 +291,8 @@ def process_transcript():
         "speakers": separated_data["speakers"]
     }
 
+    print(video_data)
+
     videos_collection.insert_one(video_data)
 
     try:
@@ -309,7 +310,8 @@ def process_transcript():
 
 def call_dialog_classifier_batch(text_list):
     data = {"inputs": text_list}
-    response = requests.post(DIALOG_CLASSIFIER_URL, headers=hf_headers, json=data)
+    response = requests.post(DIALOG_CLASSIFIER_URL,
+                             headers=hf_headers, json=data)
 
     print("Dialog classifier batch response status:", response.status_code)
 
@@ -320,12 +322,14 @@ def call_dialog_classifier_batch(text_list):
                 return [p["label"] for p in predictions["predictions"]]
             elif isinstance(predictions, list) and "label" in predictions[0]:
                 return [p["label"] for p in predictions]
-            raise ValueError(f"Unexpected dialog classifier format: {predictions}")
+            raise ValueError(
+                f"Unexpected dialog classifier format: {predictions}")
         except Exception as e:
             print("Error parsing dialog classifier response:", e)
             return ["Miscellaneous"] * len(text_list)
     else:
-        print(f"Dialog classification failed: {response.status_code}, {response.text}")
+        print(
+            f"Dialog classification failed: {response.status_code}, {response.text}")
         return ["Miscellaneous"] * len(text_list)
 
 
@@ -340,11 +344,11 @@ def call_sentiment_classifier_batch(text_list):
                 return [p["label"] for p in predictions]
             elif isinstance(predictions, dict) and "predictions" in predictions:
                 return [p["label"] for p in predictions["predictions"]]
-            raise ValueError(f"Unexpected sentiment classifier format: {predictions}")
+            raise ValueError(
+                f"Unexpected sentiment classifier format: {predictions}")
         except Exception as e:
             print("Error parsing sentiment classifier response:", e)
             return ["neutral"] * len(text_list)
     else:
         print(f"Sentiment classification failed: {response.text}")
         return ["neutral"] * len(text_list)
-
