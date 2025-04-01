@@ -101,7 +101,7 @@ const CustomComponent = (props) => {
     viewComponentRef.current = viewComponent;
   }, [viewComponent]);
 
-  useEffect(() => {
+  const addChip = () => {
     if (currentChip) {
       currentChip.remove();
     }
@@ -135,7 +135,19 @@ const CustomComponent = (props) => {
     chipContainer.insertBefore(ourChip, chipContainer.childNodes[1]);
 
     setCurrentChip(ourChip);
-  }, [textColor]);
+  }
+
+  useEffect(() => {
+    const chipObserver = new MutationObserver((mutations, obs) => {
+      addChip();
+      obs.disconnect();
+    });
+
+    chipObserver.observe(document.body, {
+      childList: true,
+      subtree: true,
+    });
+  }, []);
 
   useEffect(() => {
     const ytElement =
