@@ -131,10 +131,13 @@ const CustomComponent = (props) => {
     ourChip.style.border = "double 2px transparent";
     ourChip.style.borderRadius = "10px";
 <<<<<<< HEAD
+<<<<<<< HEAD
     ourChip.style.backgroundImage = `linear-gradient(${textColor === "rgb(15, 15, 15)" ? "#FFF" : "#171717"
       }, ${textColor === "rgb(15, 15, 15)" ? "#FFF" : "#171717"
     }), linear-gradient(to right, #f03 80%, #ff2791 100%)`;
 =======
+=======
+>>>>>>> 9c96b2c028419acd6dc7979d00bc27979f0b9b43
     ourChip.style.backgroundImage = `linear-gradient(${textColorRef.current === "rgb(15, 15, 15)" ? "#FFF" : "#171717"
       }, ${textColorRef.current === "rgb(15, 15, 15)" ? "#FFF" : "#171717"
       }), linear-gradient(to right, #f03 80%, #ff2791 100%)`;
