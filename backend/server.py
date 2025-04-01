@@ -242,7 +242,7 @@ def process_transcript():
     options = {
         'format': 'bestaudio[ext=webm]',
         'outtmpl': 'videos/%(title)s.%(ext)s',
-        'cookies': 'cookies.txt'
+        'cookiefile': 'cookies.txt'
     }
 
     with yt_dlp.YoutubeDL(options) as ydl:
