@@ -344,6 +344,7 @@ def call_sentiment_classifier(text):
     response = requests.post(SENTIMENT_URL, headers=hf_headers, json=data)
     if response.status_code == 200:
         prediction = response.json()
+        print("Sentiment classifier response status:", response.status_code)
         return prediction[0]['label'] if isinstance(prediction, list) else prediction['label']
     else:
         print(f"Sentiment classification failed: {response.text}")

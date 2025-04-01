@@ -52,12 +52,13 @@ const CustomComponent = (props) => {
   const [hoveredBar, setHoveredBar] = useState(null);
   const [viewComponent, setViewComponent] = useState(false);
   const [textColor, setTextColor] = useState("#000"); // fallback color
+  const [currentChip, setCurrentChip] = useState();
   const utterancesRef = useRef();
   const currentVideoTimeRef = useRef();
   const hoveredBarRef = useRef();
   const viewComponentRef = useRef();
   const textColorRef = useRef();
-  const [currentChip, setCurrentChip] = useState();
+  const currentChipRef = useRef();
 
   const labelToColor = {
     "Procedural Act": "#808080",
@@ -106,9 +107,13 @@ const CustomComponent = (props) => {
     textColorRef.current = textColor;
   }, [textColor]);
 
+  useEffect(() => {
+    currentChipRef.current = currentChip;
+  }, [currentChip]);
+
   const addChip = () => {
-    if (currentChip) {
-      currentChip.remove();
+    if (currentChipRef.current) {
+      currentChipRef.current.remove();
     }
 
     const chipContainer =
@@ -176,6 +181,7 @@ const CustomComponent = (props) => {
   }, []);
 
   useEffect(() => {
+    setUtterances([])
     chrome.runtime.sendMessage({ action: "getYouTubeCookies" }, (response) => {
       if (viewComponent && response?.cookies) {
         axios
