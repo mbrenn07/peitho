@@ -51,12 +51,14 @@ const CustomComponent = (props) => {
   const [utterances, setUtterances] = useState([]);
   const [hoveredBar, setHoveredBar] = useState(null);
   const [viewComponent, setViewComponent] = useState(false);
+  const [textColor, setTextColor] = useState("#000"); // fallback color
+  const [currentChip, setCurrentChip] = useState();
   const utterancesRef = useRef();
   const currentVideoTimeRef = useRef();
   const hoveredBarRef = useRef();
   const viewComponentRef = useRef();
-  const [textColor, setTextColor] = useState("#000"); // fallback color
-  const [currentChip, setCurrentChip] = useState();
+  const textColorRef = useRef();
+  const currentChipRef = useRef();
 
   const labelToColor = {
     "Procedural Act": "#808080",
@@ -101,9 +103,17 @@ const CustomComponent = (props) => {
     viewComponentRef.current = viewComponent;
   }, [viewComponent]);
 
+  useEffect(() => {
+    textColorRef.current = textColor;
+  }, [textColor]);
+
+  useEffect(() => {
+    currentChipRef.current = currentChip;
+  }, [currentChip]);
+
   const addChip = () => {
-    if (currentChip) {
-      currentChip.remove();
+    if (currentChipRef.current) {
+      currentChipRef.current.remove();
     }
 
     const chipContainer =
@@ -120,12 +130,18 @@ const CustomComponent = (props) => {
     });
     ourChip.style.border = "double 2px transparent";
     ourChip.style.borderRadius = "10px";
+<<<<<<< HEAD
     ourChip.style.backgroundImage = `linear-gradient(${textColor === "rgb(15, 15, 15)" ? "#FFF" : "#171717"
       }, ${textColor === "rgb(15, 15, 15)" ? "#FFF" : "#171717"
     }), linear-gradient(to right, #f03 80%, #ff2791 100%)`;
+=======
+    ourChip.style.backgroundImage = `linear-gradient(${textColorRef.current === "rgb(15, 15, 15)" ? "#FFF" : "#171717"
+      }, ${textColorRef.current === "rgb(15, 15, 15)" ? "#FFF" : "#171717"
+      }), linear-gradient(to right, #f03 80%, #ff2791 100%)`;
+>>>>>>> 9c96b2c028419acd6dc7979d00bc27979f0b9b43
     ourChip.style.backgroundOrigin = "border-box";
     ourChip.style.backgroundClip = "content-box, border-box";
-    if (textColor === "rgb(15, 15, 15)") {
+    if (textColorRef.current === "rgb(15, 15, 15)") {
       ourChip.childNodes[5].style.backgroundColor = "black";
       ourChip.childNodes[5].style.color = "white";
     } else {
@@ -147,7 +163,7 @@ const CustomComponent = (props) => {
       childList: true,
       subtree: true,
     });
-  }, []);
+  }, [textColor]);
 
   useEffect(() => {
     const ytElement =
@@ -171,6 +187,7 @@ const CustomComponent = (props) => {
   }, []);
 
   useEffect(() => {
+    setUtterances([])
     chrome.runtime.sendMessage({ action: "getYouTubeCookies" }, (response) => {
       if (viewComponent && response?.cookies) {
         axios
