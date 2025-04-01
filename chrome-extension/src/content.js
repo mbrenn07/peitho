@@ -419,12 +419,12 @@ const CustomComponent = (props) => {
     setSpeakers(newSpeakers);
   };
 
-  const [speaker1, setSpeaker1] = useState("Everyone");
+  const [speaker1, setSpeaker1] = useState("2");
 
   const handleChangeSpeaker1 = (event) => {
     setSpeaker1(event.target.value);
   };
-  const [speaker2, setSpeaker2] = useState("Everyone");
+  const [speaker2, setSpeaker2] = useState("1");
 
   const handleChangeSpeaker2 = (event) => {
     setSpeaker2(event.target.value);
@@ -445,10 +445,12 @@ const CustomComponent = (props) => {
           {data.speaker1Times.map((time, i) => {
             const utteranceText =
               utterances.find(
-                (u) =>
-                  u.start === time &&
-                  u.label === data.name &&
-                  String(u.speaker) === String(speaker1)
+                (u) => {
+                  return u.start === time &&
+                    u.label === data.name &&
+                    String(u.speaker) === String(speaker1)
+                }
+
               )?.text || "";
 
             return (
