@@ -851,7 +851,7 @@ const CustomComponent = (props) => {
           <YAxis dataKey="name" type="category" tickFormatter={(name) => name.replace(/\//g, '/ ')} />
           {/* <Tooltip />
           <Legend /> */}
-          <Tooltip content={<CustomTooltip />} />
+          <Tooltip content={<CustomTooltip />} cursor={false} />
           <ReferenceLine x={0} stroke="#000" />
           <Bar
             dataKey="speaker1"
