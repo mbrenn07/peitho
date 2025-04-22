@@ -1,15 +1,20 @@
 {
   "manifest_version": 3,
   "name": "Peitho",
-  "version": "1.0",
-  "description": "Clicks buttons on a webpage, captures the generated HTML, and sends it to a backend",
+  "version": "0.0.0.1",
+  "description": "Analyzes debates hosted on YouTube for speech acts, topics, and sentiment to allow you to understand rhetorical trends.",
+  "icons": {
+    "48": "icons/icon48.png",
+    "128": "icons/icon128.png"
+  },
   "permissions": [
     "activeTab",
     "scripting",
     "cookies"
   ],
   "host_permissions": [
-    "<all_urls>"
+    "*://*.youtube.com/*",
+    "https://peitho-1095352764453.us-east4.run.app/*"
   ],
   "action": {
     "default_popup": "index.html"
@@ -20,7 +25,7 @@
   "content_scripts": [
     {
       "matches": [
-        "<all_urls>"
+        "*://*.youtube.com/*"
       ],
       "js": [
         "./static/js/content.js"

@@ -279,7 +279,9 @@ def process_transcript():
     # Call classification APIs for each utterance
     utterance_texts = [utt["text"] for utt in separated_data["utterances"]]
     dialog_preds = call_dialog_classifier_batch(utterance_texts)
+    print(dialog_preds)
     sentiment_preds = call_sentiment_classifier_batch(utterance_texts)
+    print(sentiment_preds)
 
     for i, utterance in enumerate(separated_data["utterances"]):
         utterance["label"] = dialog_preds[i]
