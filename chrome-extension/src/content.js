@@ -12,8 +12,20 @@ import {
   ResponsiveContainer,
   Tooltip,
 } from "recharts";
-import { IconButton, Stack, Collapse } from "@mui/material";
+import {
+  IconButton,
+  Stack,
+  Collapse,
+  ToggleButtonGroup,
+  ToggleButton,
+} from "@mui/material";
 import axios from "axios";
+import { CustomTimeDisplay } from "./CustomTimeDisplay";
+import PieChartIcon from "@mui/icons-material/PieChart";
+import BarChartIcon from "@mui/icons-material/BarChart";
+import { CustomPie } from "./CustomPie";
+import { CustomPieBoth } from "./CustomPieBoth";
+import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 
 function getCurrentVideoTime() {
   const videoElement = document.querySelector("video");
@@ -72,56 +84,82 @@ const CustomComponent = (props) => {
     "Position Taking": "#FF8C00",
     Miscellaneous: "#D3D3D3",
     "Promise/Commitment": "#228B22",
+    negative: "#C70039",
+    positive: "#008000",
+    neutral: "#808080",
   };
 
   const dialogicActs = [
     {
       label: "Procedural Act",
-      definition: "Acts relating to the communicative nature of the debate, including denials/disagreements, confirmations/acknowledgements, and greetings/salutations."
+      definition:
+        "Acts relating to the communicative nature of the debate, including denials/disagreements, confirmations/acknowledgements, and greetings/salutations.",
     },
     {
       label: "Question",
-      definition: "Any type of question directed toward the candidate, moderator(s), or candidate(s)."
+      definition:
+        "Any type of question directed toward the candidate, moderator(s), or candidate(s).",
     },
     {
       label: "Gratitude/Congratulations",
-      definition: "Expressing thankfulness to an audience or individual, acknowledging support or contributions, or presenting good wishes for contributions/achievement."
+      definition:
+        "Expressing thankfulness to an audience or individual, acknowledging support or contributions, or presenting good wishes for contributions/achievement.",
     },
     {
       label: "Self Claim",
-      definition: "Asserting a truth or statement regarding the speaker's actions, past words, or track record."
+      definition:
+        "Asserting a truth or statement regarding the speaker's actions, past words, or track record.",
     },
     {
       label: "Unattributed Claim",
-      definition: "Asserting general truths about the state of the world or public opinion."
+      definition:
+        "Asserting general truths about the state of the world or public opinion.",
     },
     {
       label: "Attributed Claim",
-      definition: "Assertions referencing individuals/groups, or data-driven claims."
+      definition:
+        "Assertions referencing individuals/groups, or data-driven claims.",
     },
     {
       label: "Accusatory Claim",
-      definition: "Asserting a claim about the opposing candidate's beliefs, past actions, or qualities."
+      definition:
+        "Asserting a claim about the opposing candidate's beliefs, past actions, or qualities.",
     },
     {
       label: "Position Taking",
-      definition: "Asserting an opinion or belief about current events, legislation, or policy."
+      definition:
+        "Asserting an opinion or belief about current events, legislation, or policy.",
     },
     {
       label: "Miscellaneous",
-      definition: "Acts that were unable to be classified into existing categories."
+      definition:
+        "Acts that were unable to be classified into existing categories.",
     },
     {
       label: "Promise/Commitment",
-      definition: "Committing to a future action or promise."
-    }
+      definition: "Committing to a future action or promise.",
+    },
+    {
+      label: "negative",
+      definition: "",
+    },
+    {
+      label: "neutral",
+      definition: "",
+    },
+    {
+      label: "positive",
+      definition: "",
+    },
   ];
 
-  const labelToDefinition = dialogicActs.reduce((acc, { label, definition }) => {
-    acc[label] = definition;
-    return acc;
-  }, {});
-
+  const labelToDefinition = dialogicActs.reduce(
+    (acc, { label, definition }) => {
+      acc[label] = definition;
+      return acc;
+    },
+    {}
+  );
 
   useEffect(() => {
     if (viewComponent) {
@@ -181,9 +219,11 @@ const CustomComponent = (props) => {
     ourChip.style.border = "double 2px transparent";
     ourChip.style.borderRadius = "10px";
 
-    ourChip.style.backgroundImage = `linear-gradient(${textColorRef.current === "rgb(15, 15, 15)" ? "#FFF" : "#171717"
-      }, ${textColorRef.current === "rgb(15, 15, 15)" ? "#FFF" : "#171717"
-      }), linear-gradient(to right, #f03 80%, #ff2791 100%)`;
+    ourChip.style.backgroundImage = `linear-gradient(${
+      textColorRef.current === "rgb(15, 15, 15)" ? "#FFF" : "#171717"
+    }, ${
+      textColorRef.current === "rgb(15, 15, 15)" ? "#FFF" : "#171717"
+    }), linear-gradient(to right, #f03 80%, #ff2791 100%)`;
     ourChip.style.backgroundOrigin = "border-box";
     ourChip.style.backgroundClip = "content-box, border-box";
     if (textColorRef.current === "rgb(15, 15, 15)") {
@@ -233,11 +273,11 @@ const CustomComponent = (props) => {
 
   useEffect(() => {
     setUtterances([]);
-    setSpeakers([
-      { title: "Speaker A", nickname: "Nickname A" },
-      { title: "Speaker B", nickname: "Nickname B" },
-      { title: "Speaker C", nickname: "Nickname C" },
-    ]);
+    setSpeakers({
+      "Speaker A": "Nickname A",
+      "Speaker B": "Nickname B",
+      "Speaker C": "Nickname C",
+    });
     chrome.runtime.sendMessage({ action: "getYouTubeCookies" }, (response) => {
       if (viewComponent && response?.cookies) {
         axios
@@ -250,13 +290,14 @@ const CustomComponent = (props) => {
               (a, b) => a.start - b.start
             );
             setUtterances(utterances);
-            const speakers = data.data.speakers.map((speaker, index) => {
-              return {
-                title: speaker,
-                nickname: "Speaker " + (index + 1),
-              };
-            });
-            setSpeakers(speakers);
+            const speakersObject = data.data.speakers.reduce(
+              (acc, speaker, index) => {
+                acc[speaker] = `Speaker ${index + 1}`;
+                return acc;
+              },
+              {}
+            );
+            setSpeakers(speakersObject);
           })
           .catch((error) => {
             console.error(error);
@@ -373,6 +414,9 @@ const CustomComponent = (props) => {
       padding: "0.5rem",
       background: "#3ea6ff",
       borderRadius: "4px",
+      border: "none",
+      cursor: "pointer",
+      color: "#FFF",
     },
     speakerSelect: {
       width: "100%",
@@ -390,6 +434,29 @@ const CustomComponent = (props) => {
       display: "flex",
       flexDirection: "column",
       gap: "1rem",
+      width: "100%",
+      position: "relative",
+    },
+    select: {
+      backgroundColor: "#ffffff33",
+      color: "white",
+      borderRadius: "4px",
+      border: "none",
+    },
+    option: {
+      color: "black",
+    },
+    scrolllist: {
+      overflowY: "auto",
+      maxHeight: "15rem",
+      width: "100%",
+      gap: "1rem",
+      position: "relative",
+    },
+    scrollListItem: {
+      position: "sticky",
+      bottom: "0",
+      right: "0",
     },
   };
 
@@ -457,16 +524,17 @@ const CustomComponent = (props) => {
     }
   }
 
-  const [speakers, setSpeakers] = useState([
-    { title: "Speaker A", nickname: "Nickname A" },
-    { title: "Speaker B", nickname: "Nickname B" },
-    { title: "Speaker C", nickname: "Nickname C" },
-  ]);
+  const [speakers, setSpeakers] = useState({
+    "Speaker A": "Nickname A",
+    "Speaker B": "Nickname B",
+    "Speaker C": "Nickname C",
+  });
 
-  const handleUpdateNickname = (event, index) => {
-    const newSpeakers = [...speakers];
-    newSpeakers[index].nickname = event.target.value;
-    setSpeakers(newSpeakers);
+  const handleUpdateNickname = (event, speaker) => {
+    setSpeakers((prevSpeakers) => ({
+      ...prevSpeakers,
+      [speaker]: event.target.value,
+    }));
   };
 
   const [speaker1, setSpeaker1] = useState("2");
@@ -483,93 +551,37 @@ const CustomComponent = (props) => {
   const [collapse, setCollapse] = useState(true);
 
   const [barInfo, setBarInfo] = useState("");
+  // utterances, speaker1, speaker2, formatTime, setBarInfo, styles, speakers
   const handleBarClick = (data) => {
     setBarInfo(
-      <div style={styles.barInfo}>
-        <h2>{data.name}</h2>
-        <h3>
-          {speakers.find((s) => String(s.title) === String(speaker1))
-            ?.nickname || "All Speakers"}
-        </h3>
-        <div style={styles.labels}>
-          {data.speaker1Times.map((time, i) => {
-            const utteranceText =
-              utterances.find(
-                (u) => {
-                  return u.start === time &&
-                    u.label === data.name &&
-                    String(u.speaker) === String(speaker1)
-                }
-
-              )?.text || "";
-
-            return (
-              <button
-                key={`speaker1-${i}`}
-                style={{
-                  ...styles.time,
-                  cursor: "pointer",
-                  border: "none",
-                  background: "none",
-                }}
-                title={utteranceText}
-                onClick={() => {
-                  const video = document.querySelector("video");
-                  if (video) {
-                    video.currentTime = time / 1000;
-                    video.play();
-                  }
-                }}
-              >
-                {formatTime(time)}
-              </button>
-            );
-          })}
-        </div>
-        <h3>
-          {speakers.find((s) => String(s.title) === String(speaker2))
-            ?.nickname || "All Speakers"}
-        </h3>
-        <div style={styles.labels}>
-          {data.speaker2Times.map((time, i) => {
-            const utteranceText =
-              utterances.find(
-                (u) =>
-                  u.start === time &&
-                  u.label === data.name &&
-                  String(u.speaker) === String(speaker2)
-              )?.text || "";
-
-            return (
-              <button
-                key={`speaker2-${i}`}
-                style={{
-                  ...styles.time,
-                  cursor: "pointer",
-                  border: "none",
-                  background: "none",
-                }}
-                title={utteranceText}
-                onClick={() => {
-                  const video = document.querySelector("video");
-                  if (video) {
-                    video.currentTime = time / 1000;
-                    video.play();
-                  }
-                }}
-              >
-                {formatTime(time)}
-              </button>
-            );
-          })}
-        </div>
-      </div>
+      <CustomTimeDisplay
+        data={data}
+        utterances={utterances}
+        speaker1={speaker1}
+        speaker2={speaker2}
+        formatTime={formatTime}
+        styles={styles}
+        speakers={speakers}
+        color1={labelToColor[data.name]}
+        color2={darkenHexColor(labelToColor[data.name], 0.6)}
+        clickPlay={handleClickPlay}
+        valuesToShow={valuesToShow}
+      />
     );
   };
 
+  const handleClickPlay = (time) => {
+    const video = document.querySelector("video");
+    if (video) {
+      video.currentTime = time / 1000;
+      video.play();
+    }
+  };
+  const [valuesToShow, setValuesToShow] = useState("label");
+
   const chartData = utterances
     .filter((utterance) => utterance.start <= currentVideoTime)
-    .map((utterance) => utterance.label)
+    .map((utterance) => utterance[valuesToShow])
     .filter((label, index, self) => self.indexOf(label) === index)
     .map((label) => ({
       name: label,
@@ -581,7 +593,7 @@ const CustomComponent = (props) => {
               ? true
               : String(utterance.speaker) === String(speaker1)
           )
-          .filter((utterance) => utterance.label === label).length * -1,
+          .filter((utterance) => utterance[valuesToShow] === label).length * -1,
       speaker2: utterances
         .filter((utterance) => utterance.start <= currentVideoTime)
         .filter((utterance) =>
@@ -589,7 +601,7 @@ const CustomComponent = (props) => {
             ? true
             : String(utterance.speaker) === String(speaker2)
         )
-        .filter((utterance) => utterance.label === label).length,
+        .filter((utterance) => utterance[valuesToShow] === label).length,
       speaker1Times: utterances
         .filter((utterance) => utterance.start <= currentVideoTime)
         .filter((utterance) =>
@@ -597,7 +609,7 @@ const CustomComponent = (props) => {
             ? true
             : String(utterance.speaker) === String(speaker1)
         )
-        .filter((utterance) => utterance.label === label)
+        .filter((utterance) => utterance[valuesToShow] === label)
         .map((utterance) => utterance.start),
       speaker2Times: utterances
         .filter((utterance) => utterance.start <= currentVideoTime)
@@ -606,7 +618,7 @@ const CustomComponent = (props) => {
             ? true
             : String(utterance.speaker) === String(speaker2)
         )
-        .filter((utterance) => utterance.label === label)
+        .filter((utterance) => utterance[valuesToShow] === label)
         .map((utterance) => utterance.start),
     }))
     .sort((a, b) => a.speaker1 - b.speaker1);
@@ -638,7 +650,6 @@ const CustomComponent = (props) => {
     return null;
   };
 
-
   const darkenHexColor = (hex, factor = 0.8) => {
     hex = hex.replace(/^#/, "");
     if (hex.length === 3) {
@@ -660,6 +671,26 @@ const CustomComponent = (props) => {
       .toString(16)
       .padStart(2, "0")}${b.toString(16).padStart(2, "0")}`;
   };
+
+  const [charts, setCharts] = useState("bar");
+  const handleCharts = (event, value) => {
+    if (value !== null) {
+      console.log(value);
+      setCharts(value);
+    }
+  };
+
+  const handleBarMouseEnter = (e) => {
+    setHoveredBar(e.name);
+    setProgressBarVisibility(true);
+  };
+
+  const handleBarMouseLeave = () => {
+    setHoveredBar(null);
+    setProgressBarVisibility(false);
+  };
+
+  const lastUtteranceRef = useRef(null);
 
   return (
     <div style={styles.container}>
@@ -706,9 +737,39 @@ const CustomComponent = (props) => {
           </svg>
         </IconButton>
       </Stack>
-
       {/* <p>Current Video Time: {currentVideoTime} seconds</p> */}
-      {utterances
+      <div style={styles.scrolllist}>
+        {utterances
+          .filter((utterance) => utterance.start <= currentVideoTime)
+          .map((utterance, index, array) => (
+            <div
+              ref={index === array.length - 1 ? lastUtteranceRef : null}
+              key={utterance.start}
+              style={styles.utterance}
+            >
+              <p style={styles.time}>{formatTime(utterance.start)}</p>
+              <h2>"{utterance.text}"</h2>
+            </div>
+          ))}
+
+        <IconButton
+          title="zoom out"
+          onClick={() => {
+            lastUtteranceRef.current?.scrollIntoView({ behavior: "smooth" });
+          }}
+          sx={{
+            color: "#fff",
+            backgroundColor: "#ffffff33",
+            position: "sticky",
+            bottom: "0",
+            margin: "1rem",
+          }}
+        >
+          <KeyboardArrowDownIcon />
+        </IconButton>
+      </div>
+
+      {/* {utterances
         .filter((utterance) => utterance.start <= currentVideoTime)
         .slice(-1)
         .map((utterance) => (
@@ -722,8 +783,7 @@ const CustomComponent = (props) => {
               <h2>"{utterance.text}"</h2>
             </div>
           </Collapse>
-        ))}
-
+        ))} */}
       {/* place holders below */}
       <h2>Current Labels:</h2>
       <Stack direction="row" spacing={1}>
@@ -732,7 +792,12 @@ const CustomComponent = (props) => {
             .filter((utterance) => utterance.start <= currentVideoTime)
             .slice(-1)
             .map((utterance) => (
-              <p style={styles.label}>{utterance.label}</p>
+              <button
+                style={styles.label}
+                onClick={() => setValuesToShow("label")}
+              >
+                {utterance.label}
+              </button>
             ))}
         </div>
         <div style={styles.labels}>
@@ -752,17 +817,19 @@ const CustomComponent = (props) => {
                 utterance.sentiment.slice(1);
 
               return (
-                <p style={{ ...styles.label, backgroundColor: sentimentColor }}>
+                <button
+                  style={{ ...styles.label, backgroundColor: sentimentColor }}
+                  onClick={() => setValuesToShow("sentiment")}
+                >
                   {sentiment}
-                </p>
+                </button>
               );
             })}
         </div>
       </Stack>
-
       <h2>Speakers:</h2>
       <div style={styles.labels}>
-        {speakers.map((speaker, index) => (
+        {Object.entries(speakers).map(([key, value]) => (
           <div
             style={{
               position: "relative",
@@ -773,130 +840,188 @@ const CustomComponent = (props) => {
             <input
               style={{
                 ...styles.speaker,
-                width: `${(speaker.nickname?.length || 1) + 1}ch`,
+                width: `${(value.length || 1) + 1}ch`,
                 border:
                   utterances
                     .filter((utterance) => utterance.start <= currentVideoTime)
-                    .slice(-1)[0]?.speaker === speaker.title
+                    .slice(-1)[0]?.speaker === key
                     ? "2px solid #ffffff"
                     : "none",
                 paddingRight: "1.5rem", // make room for ornament
               }}
               type="text"
-              key={speaker.title}
-              value={speaker.nickname}
-              onChange={(event) => handleUpdateNickname(event, index)}
+              key={key}
+              value={value}
+              onChange={(event) => handleUpdateNickname(event, key)}
             />
-            {speaker.title ===
-              utterances
-                .filter((utterance) => utterance.start <= currentVideoTime)
-                .slice(-1)[0]?.speaker && (
-                <span
-                  style={{
-                    position: "absolute",
-                    right: "0.5rem",
-                    color: "#fff",
-                    pointerEvents: "none",
-                  }}
-                >
-                  🔊
-                </span>
-              )}
+
+            {key ===
+              String(
+                utterances
+                  .filter((utterance) => utterance.start <= currentVideoTime)
+                  .slice(-1)[0]?.speaker
+              ) && (
+              <span
+                style={{
+                  position: "absolute",
+                  right: "0.5rem",
+                  color: "#fff",
+                  pointerEvents: "none",
+                }}
+              >
+                🔊
+              </span>
+            )}
           </div>
         ))}
       </div>
-
       <div style={styles.speakerSelect}>
         <select
           value={speaker1}
           label="speaker"
           onChange={handleChangeSpeaker1}
+          style={styles.select}
         >
-          <option value={"Everyone"}>All Speakers</option>
-          {speakers.map((speaker) => (
-            <option key={speaker.title} value={speaker.title}>
-              {speaker.nickname}
+          <option value={"Everyone"} style={styles.option}>
+            All Speakers
+          </option>
+          {Object.entries(speakers).map(([key, value]) => (
+            <option key={key} value={key} style={styles.option}>
+              {value}
             </option>
           ))}
         </select>
+
+        <ToggleButtonGroup
+          value={charts}
+          exclusive
+          onChange={handleCharts}
+          aria-label="chart type"
+          sx={{
+            backgroundColor: "#ffffff33",
+            "& .MuiToggleButton-root": {
+              color: "white",
+              border: "none",
+              "&:hover": {
+                backgroundColor: "#ffffff44",
+              },
+            },
+            "& .MuiToggleButton-root.Mui-selected": {
+              backgroundColor: "#ffffff66",
+              color: "white",
+              "&:hover": {
+                backgroundColor: "#ffffff88",
+              },
+            },
+          }}
+        >
+          <ToggleButton value="bar" aria-label="bar">
+            <BarChartIcon />
+          </ToggleButton>
+
+          <ToggleButton value="pie" aria-label="pie">
+            <PieChartIcon />
+          </ToggleButton>
+        </ToggleButtonGroup>
+
         <select
           value={speaker2}
           label="speaker"
           onChange={handleChangeSpeaker2}
+          style={styles.select}
         >
-          <option value={"Everyone"}>All Speakers</option>
-          {speakers.map((speaker) => (
-            <option key={speaker.title} value={speaker.title}>
-              {speaker.nickname}
+          <option value={"Everyone"} style={styles.option}>
+            All Speakers
+          </option>
+          {Object.entries(speakers).map(([key, value]) => (
+            <option key={key} value={key} style={styles.option}>
+              {value}
             </option>
           ))}
         </select>
       </div>
-      <ResponsiveContainer width="100%" height={300}>
-        <BarChart
-          layout="vertical"
-          width={500}
-          height={300}
-          data={chartData}
-          stackOffset="sign"
-          margin={{
-            top: 5,
-            right: 30,
-            left: 20,
-            bottom: 5,
-          }}
-        >
-          <CartesianGrid strokeDasharray="3 3" />
-          <XAxis type="number" tickFormatter={(value) => Math.abs(value)} />
-          <YAxis dataKey="name" type="category" tickFormatter={(name) => name.replace(/\//g, '/ ')} />
-          {/* <Tooltip />
+      {charts === "bar" ? (
+        <ResponsiveContainer width="100%" height={300}>
+          <BarChart
+            layout="vertical"
+            width={500}
+            height={300}
+            data={chartData}
+            stackOffset="sign"
+            margin={{
+              top: 5,
+              right: 30,
+              left: 20,
+              bottom: 5,
+            }}
+          >
+            <CartesianGrid strokeDasharray="3 3" />
+            <XAxis type="number" tickFormatter={(value) => Math.abs(value)} />
+            <YAxis
+              dataKey="name"
+              type="category"
+              tickFormatter={(name) => name.replace(/\//g, "/ ")}
+            />
+            {/* <Tooltip />
           <Legend /> */}
-          <Tooltip content={<CustomTooltip />} cursor={false} />
-          <ReferenceLine x={0} stroke="#000" />
-          <Bar
-            dataKey="speaker1"
-            stackId="stack"
-            onClick={handleBarClick}
-            onMouseEnter={(e) => {
-              setHoveredBar(e.name);
-              setProgressBarVisibility(true);
-            }}
-            onMouseLeave={() => {
-              setHoveredBar(null);
-              setProgressBarVisibility(false);
-            }}
-          >
-            {chartData.map((entry, index) => {
-              return (
-                <Cell key={`cell-${index}`} fill={labelToColor[entry.name]} />
-              );
-            })}
-          </Bar>
-          <Bar
-            dataKey="speaker2"
-            stackId="stack"
-            onClick={handleBarClick}
-            onMouseEnter={(e) => {
-              setHoveredBar(e.name);
-              setProgressBarVisibility(true);
-            }}
-            onMouseLeave={() => {
-              setHoveredBar(null);
-              setProgressBarVisibility(false);
-            }}
-          >
-            {chartData.map((entry, index) => {
-              return (
-                <Cell
-                  key={`cell-${index}`}
-                  fill={darkenHexColor(labelToColor[entry.name])}
-                />
-              );
-            })}
-          </Bar>
-        </BarChart>
-      </ResponsiveContainer>
-
+            <Tooltip content={<CustomTooltip />} cursor={false} />
+            <ReferenceLine x={0} stroke="#000" />
+            <Bar
+              dataKey="speaker1"
+              stackId="stack"
+              onClick={handleBarClick}
+              onMouseEnter={handleBarMouseEnter}
+              onMouseLeave={handleBarMouseLeave}
+            >
+              {chartData.map((entry, index) => {
+                return (
+                  <Cell key={`cell-${index}`} fill={labelToColor[entry.name]} />
+                );
+              })}
+            </Bar>
+            <Bar
+              dataKey="speaker2"
+              stackId="stack"
+              onClick={handleBarClick}
+              onMouseEnter={handleBarMouseEnter}
+              onMouseLeave={handleBarMouseLeave}
+            >
+              {chartData.map((entry, index) => {
+                return (
+                  <Cell
+                    key={`cell-${index}`}
+                    fill={darkenHexColor(labelToColor[entry.name])}
+                  />
+                );
+              })}
+            </Bar>
+          </BarChart>
+        </ResponsiveContainer>
+      ) : (
+        <div style={{ width: "100%", display: "flex" }}>
+          <CustomPieBoth
+            data1={chartData.map((l) => ({
+              ...l,
+              value: l.speaker1Times.length,
+              color: labelToColor[l.name],
+              text: labelToDefinition[l.name],
+              speaker: speakers[speaker1],
+            }))}
+            data2={chartData.map((l) => ({
+              ...l,
+              value: l.speaker2Times.length,
+              color: darkenHexColor(labelToColor[l.name]),
+              text: labelToDefinition[l.name],
+              speaker: speakers[speaker2],
+            }))}
+            width={"100%"}
+            height={300}
+            handleClick={handleBarClick}
+            handleMouseEnter={handleBarMouseEnter}
+            handleMouseLeave={handleBarMouseLeave}
+          />
+        </div>
+      )}
       {barInfo}
     </div>
   );
