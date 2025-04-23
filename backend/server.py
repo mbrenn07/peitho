@@ -78,77 +78,6 @@ class UtteranceSeparator:
         nltk.download('cmudict')
         self.cmu_dict = nltk.corpus.cmudict.dict()
 
-    def count_syllables(self, word):
-        """
-        Count syllables for a single word using CMU dictionary if available,
-        else use a heuristic method.
-        """
-        # Remove punctuation and convert to lowercase.
-        word = re.sub(r'[^\w\s]', '', word).lower()
-        if word in self.cmu_dict:
-            # The dictionary may have multiple pronunciations; pick the first one.
-            pronunciation = self.cmu_dict[word][0]
-            # Count the number of vowel sounds (they end with a digit).
-            syllable_count = len(
-                [phoneme for phoneme in pronunciation if phoneme[-1].isdigit()])
-            return syllable_count
-        else:
-            return self.heuristic_syllable_count(word)
-
-    def heuristic_syllable_count(self, word):
-        """
-        A simple heuristic to estimate syllable count for a word.
-        This method is less reliable than the CMU dictionary.
-        """
-        word = word.lower()
-        vowels = "aeiouy"
-        count = 0
-
-        # Count transitions from a non-vowel to a vowel.
-        if word and word[0] in vowels:
-            count += 1
-        for index in range(1, len(word)):
-            if word[index] in vowels and word[index - 1] not in vowels:
-                count += 1
-
-        # Remove a syllable for silent 'e' endings.
-        if word.endswith("e"):
-            count -= 1
-
-        # Ensure at least one syllable.
-        return count if count > 0 else 1
-
-    def count_text_syllables(self, text):
-        """
-        Count syllables in a text string by splitting it into words.
-        """
-        # Use regex to extract words (this removes punctuation).
-        words = re.findall(r'\w+', text)
-        total_syllables = sum(self.count_syllables(word) for word in words)
-        return total_syllables
-
-    def get_index_ranges(self, percentages, total, start_index, end_index):
-        """
-        Given a list of percentages that sum to 1 and a total length,
-        returns a list of [start, end] index ranges corresponding to each percentage.
-        """
-        # Create cumulative boundaries by multiplying the cumulative sum with total
-        boundaries = [0]
-        cumulative = 0
-        for p in percentages:
-            cumulative += p * total
-            # Round to the nearest integer for the boundary
-            boundaries.append(int(round(cumulative)))
-
-        # Now generate the index ranges
-        ranges = []
-        for i in range(len(percentages)):
-            start = boundaries[i]
-            end = boundaries[i+1] - 1  # end index is inclusive
-            ranges.append([start + start_index, end + start_index])
-        ranges[-1][1] = end_index
-        return ranges
-
     def preprocess_abbreviations_extended(self, text):
         # Dictionary of common abbreviations and their temporary replacements
         common_abbrev = {
@@ -193,25 +122,17 @@ class UtteranceSeparator:
             text = data['utterances'][i]['text']
             speaker = speaker_map[data['utterances'][i]['speaker']]
             label = data['utterances'][i]['label']
-            start_index = data['utterances'][i]['start']
-            end_index = data['utterances'][i]['end']
 
-            run_time = end_index - start_index
             cleaned_text = self.clean_text(text)
             cleaned_data, replacements = self.preprocess_abbreviations_extended(
                 cleaned_text)
             utterances = nltk.sent_tokenize(cleaned_data)
-            syllables = [self.count_text_syllables(j) for j in utterances]
-            total_syllables = sum(syllables)
-            syllables = [j/total_syllables for j in syllables]
-            start_end_indices = self.get_index_ranges(
-                syllables, run_time, start_index, end_index)
-            for j in range(len(start_end_indices)):
+            for j in range(len(utterances)):
                 all_utterances.append({
                     'speaker': speaker,
                     'text': utterances[j],
-                    'start': start_end_indices[j][0],
-                    'end': start_end_indices[j][1],
+                    'start': None,
+                    'end': None,
                     'label': label
                 })
         output_data = {
@@ -240,7 +161,7 @@ def process_transcript():
     if existing_video:
         return {"utterances": existing_video["utterances"], "speakers": existing_video["speakers"]}
     options = {
-        'format': 'bestaudio[ext=webm]',
+        'format': 'bestaudio[ext=webm]/bestaudio/best',
         'outtmpl': 'videos/%(title)s.%(ext)s',
         'cookiefile': 'cookies.txt'
     }
@@ -274,6 +195,15 @@ def process_transcript():
         "utterances": raw_utterances,
         "speakers": list(speakers_set)
     })
+
+    word_index = 0
+    for utterance in separated_data["utterances"]:
+        utterance_length = len(utterance["text"].split())
+
+        utterance["start"] = transcript.words[word_index].start
+        word_index = word_index + utterance_length - 1
+        utterance["end"] = transcript.words[word_index].end
+        word_index = word_index + 1
 
     print(separated_data)
     # Call classification APIs for each utterance
