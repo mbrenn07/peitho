@@ -190,6 +190,28 @@ def speaker_vote():
 
         updated_video["votes"] = new_votes
 
+    returned_speakers = video["speakers"]
+
+    sorted_keys = sorted(
+        updated_video["votes"].keys(), key=lambda x: int(x))
+    for int_key, index in enumerate(sorted_keys):
+        key = str(int_key)
+        if updated_video["votes"][key]:
+            best_option = None
+            best_option_count = -1
+            for option in updated_video["votes"][key]:
+                if updated_video["votes"][key][option] > best_option_count:
+                    best_option = option
+                    best_option_count = updated_video["votes"][key][option]
+
+            best_option = best_option.split()
+            best_option = " ".join([word.capitalize()
+                                    for word in best_option])
+
+            returned_speakers[int(index)] = best_option
+
+    updated_video["speakers"] = returned_speakers
+    
     print(updated_video)
 
     result = videos_collection.update_one(
@@ -217,32 +239,7 @@ def process_transcript():
 
     existing_video = videos_collection.find_one({"url": url})
     if existing_video:
-        if "votes" in existing_video:
-            returned_speakers = existing_video["speakers"]
-
-            sorted_keys = sorted(
-                existing_video["votes"].keys(), key=lambda x: int(x))
-            for int_key, index in enumerate(sorted_keys):
-                key = str(int_key)
-                if existing_video["votes"][key]:
-                    best_option = None
-                    best_option_count = -1
-                    for option in existing_video["votes"][key]:
-                        if existing_video["votes"][key][option] > best_option_count:
-                            best_option = option
-                            best_option_count = existing_video["votes"][key][option]
-
-                    best_option = best_option.split()
-                    best_option = " ".join([word.capitalize()
-                                           for word in best_option])
-
-                    returned_speakers[int(index)] = best_option
-
-            print(returned_speakers)
-
-            return {"utterances": existing_video["utterances"], "speakers": returned_speakers}
-        else:
-            return {"utterances": existing_video["utterances"], "speakers": existing_video["speakers"]}
+        return {"utterances": existing_video["utterances"], "speakers": existing_video["speakers"]}
     options = {
         'format': 'bestaudio[ext=webm]/bestaudio/best',
         'outtmpl': 'videos/%(title)s.%(ext)s',
@@ -320,7 +317,9 @@ def process_transcript():
     except Exception as e:
         print(f"An error occurred: {e}")
 
-    return {"utterances": separated_data["utterances"], "speakers": separated_data["speakers"]}
+    modified_speakers = [f"Speaker {index + 1}" for index, _ in enumerate(separated_data['speakers'])]
+
+    return {"utterances": separated_data["utterances"], "speakers": modified_speakers}
 
 
 def call_dialog_classifier_batch(text_list):

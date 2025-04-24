@@ -15,7 +15,6 @@ import {
 import {
   IconButton,
   Stack,
-  Collapse,
   ToggleButtonGroup,
   ToggleButton,
 } from "@mui/material";
@@ -23,7 +22,6 @@ import axios from "axios";
 import { CustomTimeDisplay } from "./CustomTimeDisplay";
 import PieChartIcon from "@mui/icons-material/PieChart";
 import BarChartIcon from "@mui/icons-material/BarChart";
-import { CustomPie } from "./CustomPie";
 import { CustomPieBoth } from "./CustomPieBoth";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 
@@ -289,13 +287,9 @@ const CustomComponent = (props) => {
               (a, b) => a.start - b.start
             );
             setUtterances(utterances);
-            const speakersObject = data.data.speakers.map((speaker, index) => {
-              if (typeof speaker === "number") {
-                return `Speaker ${index + 1}`
-              } else {
-                return speaker
-              }
-
+            const speakersObject = {}
+            data.data.speakers.forEach((speaker, index) => {
+              speakersObject[index + 1] = speaker
             });
             setSpeakers(speakersObject);
           })
@@ -832,6 +826,7 @@ const CustomComponent = (props) => {
       <div style={styles.labels}>
         {Object.entries(speakers).map(([key, value], index) => (
           <div
+            key={key}
             style={{
               position: "relative",
               display: "inline-flex",
