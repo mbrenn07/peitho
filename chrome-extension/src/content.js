@@ -200,10 +200,6 @@ const CustomComponent = (props) => {
   }, [currentChip]);
 
   const addChip = () => {
-    if (currentChipRef.current) {
-      currentChipRef.current.remove();
-    }
-
     const chipContainer =
       recommendationBar.childNodes[3].childNodes[5].firstChild.childNodes[3]
         .firstChild.childNodes[3].childNodes[3].childNodes[1];
@@ -219,11 +215,9 @@ const CustomComponent = (props) => {
     ourChip.style.border = "double 2px transparent";
     ourChip.style.borderRadius = "10px";
 
-    ourChip.style.backgroundImage = `linear-gradient(${
-      textColorRef.current === "rgb(15, 15, 15)" ? "#FFF" : "#171717"
-    }, ${
-      textColorRef.current === "rgb(15, 15, 15)" ? "#FFF" : "#171717"
-    }), linear-gradient(to right, #f03 80%, #ff2791 100%)`;
+    ourChip.style.backgroundImage = `linear-gradient(${textColorRef.current === "rgb(15, 15, 15)" ? "#FFF" : "#171717"
+      }, ${textColorRef.current === "rgb(15, 15, 15)" ? "#FFF" : "#171717"
+      }), linear-gradient(to right, #f03 80%, #ff2791 100%)`;
     ourChip.style.backgroundOrigin = "border-box";
     ourChip.style.backgroundClip = "content-box, border-box";
     if (textColorRef.current === "rgb(15, 15, 15)") {
@@ -233,14 +227,19 @@ const CustomComponent = (props) => {
       ourChip.childNodes[5].style.backgroundColor = "white";
       ourChip.childNodes[5].style.color = "black";
     }
-    chipContainer.insertBefore(ourChip, chipContainer.childNodes[1]);
 
+    chipContainer.insertBefore(ourChip, chipContainer.childNodes[1]);
+    if (currentChipRef.current) {
+      currentChipRef.current.remove();
+    }
     setCurrentChip(ourChip);
   };
 
   useEffect(() => {
     const chipObserver = new MutationObserver((mutations, obs) => {
-      addChip();
+      setTimeout(() => {
+        addChip();
+      }, 100); //hacky, but might help avoid fighting youtube's styling
       obs.disconnect();
     });
 
@@ -290,13 +289,14 @@ const CustomComponent = (props) => {
               (a, b) => a.start - b.start
             );
             setUtterances(utterances);
-            const speakersObject = data.data.speakers.reduce(
-              (acc, speaker, index) => {
-                acc[speaker] = `Speaker ${index + 1}`;
-                return acc;
-              },
-              {}
-            );
+            const speakersObject = data.data.speakers.map((speaker, index) => {
+              if (typeof speaker === "number") {
+                return `Speaker ${index + 1}`
+              } else {
+                return speaker
+              }
+
+            });
             setSpeakers(speakersObject);
           })
           .catch((error) => {
@@ -548,7 +548,8 @@ const CustomComponent = (props) => {
     setSpeaker2(event.target.value);
   };
 
-  const [collapse, setCollapse] = useState(true);
+  const [previousSpeakerName, setPreviousSpeakerName] = useState(null);
+  const [editedSpeakers, setEditedSpeakers] = useState({});
 
   const [barInfo, setBarInfo] = useState("");
   // utterances, speaker1, speaker2, formatTime, setBarInfo, styles, speakers
@@ -829,7 +830,7 @@ const CustomComponent = (props) => {
       </Stack>
       <h2>Speakers:</h2>
       <div style={styles.labels}>
-        {Object.entries(speakers).map(([key, value]) => (
+        {Object.entries(speakers).map(([key, value], index) => (
           <div
             style={{
               position: "relative",
@@ -853,6 +854,42 @@ const CustomComponent = (props) => {
               key={key}
               value={value}
               onChange={(event) => handleUpdateNickname(event, key)}
+              onFocus={() => {
+                setPreviousSpeakerName(value)
+              }}
+              onBlur={() => {
+                if (value === previousSpeakerName) {
+                  return;
+                }
+
+                const vote_diff = {
+                  add: {
+                    index: "" + index,
+                    name: value.toLowerCase()
+                  }
+                }
+
+                if (editedSpeakers[index]) {
+                  vote_diff.sub = {
+                    index: "" + index,
+                    name: previousSpeakerName.toLowerCase()
+                  }
+                }
+
+                editedSpeakers[index] = true
+                setEditedSpeakers({ ...editedSpeakers })
+
+                setPreviousSpeakerName(value)
+
+                axios
+                  .post(`${config.BACKEND_URL}/speaker_vote`, {
+                    url: window.location.href,
+                    vote_diff: vote_diff,
+                  })
+                  .catch((error) => {
+                    console.error(error);
+                  });
+              }}
             />
 
             {key ===
@@ -861,17 +898,17 @@ const CustomComponent = (props) => {
                   .filter((utterance) => utterance.start <= currentVideoTime)
                   .slice(-1)[0]?.speaker
               ) && (
-              <span
-                style={{
-                  position: "absolute",
-                  right: "0.5rem",
-                  color: "#fff",
-                  pointerEvents: "none",
-                }}
-              >
-                🔊
-              </span>
-            )}
+                <span
+                  style={{
+                    position: "absolute",
+                    right: "0.5rem",
+                    color: "#fff",
+                    pointerEvents: "none",
+                  }}
+                >
+                  🔊
+                </span>
+              )}
           </div>
         ))}
       </div>

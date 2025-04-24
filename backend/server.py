@@ -145,6 +145,64 @@ class UtteranceSeparator:
 utterance_seperator = UtteranceSeparator()
 
 
+@app.route("/speaker_vote", methods=["POST"])
+def speaker_vote():
+    vote_diff = request.get_json()["vote_diff"]
+    raw_url = request.get_json()["url"]
+    parsed_url = urlparse(raw_url)
+    query_params = parse_qs(parsed_url.query)
+    video_id = query_params.get("v", [None])[0]
+    if not video_id:
+        return {"error": "Invalid YouTube URL"}, 400
+
+    url = f"{parsed_url.scheme}://{parsed_url.netloc}/watch?v={video_id}"
+
+    video = videos_collection.find_one({"url": url})
+
+    if not video:
+        return {"error": "Video not yet cached"}, 400
+
+    updated_video = {"votes": video.get("votes", None)}
+
+    if updated_video["votes"]:
+        if vote_diff["add"]["name"] in updated_video["votes"][vote_diff["add"]["index"]]:
+            updated_video["votes"][vote_diff["add"]
+                                   ["index"]][vote_diff["add"]["name"]] = updated_video["votes"][vote_diff["add"]["index"]][vote_diff["add"]["name"]] + 1
+        else:
+            updated_video["votes"][vote_diff["add"]
+                                   ["index"]][vote_diff["add"]["name"]] = 1
+
+        if "sub" in vote_diff:
+            if vote_diff["sub"]["name"] in updated_video["votes"][vote_diff["sub"]["index"]]:
+                updated_video["votes"][vote_diff["sub"]
+                                       ["index"]][vote_diff["sub"]["name"]] = updated_video["votes"][vote_diff["sub"]["index"]][vote_diff["sub"]["name"]] - 1
+            else:
+                updated_video["votes"][vote_diff["sub"]
+                                       ["index"]][vote_diff["sub"]["name"]] = 1
+
+    else:
+        new_votes = {}
+        for i, speaker in enumerate(video["speakers"]):
+            new_votes[str(i)] = {}
+
+        new_votes[vote_diff["add"]
+                  ["index"]][vote_diff["add"]["name"]] = 1
+
+        updated_video["votes"] = new_votes
+
+    print(updated_video)
+
+    result = videos_collection.update_one(
+        {"url": url},  # Find by URL (or any other unique identifier)
+        {"$set": updated_video}  # Update the fields with new data
+    )
+
+    if result.modified_count > 0:
+        return {"message": "Video updated successfully!"}, 200
+    else:
+        return {"message": "No changes made to the video."}, 200
+
+
 @app.route("/process_transcript", methods=["POST"])
 def process_transcript():
     raw_url = request.get_json()["url"]
@@ -159,7 +217,32 @@ def process_transcript():
 
     existing_video = videos_collection.find_one({"url": url})
     if existing_video:
-        return {"utterances": existing_video["utterances"], "speakers": existing_video["speakers"]}
+        if "votes" in existing_video:
+            returned_speakers = existing_video["speakers"]
+
+            sorted_keys = sorted(
+                existing_video["votes"].keys(), key=lambda x: int(x))
+            for int_key, index in enumerate(sorted_keys):
+                key = str(int_key)
+                if existing_video["votes"][key]:
+                    best_option = None
+                    best_option_count = -1
+                    for option in existing_video["votes"][key]:
+                        if existing_video["votes"][key][option] > best_option_count:
+                            best_option = option
+                            best_option_count = existing_video["votes"][key][option]
+
+                    best_option = best_option.split()
+                    best_option = " ".join([word.capitalize()
+                                           for word in best_option])
+
+                    returned_speakers[int(index)] = best_option
+
+            print(returned_speakers)
+
+            return {"utterances": existing_video["utterances"], "speakers": returned_speakers}
+        else:
+            return {"utterances": existing_video["utterances"], "speakers": existing_video["speakers"]}
     options = {
         'format': 'bestaudio[ext=webm]/bestaudio/best',
         'outtmpl': 'videos/%(title)s.%(ext)s',
