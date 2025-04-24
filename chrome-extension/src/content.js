@@ -310,16 +310,32 @@ const CustomComponent = (props) => {
 
     if (progressBar && progressBarBackground && progressBarScroller) {
       if (viewComponentRef.current === true) {
-        progressBar.style.height = "20px";
+        progressBar.style.height = "40px";
         progressBarScroller.style.width = "4px";
         progressBarScroller.style.background = "black";
+        progressBarBackground.style.background = "transparent";
+        if (progressBarBackground.children.length === 0) {
+          const gradient1Holder = document.createElement('div'); 
+          gradient1Holder.style.width = '100%';
+          gradient1Holder.style.height = '50%';
+
+          const gradient2Holder = document.createElement('div'); 
+          gradient2Holder.style.width = '100%';
+          gradient2Holder.style.height = '50%';
+
+          progressBarBackground.appendChild(gradient1Holder);
+          progressBarBackground.appendChild(gradient2Holder);
+        }
+
 
         if (utterancesRef.current) {
-          let gradient = "linear-gradient(90deg, ";
+          let gradient1 = "linear-gradient(90deg, ";
+          let gradient2 = "linear-gradient(90deg, ";
           let currentPercentage = 0;
           utterancesRef.current
             .filter((item) => item.start <= currentVideoTimeRef.current)
             .forEach((item, index) => {
+              const stringSpeaker = "" + item.speaker;
               const length = item.end - item.start;
               const percentage = (length / currentVideoTimeRef.current) * 100;
               let color = labelToColor[item.label];
@@ -327,7 +343,23 @@ const CustomComponent = (props) => {
                 hoveredBarRef?.current &&
                 hoveredBarRef.current !== item.label
               ) {
-                color = "gray";
+                color = "black";
+              }
+
+              const addToGradient = (stringSpeaker, potentialColor, currentPercentage) => {
+                let color1 = "transparent"
+                let color2 = "transparent"
+
+                if (stringSpeaker === speaker1Ref.current || speaker1Ref.current === "Everyone") {
+                  color1 = potentialColor
+                }
+
+                if (stringSpeaker === speaker2Ref.current || speaker2Ref.current === "Everyone") {
+                  color2 = potentialColor
+                }
+
+                gradient1 = gradient1 + `${color1} ${currentPercentage}%, `;
+                gradient2 = gradient2 + `${color2} ${currentPercentage}%, `;
               }
 
               if (index === 0) {
@@ -335,18 +367,20 @@ const CustomComponent = (props) => {
                   currentPercentage + percentage,
                   100
                 );
-                gradient = gradient + `${color} ${currentPercentage}%, `;
+                addToGradient(stringSpeaker, color, currentPercentage);
               } else {
-                gradient = gradient + `${color} ${currentPercentage}%, `;
+                addToGradient(stringSpeaker, color, currentPercentage);
                 currentPercentage = Math.min(
                   currentPercentage + percentage,
                   100
                 );
-                gradient = gradient + `${color} ${currentPercentage}%, `;
+                addToGradient(stringSpeaker, color, currentPercentage);
               }
             });
-          gradient = gradient.substring(0, gradient.length - 2) + ")";
-          progressBarBackground.style.background = gradient;
+          gradient1 = gradient1.substring(0, gradient1.length - 2) + ")";
+          gradient2 = gradient2.substring(0, gradient2.length - 2) + ")";
+          progressBarBackground.childNodes[0].style.background = gradient1;
+          progressBarBackground.childNodes[1].style.background = gradient2;
         }
       } else {
         progressBar.style.height = "100%";
@@ -532,15 +566,22 @@ const CustomComponent = (props) => {
   };
 
   const [speaker1, setSpeaker1] = useState("2");
-
   const handleChangeSpeaker1 = (event) => {
     setSpeaker1(event.target.value);
   };
-  const [speaker2, setSpeaker2] = useState("1");
+  const speaker1Ref = useRef();
+  useEffect(() => {
+    speaker1Ref.current = speaker1;
+  }, [speaker1])
 
+  const [speaker2, setSpeaker2] = useState("1");
   const handleChangeSpeaker2 = (event) => {
     setSpeaker2(event.target.value);
   };
+  const speaker2Ref = useRef();
+  useEffect(() => {
+    speaker2Ref.current = speaker2;
+  }, [speaker2])
 
   const [previousSpeakerName, setPreviousSpeakerName] = useState(null);
   const [editedSpeakers, setEditedSpeakers] = useState({});
