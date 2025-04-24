@@ -13,3 +13,12 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     return true; // Indicates we want to send a response asynchronously
   }
 });
+
+chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+  if (message.action === "getYouTubeCookies") {
+    chrome.cookies.getAll({ domain: "youtube.com" }, (cookies) => {
+      sendResponse({ cookies: cookies });
+    });
+    return true;
+  }
+});
