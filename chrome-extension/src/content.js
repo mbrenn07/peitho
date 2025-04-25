@@ -227,25 +227,33 @@ const CustomComponent = (props) => {
     }
 
     chipContainer.insertBefore(ourChip, chipContainer.childNodes[1]);
-    if (currentChipRef.current) {
-      currentChipRef.current.remove();
-    }
     setCurrentChip(ourChip);
   };
 
   useEffect(() => {
-    const chipObserver = new MutationObserver((mutations, obs) => {
-      setTimeout(() => {
-        addChip();
-      }, 100); //hacky, but might help avoid fighting youtube's styling
-      obs.disconnect();
-    });
-
-    chipObserver.observe(document.body, {
-      childList: true,
-      subtree: true,
-    });
+    if (textColor !== "#000") {
+      addChip();
+    }
   }, [textColor]);
+
+
+  useEffect(() => {
+    const handleResize = () => {
+      if (currentChipRef.current) {
+        while (currentChipRef.current.childNodes[5].firstChild) {
+          currentChipRef.current.childNodes[5].removeChild(currentChipRef.current.childNodes[5].firstChild);
+        }
+        currentChipRef.current.childNodes[5].appendChild(
+          document.createTextNode("Utterance Analysis")
+        );
+      }
+    }
+
+    window.addEventListener('resize', handleResize);
+    return () => {
+      window.removeEventListener('resize', handleResize);
+    };
+  }, []);
 
   useEffect(() => {
     const ytElement =
@@ -315,11 +323,11 @@ const CustomComponent = (props) => {
         progressBarScroller.style.background = "black";
         progressBarBackground.style.background = "transparent";
         if (progressBarBackground.children.length === 0) {
-          const gradient1Holder = document.createElement('div'); 
+          const gradient1Holder = document.createElement('div');
           gradient1Holder.style.width = '100%';
           gradient1Holder.style.height = '50%';
 
-          const gradient2Holder = document.createElement('div'); 
+          const gradient2Holder = document.createElement('div');
           gradient2Holder.style.width = '100%';
           gradient2Holder.style.height = '50%';
 
