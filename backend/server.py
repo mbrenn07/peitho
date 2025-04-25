@@ -1,6 +1,7 @@
+from collections import Counter
 import assemblyai as aai
 import yt_dlp
-from flask import Flask, request
+from flask import Flask, request, jsonify
 from flask_cors import CORS
 import random
 import os
@@ -145,6 +146,34 @@ class UtteranceSeparator:
 utterance_seperator = UtteranceSeparator()
 
 
+@app.route("/get_all_videos_for_speaker", methods=["POST"])
+def get_all_videos_for_speaker():
+    speaker = request.get_json()["speaker"]
+    results = videos_collection.find({"speakers": speaker})
+
+    overall_label_counts = Counter()
+    overall_sentiment_counts = Counter()
+
+    for doc in results:
+        utterances = doc.get("utterances", [])
+        for u in utterances:
+            label = u.get("label", "unknown")
+            overall_label_counts[label] += 1
+
+            sentiment = u.get("sentiment", "unknown")
+            overall_sentiment_counts[sentiment] += 1
+
+    return jsonify({
+        "overallLabel": dict(overall_label_counts),
+        "overallSentiment": dict(overall_sentiment_counts)
+    })
+
+
+@app.route("/autofill_speakers")
+def autofill_speakers():
+    return videos_collection.distinct("speakers")
+
+
 @app.route("/speaker_vote", methods=["POST"])
 def speaker_vote():
     vote_diff = request.get_json()["vote_diff"]
@@ -211,7 +240,7 @@ def speaker_vote():
             returned_speakers[int(index)] = best_option
 
     updated_video["speakers"] = returned_speakers
-    
+
     print(updated_video)
 
     result = videos_collection.update_one(
@@ -317,7 +346,8 @@ def process_transcript():
     except Exception as e:
         print(f"An error occurred: {e}")
 
-    modified_speakers = [f"Speaker {index + 1}" for index, _ in enumerate(separated_data['speakers'])]
+    modified_speakers = [
+        f"Speaker {index + 1}" for index, _ in enumerate(separated_data['speakers'])]
 
     return {"utterances": separated_data["utterances"], "speakers": modified_speakers}
 

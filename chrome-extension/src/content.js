@@ -17,6 +17,10 @@ import {
   Stack,
   ToggleButtonGroup,
   ToggleButton,
+  Typography,
+  Box,
+  Autocomplete,
+  TextField,
 } from "@mui/material";
 import axios from "axios";
 import { CustomTimeDisplay } from "./CustomTimeDisplay";
@@ -24,6 +28,7 @@ import PieChartIcon from "@mui/icons-material/PieChart";
 import BarChartIcon from "@mui/icons-material/BarChart";
 import { CustomPieBoth } from "./CustomPieBoth";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
+import { VideoLibrary, SmartDisplay } from "@mui/icons-material"
 
 function getCurrentVideoTime() {
   const videoElement = document.querySelector("video");
@@ -55,6 +60,78 @@ function initTimeTracking() {
 }
 
 initTimeTracking();
+
+const LibraryAnalysis = ({ speakers, textColor }) => {
+  const [videosWithSpeaker, setVideosWithSpeaker] = useState();
+
+  const getStatsForSpeaker = (speaker) => {
+    axios
+      .post(`${config.BACKEND_URL}/get_all_videos_for_speaker`, {
+        speaker: speaker,
+      })
+      .then((data) => {
+        setVideosWithSpeaker(data.data)
+      })
+      .catch((error) => {
+        console.error(error);
+      });
+  }
+
+  return (
+    <Box sx={{ width: "100%" }}>
+      <Stack direction="column">
+        <Autocomplete
+          options={speakers}
+          onChange={(event, value) => {
+            getStatsForSpeaker(value);
+          }}
+          slotProps={{
+            inputLabel: {
+              color: 'gray'
+            },
+            popper: {
+              modifiers: [
+                {
+                  name: 'offset',
+                  options: {
+                    offset: [0, 4],
+                  },
+                },
+              ],
+              sx: {
+                '& .MuiAutocomplete-paper': {
+                  backgroundColor: '#1e1e1e',
+                  color: '#fff',
+                },
+              },
+            },
+          }}
+          sx={{
+            '& .MuiInputBase-root': {
+              color: 'white',
+              backgroundColor: '#1e1e1e',
+            },
+            '& .MuiOutlinedInput-notchedOutline': {
+              borderColor: 'gray',
+            },
+            '&:hover .MuiOutlinedInput-notchedOutline': {
+              borderColor: 'white',
+            },
+            '& .MuiInputLabel-root': {
+              color: 'gray',
+            },
+          }}
+          renderInput={(params) => (
+            <TextField
+              {...params}
+              label="Speaker"
+            />
+          )}
+        />
+      </Stack>
+    </Box>
+  );
+}
 
 const CustomComponent = (props) => {
   const { recommendationBar, container } = props;
@@ -566,6 +643,27 @@ const CustomComponent = (props) => {
     "Speaker C": "Nickname C",
   });
 
+  const [autofillSpeakers, setAutofillSpeakers] = useState([]);
+
+  const getAutofillSpeakers = () => {
+    axios
+      .get(`${config.BACKEND_URL}/autofill_speakers`)
+      .then((data) => {
+        const filteredSpeakers = data.data.map((speaker) => "" + speaker).
+          filter((speaker) => !speaker.includes("Speaker"))
+        setAutofillSpeakers(filteredSpeakers);
+      })
+      .catch((error) => {
+        console.error(error);
+      });
+  }
+
+  useEffect(() => {
+    getAutofillSpeakers();
+  }, [])
+
+  const [analysisPage, setAnalysisPage] = useState("single");
+
   const handleUpdateNickname = (event, speaker) => {
     setSpeakers((prevSpeakers) => ({
       ...prevSpeakers,
@@ -744,76 +842,119 @@ const CustomComponent = (props) => {
         sx={{ width: "100%" }}
       >
         <h1>AI Utterance Analysis</h1>
-        <IconButton
-          sx={{
-            mt: -1.5,
-            mr: -2,
-            padding: 1,
-            "&:hover": {
-              backgroundColor:
-                textColor === "rgb(15, 15, 15)"
-                  ? "rgba(0, 0, 0, 0.1)"
-                  : "rgba(255, 255, 255, 0.15)",
-            },
-          }}
-          size="large"
-          onClick={() => {
-            setViewComponent(false);
-          }}
-        >
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            viewBox="0 0 24 24"
-            height="24"
-            width="24"
-            focusable="false"
-            aria-hidden="true"
-            style={{
-              pointerEvents: "none",
-              display: "inherit",
-              width: "100%",
-              height: "100%",
-              stroke: textColor === "rgb(15, 15, 15)" ? "#a2a2a2" : "#868686",
-              fill: textColor === "rgb(15, 15, 15)" ? "#0f0f0f" : "#f1f1f1",
+        <Stack spacing={2} direction="row" sx={{ mt: "-6px" }}>
+          <ToggleButtonGroup
+            value={analysisPage}
+            exclusive
+            onChange={(event, value) => {
+              setAnalysisPage(value)
+            }}
+            aria-label="single or multiple video analysis"
+            sx={{
+              backgroundColor: "#ffffff33",
+              "& .MuiToggleButton-root": {
+                color: "white",
+                border: "none",
+                "&:hover": {
+                  backgroundColor: "#ffffff44",
+                },
+              },
+              "& .MuiToggleButton-root.Mui-selected": {
+                backgroundColor: "#ffffff66",
+                color: "white",
+                "&:hover": {
+                  backgroundColor: "#ffffff88",
+                },
+              },
             }}
           >
-            <path d="m12.71 12 8.15 8.15-.71.71L12 12.71l-8.15 8.15-.71-.71L11.29 12 3.15 3.85l.71-.71L12 11.29l8.15-8.15.71.71L12.71 12z"></path>
-          </svg>
-        </IconButton>
-      </Stack>
-      {/* <p>Current Video Time: {currentVideoTime} seconds</p> */}
-      <div style={styles.scrolllist}>
-        {utterances
-          .filter((utterance) => utterance.start <= currentVideoTime)
-          .map((utterance, index, array) => (
-            <div
-              ref={index === array.length - 1 ? lastUtteranceRef : null}
-              key={utterance.start}
-              style={styles.utterance}
+            <ToggleButton value="single" aria-label="single">
+              <SmartDisplay />
+            </ToggleButton>
+
+            <ToggleButton value="library" aria-label="library">
+              <VideoLibrary />
+            </ToggleButton>
+          </ToggleButtonGroup>
+          <IconButton
+            sx={{
+              mt: -1.5,
+              mr: -2,
+              padding: 1,
+              "&:hover": {
+                backgroundColor:
+                  textColor === "rgb(15, 15, 15)"
+                    ? "rgba(0, 0, 0, 0.1)"
+                    : "rgba(255, 255, 255, 0.15)",
+              },
+            }}
+            size="large"
+            onClick={() => {
+              setViewComponent(false);
+            }}
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 24 24"
+              height="24"
+              width="24"
+              focusable="false"
+              aria-hidden="true"
+              style={{
+                pointerEvents: "none",
+                display: "inherit",
+                width: "100%",
+                height: "100%",
+                stroke: textColor === "rgb(15, 15, 15)" ? "#a2a2a2" : "#868686",
+                fill: textColor === "rgb(15, 15, 15)" ? "#0f0f0f" : "#f1f1f1",
+              }}
             >
-              <p style={styles.time}>{formatTime(utterance.start)}</p>
-              <h2>"{utterance.text}"</h2>
-            </div>
-          ))}
+              <path d="m12.71 12 8.15 8.15-.71.71L12 12.71l-8.15 8.15-.71-.71L11.29 12 3.15 3.85l.71-.71L12 11.29l8.15-8.15.71.71L12.71 12z"></path>
+            </svg>
+          </IconButton>
+        </Stack>
+      </Stack>
+      {analysisPage === "single" ? (
+        <Box sx={{
+          fontFamily: "Arial, sans-serif",
+          display: "flex",
+          flexDirection: "column",
+          justifyContent: "flex-start",
+          alignItems: "flex-start",
+          gap: "1rem",
+        }}>
+          <div style={styles.scrolllist}>
+            {utterances
+              .filter((utterance) => utterance.start <= currentVideoTime)
+              .map((utterance, index, array) => (
+                <div
+                  ref={index === array.length - 1 ? lastUtteranceRef : null}
+                  key={utterance.start}
+                  style={styles.utterance}
+                >
+                  <p style={styles.time}>{formatTime(utterance.start)}</p>
+                  <h2>"{utterance.text}"</h2>
+                </div>
+              ))}
 
-        <IconButton
-          title="zoom out"
-          onClick={() => {
-            lastUtteranceRef.current?.scrollIntoView({ behavior: "smooth" });
-          }}
-          sx={{
-            color: "#fff",
-            backgroundColor: "#ffffff33",
-            position: "sticky",
-            bottom: "0",
-            margin: "1rem",
-          }}
-        >
-          <KeyboardArrowDownIcon />
-        </IconButton>
-      </div>
+            <IconButton
+              title="zoom out"
+              onClick={() => {
+                lastUtteranceRef.current?.scrollIntoView({ behavior: "smooth" });
+              }}
+              sx={{
+                color: "#fff",
+                backgroundColor: "#ffffff33",
+                position: "sticky",
+                bottom: "0",
+                margin: "1rem",
+              }}
+            >
+              <KeyboardArrowDownIcon />
+            </IconButton>
+          </div>
 
-      {/* {utterances
+          {/* {utterances
         .filter((utterance) => utterance.start <= currentVideoTime)
         .slice(-1)
         .map((utterance) => (
@@ -828,282 +969,291 @@ const CustomComponent = (props) => {
             </div>
           </Collapse>
         ))} */}
-      {/* place holders below */}
-      <h2>Current Labels:</h2>
-      <Stack direction="row" spacing={1}>
-        <div style={styles.labels}>
-          {utterances
-            .filter((utterance) => utterance.start <= currentVideoTime)
-            .slice(-1)
-            .map((utterance) => (
-              <button
-                style={styles.label}
-                onClick={() => setValuesToShow("label")}
+          {/* place holders below */}
+          <h2>Current Labels:</h2>
+          <Stack direction="row" spacing={1}>
+            <div style={styles.labels}>
+              {utterances
+                .filter((utterance) => utterance.start <= currentVideoTime)
+                .slice(-1)
+                .map((utterance) => (
+                  <button
+                    style={styles.label}
+                    onClick={() => setValuesToShow("label")}
+                  >
+                    {utterance.label}
+                  </button>
+                ))}
+            </div>
+            <div style={styles.labels}>
+              {utterances
+                .filter((utterance) => utterance.start <= currentVideoTime)
+                .slice(-1)
+                .map((utterance) => {
+                  let sentimentColor = "grey";
+                  if (utterance.sentiment === "positive") {
+                    sentimentColor = "green";
+                  } else if (utterance.sentiment === "negative") {
+                    sentimentColor = "red";
+                  }
+
+                  const sentiment =
+                    utterance.sentiment.charAt(0).toUpperCase() +
+                    utterance.sentiment.slice(1);
+
+                  return (
+                    <button
+                      style={{ ...styles.label, backgroundColor: sentimentColor }}
+                      onClick={() => setValuesToShow("sentiment")}
+                    >
+                      {sentiment}
+                    </button>
+                  );
+                })}
+            </div>
+          </Stack>
+          <h2>Speakers:</h2>
+          <div style={styles.labels}>
+            {Object.entries(speakers).map(([key, value], index) => (
+              <div
+                key={key}
+                style={{
+                  position: "relative",
+                  display: "inline-flex",
+                  alignItems: "center",
+                }}
               >
-                {utterance.label}
-              </button>
-            ))}
-        </div>
-        <div style={styles.labels}>
-          {utterances
-            .filter((utterance) => utterance.start <= currentVideoTime)
-            .slice(-1)
-            .map((utterance) => {
-              let sentimentColor = "grey";
-              if (utterance.sentiment === "positive") {
-                sentimentColor = "green";
-              } else if (utterance.sentiment === "negative") {
-                sentimentColor = "red";
-              }
-
-              const sentiment =
-                utterance.sentiment.charAt(0).toUpperCase() +
-                utterance.sentiment.slice(1);
-
-              return (
-                <button
-                  style={{ ...styles.label, backgroundColor: sentimentColor }}
-                  onClick={() => setValuesToShow("sentiment")}
-                >
-                  {sentiment}
-                </button>
-              );
-            })}
-        </div>
-      </Stack>
-      <h2>Speakers:</h2>
-      <div style={styles.labels}>
-        {Object.entries(speakers).map(([key, value], index) => (
-          <div
-            key={key}
-            style={{
-              position: "relative",
-              display: "inline-flex",
-              alignItems: "center",
-            }}
-          >
-            <input
-              style={{
-                ...styles.speaker,
-                width: `${(value.length || 1) + 1}ch`,
-                border:
-                  utterances
-                    .filter((utterance) => utterance.start <= currentVideoTime)
-                    .slice(-1)[0]?.speaker === key
-                    ? "2px solid #ffffff"
-                    : "none",
-                paddingRight: "1.5rem", // make room for ornament
-              }}
-              type="text"
-              key={key}
-              value={value}
-              onChange={(event) => handleUpdateNickname(event, key)}
-              onFocus={() => {
-                setPreviousSpeakerName(value)
-              }}
-              onBlur={() => {
-                if (value === previousSpeakerName) {
-                  return;
-                }
-
-                const vote_diff = {
-                  add: {
-                    index: "" + index,
-                    name: value.toLowerCase()
-                  }
-                }
-
-                if (editedSpeakers[index]) {
-                  vote_diff.sub = {
-                    index: "" + index,
-                    name: previousSpeakerName.toLowerCase()
-                  }
-                }
-
-                editedSpeakers[index] = true
-                setEditedSpeakers({ ...editedSpeakers })
-
-                setPreviousSpeakerName(value)
-
-                axios
-                  .post(`${config.BACKEND_URL}/speaker_vote`, {
-                    url: window.location.href,
-                    vote_diff: vote_diff,
-                  })
-                  .catch((error) => {
-                    console.error(error);
-                  });
-              }}
-            />
-
-            {key ===
-              String(
-                utterances
-                  .filter((utterance) => utterance.start <= currentVideoTime)
-                  .slice(-1)[0]?.speaker
-              ) && (
-                <span
+                <input
                   style={{
-                    position: "absolute",
-                    right: "0.5rem",
-                    color: "#fff",
-                    pointerEvents: "none",
+                    ...styles.speaker,
+                    width: `${(value.length || 1) + 1}ch`,
+                    border:
+                      utterances
+                        .filter((utterance) => utterance.start <= currentVideoTime)
+                        .slice(-1)[0]?.speaker === key
+                        ? "2px solid #ffffff"
+                        : "none",
+                    paddingRight: "1.5rem", // make room for ornament
+                  }}
+                  type="text"
+                  key={key}
+                  value={value}
+                  onChange={(event) => handleUpdateNickname(event, key)}
+                  onFocus={() => {
+                    setPreviousSpeakerName(value)
+                  }}
+                  onBlur={() => {
+                    if (value === previousSpeakerName) {
+                      return;
+                    }
+
+                    const vote_diff = {
+                      add: {
+                        index: "" + index,
+                        name: value.toLowerCase()
+                      }
+                    }
+
+                    if (editedSpeakers[index]) {
+                      vote_diff.sub = {
+                        index: "" + index,
+                        name: previousSpeakerName.toLowerCase()
+                      }
+                    }
+
+                    editedSpeakers[index] = true
+                    setEditedSpeakers({ ...editedSpeakers })
+
+                    setPreviousSpeakerName(value)
+
+                    axios
+                      .post(`${config.BACKEND_URL}/speaker_vote`, {
+                        url: window.location.href,
+                        vote_diff: vote_diff,
+                      })
+                      .then(() => {
+                        getAutofillSpeakers();
+                      })
+                      .catch((error) => {
+                        console.error(error);
+                      });
+                  }}
+                />
+
+                {key ===
+                  String(
+                    utterances
+                      .filter((utterance) => utterance.start <= currentVideoTime)
+                      .slice(-1)[0]?.speaker
+                  ) && (
+                    <span
+                      style={{
+                        position: "absolute",
+                        right: "0.5rem",
+                        color: "#fff",
+                        pointerEvents: "none",
+                      }}
+                    >
+                      🔊
+                    </span>
+                  )}
+              </div>
+            ))}
+          </div>
+          <div style={styles.speakerSelect}>
+            <select
+              value={speaker1}
+              label="speaker"
+              onChange={handleChangeSpeaker1}
+              style={styles.select}
+            >
+              <option value={"Everyone"} style={styles.option}>
+                All Speakers
+              </option>
+              {Object.entries(speakers).map(([key, value]) => (
+                <option key={key} value={key} style={styles.option}>
+                  {value}
+                </option>
+              ))}
+            </select>
+
+            <ToggleButtonGroup
+              value={charts}
+              exclusive
+              onChange={handleCharts}
+              aria-label="chart type"
+              sx={{
+                backgroundColor: "#ffffff33",
+                "& .MuiToggleButton-root": {
+                  color: "white",
+                  border: "none",
+                  "&:hover": {
+                    backgroundColor: "#ffffff44",
+                  },
+                },
+                "& .MuiToggleButton-root.Mui-selected": {
+                  backgroundColor: "#ffffff66",
+                  color: "white",
+                  "&:hover": {
+                    backgroundColor: "#ffffff88",
+                  },
+                },
+              }}
+            >
+              <ToggleButton value="bar" aria-label="bar">
+                <BarChartIcon />
+              </ToggleButton>
+
+              <ToggleButton value="pie" aria-label="pie">
+                <PieChartIcon />
+              </ToggleButton>
+            </ToggleButtonGroup>
+
+            <select
+              value={speaker2}
+              label="speaker"
+              onChange={handleChangeSpeaker2}
+              style={styles.select}
+            >
+              <option value={"Everyone"} style={styles.option}>
+                All Speakers
+              </option>
+              {Object.entries(speakers).map(([key, value]) => (
+                <option key={key} value={key} style={styles.option}>
+                  {value}
+                </option>
+              ))}
+            </select>
+          </div>
+          {
+            charts === "bar" ? (
+              <ResponsiveContainer width="100%" height={300}>
+                <BarChart
+                  layout="vertical"
+                  width={500}
+                  height={300}
+                  data={chartData}
+                  stackOffset="sign"
+                  margin={{
+                    top: 5,
+                    right: 30,
+                    left: 20,
+                    bottom: 5,
                   }}
                 >
-                  🔊
-                </span>
-              )}
-          </div>
-        ))}
-      </div>
-      <div style={styles.speakerSelect}>
-        <select
-          value={speaker1}
-          label="speaker"
-          onChange={handleChangeSpeaker1}
-          style={styles.select}
-        >
-          <option value={"Everyone"} style={styles.option}>
-            All Speakers
-          </option>
-          {Object.entries(speakers).map(([key, value]) => (
-            <option key={key} value={key} style={styles.option}>
-              {value}
-            </option>
-          ))}
-        </select>
-
-        <ToggleButtonGroup
-          value={charts}
-          exclusive
-          onChange={handleCharts}
-          aria-label="chart type"
-          sx={{
-            backgroundColor: "#ffffff33",
-            "& .MuiToggleButton-root": {
-              color: "white",
-              border: "none",
-              "&:hover": {
-                backgroundColor: "#ffffff44",
-              },
-            },
-            "& .MuiToggleButton-root.Mui-selected": {
-              backgroundColor: "#ffffff66",
-              color: "white",
-              "&:hover": {
-                backgroundColor: "#ffffff88",
-              },
-            },
-          }}
-        >
-          <ToggleButton value="bar" aria-label="bar">
-            <BarChartIcon />
-          </ToggleButton>
-
-          <ToggleButton value="pie" aria-label="pie">
-            <PieChartIcon />
-          </ToggleButton>
-        </ToggleButtonGroup>
-
-        <select
-          value={speaker2}
-          label="speaker"
-          onChange={handleChangeSpeaker2}
-          style={styles.select}
-        >
-          <option value={"Everyone"} style={styles.option}>
-            All Speakers
-          </option>
-          {Object.entries(speakers).map(([key, value]) => (
-            <option key={key} value={key} style={styles.option}>
-              {value}
-            </option>
-          ))}
-        </select>
-      </div>
-      {charts === "bar" ? (
-        <ResponsiveContainer width="100%" height={300}>
-          <BarChart
-            layout="vertical"
-            width={500}
-            height={300}
-            data={chartData}
-            stackOffset="sign"
-            margin={{
-              top: 5,
-              right: 30,
-              left: 20,
-              bottom: 5,
-            }}
-          >
-            <CartesianGrid strokeDasharray="3 3" />
-            <XAxis type="number" tickFormatter={(value) => Math.abs(value)} />
-            <YAxis
-              dataKey="name"
-              type="category"
-              tickFormatter={(name) => name.replace(/\//g, "/ ")}
-            />
-            {/* <Tooltip />
-          <Legend /> */}
-            <Tooltip content={<CustomTooltip />} cursor={false} />
-            <ReferenceLine x={0} stroke="#000" />
-            <Bar
-              dataKey="speaker1"
-              stackId="stack"
-              onClick={handleBarClick}
-              onMouseEnter={handleBarMouseEnter}
-              onMouseLeave={handleBarMouseLeave}
-            >
-              {chartData.map((entry, index) => {
-                return (
-                  <Cell key={`cell-${index}`} fill={labelToColor[entry.name]} />
-                );
-              })}
-            </Bar>
-            <Bar
-              dataKey="speaker2"
-              stackId="stack"
-              onClick={handleBarClick}
-              onMouseEnter={handleBarMouseEnter}
-              onMouseLeave={handleBarMouseLeave}
-            >
-              {chartData.map((entry, index) => {
-                return (
-                  <Cell
-                    key={`cell-${index}`}
-                    fill={darkenHexColor(labelToColor[entry.name])}
+                  <CartesianGrid strokeDasharray="3 3" />
+                  <XAxis type="number" tickFormatter={(value) => Math.abs(value)} />
+                  <YAxis
+                    dataKey="name"
+                    type="category"
+                    tickFormatter={(name) => name.replace(/\//g, "/ ")}
                   />
-                );
-              })}
-            </Bar>
-          </BarChart>
-        </ResponsiveContainer>
+                  {/* <Tooltip />
+          <Legend /> */}
+                  <Tooltip content={<CustomTooltip />} cursor={false} />
+                  <ReferenceLine x={0} stroke="#000" />
+                  <Bar
+                    dataKey="speaker1"
+                    stackId="stack"
+                    onClick={handleBarClick}
+                    onMouseEnter={handleBarMouseEnter}
+                    onMouseLeave={handleBarMouseLeave}
+                  >
+                    {chartData.map((entry, index) => {
+                      return (
+                        <Cell key={`cell-${index}`} fill={labelToColor[entry.name]} />
+                      );
+                    })}
+                  </Bar>
+                  <Bar
+                    dataKey="speaker2"
+                    stackId="stack"
+                    onClick={handleBarClick}
+                    onMouseEnter={handleBarMouseEnter}
+                    onMouseLeave={handleBarMouseLeave}
+                  >
+                    {chartData.map((entry, index) => {
+                      return (
+                        <Cell
+                          key={`cell-${index}`}
+                          fill={darkenHexColor(labelToColor[entry.name])}
+                        />
+                      );
+                    })}
+                  </Bar>
+                </BarChart>
+              </ResponsiveContainer>
+            ) : (
+              <div style={{ width: "100%", display: "flex" }}>
+                <CustomPieBoth
+                  data1={chartData.map((l) => ({
+                    ...l,
+                    value: l.speaker1Times.length,
+                    color: labelToColor[l.name],
+                    text: labelToDefinition[l.name],
+                    speaker: speakers[speaker1],
+                  }))}
+                  data2={chartData.map((l) => ({
+                    ...l,
+                    value: l.speaker2Times.length,
+                    color: darkenHexColor(labelToColor[l.name]),
+                    text: labelToDefinition[l.name],
+                    speaker: speakers[speaker2],
+                  }))}
+                  width={"100%"}
+                  height={300}
+                  handleClick={handleBarClick}
+                  handleMouseEnter={handleBarMouseEnter}
+                  handleMouseLeave={handleBarMouseLeave}
+                />
+              </div>
+            )
+          }
+          {barInfo}
+        </Box>
       ) : (
-        <div style={{ width: "100%", display: "flex" }}>
-          <CustomPieBoth
-            data1={chartData.map((l) => ({
-              ...l,
-              value: l.speaker1Times.length,
-              color: labelToColor[l.name],
-              text: labelToDefinition[l.name],
-              speaker: speakers[speaker1],
-            }))}
-            data2={chartData.map((l) => ({
-              ...l,
-              value: l.speaker2Times.length,
-              color: darkenHexColor(labelToColor[l.name]),
-              text: labelToDefinition[l.name],
-              speaker: speakers[speaker2],
-            }))}
-            width={"100%"}
-            height={300}
-            handleClick={handleBarClick}
-            handleMouseEnter={handleBarMouseEnter}
-            handleMouseLeave={handleBarMouseLeave}
-          />
-        </div>
+        <LibraryAnalysis speakers={autofillSpeakers} textColor={textColor} />
       )}
-      {barInfo}
     </div>
   );
 };
