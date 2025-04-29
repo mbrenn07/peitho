@@ -28,7 +28,95 @@ import PieChartIcon from "@mui/icons-material/PieChart";
 import BarChartIcon from "@mui/icons-material/BarChart";
 import { CustomPieBoth } from "./CustomPieBoth";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
-import { VideoLibrary, SmartDisplay } from "@mui/icons-material"
+import { VideoLibrary, SmartDisplay, SentimentVerySatisfied, Label } from "@mui/icons-material"
+
+const dialogicActs = [
+  {
+    label: "Procedural Act",
+    definition:
+      "Acts relating to the communicative nature of the debate, including denials/disagreements, confirmations/acknowledgements, and greetings/salutations.",
+  },
+  {
+    label: "Question",
+    definition:
+      "Any type of question directed toward the candidate, moderator(s), or candidate(s).",
+  },
+  {
+    label: "Gratitude/Congratulations",
+    definition:
+      "Expressing thankfulness to an audience or individual, acknowledging support or contributions, or presenting good wishes for contributions/achievement.",
+  },
+  {
+    label: "Self Claim",
+    definition:
+      "Asserting a truth or statement regarding the speaker's actions, past words, or track record.",
+  },
+  {
+    label: "Unattributed Claim",
+    definition:
+      "Asserting general truths about the state of the world or public opinion.",
+  },
+  {
+    label: "Attributed Claim",
+    definition:
+      "Assertions referencing individuals/groups, or data-driven claims.",
+  },
+  {
+    label: "Accusatory Claim",
+    definition:
+      "Asserting a claim about the opposing candidate's beliefs, past actions, or qualities.",
+  },
+  {
+    label: "Position Taking",
+    definition:
+      "Asserting an opinion or belief about current events, legislation, or policy.",
+  },
+  {
+    label: "Miscellaneous",
+    definition:
+      "Acts that were unable to be classified into existing categories.",
+  },
+  {
+    label: "Promise/Commitment",
+    definition: "Committing to a future action or promise.",
+  },
+  {
+    label: "negative",
+    definition: "",
+  },
+  {
+    label: "neutral",
+    definition: "",
+  },
+  {
+    label: "positive",
+    definition: "",
+  },
+];
+
+const labelToDefinition = dialogicActs.reduce(
+  (acc, { label, definition }) => {
+    acc[label] = definition;
+    return acc;
+  },
+  {}
+);
+
+const labelToColor = {
+  "Procedural Act": "#FF69B4",
+  Question: "#007BFF",
+  "Gratitude/Congratulations": "#800080",
+  "Self Claim": "#DC143C",
+  "Unattributed Claim": "#FFD700",
+  "Attributed Claim": "#008B8B",
+  "Accusatory Claim": "#8B0000",
+  "Position Taking": "#FF8C00",
+  Miscellaneous: "#D3D3D3",
+  "Promise/Commitment": "#228B22",
+  negative: "#C70039",
+  positive: "#008000",
+  neutral: "#808080",
+};
 
 function getCurrentVideoTime() {
   const videoElement = document.querySelector("video");
@@ -62,7 +150,11 @@ function initTimeTracking() {
 initTimeTracking();
 
 const LibraryAnalysis = ({ speakers, textColor }) => {
-  const [videosWithSpeaker, setVideosWithSpeaker] = useState();
+  const [videosWithSpeaker, setVideosWithSpeaker] = useState({
+    "overallLabel": {},
+    "overallSentiment": {},
+  });
+  const [displaySentiment, setDisplaySentiment] = useState(false);
 
   const getStatsForSpeaker = (speaker) => {
     axios
@@ -77,59 +169,147 @@ const LibraryAnalysis = ({ speakers, textColor }) => {
       });
   }
 
+  const CustomTooltip = ({ active, payload }) => {
+    if (active && payload && payload.length) {
+      const data = payload[0].payload;
+      const value = payload[0].value;
+
+      return (
+        <div className="bg-white p-2 border border-gray-300 shadow-lg rounded">
+          <p className="font-bold">{data.name}</p>
+          <p>Value: {value}</p>
+        </div>
+      );
+    }
+    return null;
+  };
+
+  const chartDataLabel = Object.entries(videosWithSpeaker.overallLabel).map(([key, value]) => {
+    return { name: key, value: value, text: labelToDefinition[key], color: labelToColor[key] }
+  })
+
+  const chartDataSentiment = Object.entries(videosWithSpeaker.overallSentiment).map(([key, value]) => {
+    return { name: key, value: value, text: labelToDefinition[key], color: labelToColor[key] }
+  })
+
+  const selectedChartData = displaySentiment ? chartDataSentiment : chartDataLabel;
+
   return (
     <Box sx={{ width: "100%" }}>
-      <Stack direction="column">
-        <Autocomplete
-          options={speakers}
-          onChange={(event, value) => {
-            getStatsForSpeaker(value);
-          }}
-          slotProps={{
-            inputLabel: {
-              color: 'gray'
-            },
-            popper: {
-              modifiers: [
-                {
-                  name: 'offset',
-                  options: {
-                    offset: [0, 4],
+      <Stack direction="column" spacing={1}>
+        <Stack direction="row" spacing={.5} justifyContent="space-between">
+          <Autocomplete
+            options={speakers}
+            onChange={(event, value) => {
+              getStatsForSpeaker(value);
+            }}
+            slotProps={{
+              inputLabel: {
+                color: 'gray'
+              },
+              popper: {
+                sx: {
+                  '& .MuiAutocomplete-paper': {
+                    backgroundColor: '#1e1e1e',
+                    color: '#fff',
                   },
                 },
-              ],
-              sx: {
-                '& .MuiAutocomplete-paper': {
-                  backgroundColor: '#1e1e1e',
-                  color: '#fff',
+              },
+            }}
+            sx={{
+              '& .MuiInputBase-root': {
+                color: 'white',
+                backgroundColor: '#1e1e1e',
+              },
+              '& .MuiOutlinedInput-notchedOutline': {
+                borderColor: 'gray',
+              },
+              '&:hover .MuiOutlinedInput-notchedOutline': {
+                borderColor: 'white',
+              },
+              '& .MuiInputLabel-root': {
+                color: 'gray',
+              },
+              width: "70%"
+            }}
+            renderInput={(params) => (
+              <TextField
+                {...params}
+                label="Speaker"
+              />
+            )}
+          />
+          <ToggleButtonGroup
+            value={displaySentiment}
+            exclusive
+            onChange={(event, value) => {
+              setDisplaySentiment(value)
+            }}
+            aria-label="single or multiple video analysis"
+            sx={{
+              backgroundColor: "#ffffff33",
+              "& .MuiToggleButton-root": {
+                color: "white",
+                border: "none",
+                "&:hover": {
+                  backgroundColor: "#ffffff44",
                 },
               },
-            },
-          }}
-          sx={{
-            '& .MuiInputBase-root': {
-              color: 'white',
-              backgroundColor: '#1e1e1e',
-            },
-            '& .MuiOutlinedInput-notchedOutline': {
-              borderColor: 'gray',
-            },
-            '&:hover .MuiOutlinedInput-notchedOutline': {
-              borderColor: 'white',
-            },
-            '& .MuiInputLabel-root': {
-              color: 'gray',
-            },
-          }}
-          renderInput={(params) => (
-            <TextField
-              {...params}
-              label="Speaker"
+              "& .MuiToggleButton-root.Mui-selected": {
+                backgroundColor: "#ffffff66",
+                color: "white",
+                "&:hover": {
+                  backgroundColor: "#ffffff88",
+                },
+              },
+            }}
+          >
+            <ToggleButton value={false} aria-label="label">
+              <Label />
+            </ToggleButton>
+            <ToggleButton value={true} aria-label="sentiment">
+              <SentimentVerySatisfied />
+            </ToggleButton>
+          </ToggleButtonGroup>
+        </Stack>
+        {selectedChartData.length > 0 && (
+          <>
+            <ResponsiveContainer width="100%" height={300}>
+              <BarChart
+                layout="vertical"
+                data={selectedChartData}
+                margin={{
+                  top: 5,
+                  right: 30,
+                  left: 20,
+                  bottom: 5,
+                }}
+              >
+                <CartesianGrid strokeDasharray="3 3" />
+                <XAxis type="number" />
+                <YAxis
+                  dataKey="name"
+                  type="category"
+                  tickFormatter={(name) => name.replace(/\//g, "/ ")}
+                />
+                <Tooltip content={<CustomTooltip />} cursor={false} />
+                <Bar dataKey="value">
+                  {selectedChartData.map((entry, index) => (
+                    <Cell key={`cell-${index}`} fill={entry.color} />
+                  ))}
+                </Bar>
+              </BarChart>
+            </ResponsiveContainer>
+            <CustomPieBoth
+              data1={chartDataLabel}
+              data2={chartDataSentiment}
+              width={"100%"}
+              height={300}
             />
-          )}
-        />
+          </>
+        )}
       </Stack>
-    </Box>
+    </Box >
   );
 }
 
@@ -147,94 +327,6 @@ const CustomComponent = (props) => {
   const viewComponentRef = useRef();
   const textColorRef = useRef();
   const currentChipRef = useRef();
-
-  const labelToColor = {
-    "Procedural Act": "#FF69B4",
-    Question: "#007BFF",
-    "Gratitude/Congratulations": "#800080",
-    "Self Claim": "#DC143C",
-    "Unattributed Claim": "#FFD700",
-    "Attributed Claim": "#008B8B",
-    "Accusatory Claim": "#8B0000",
-    "Position Taking": "#FF8C00",
-    Miscellaneous: "#D3D3D3",
-    "Promise/Commitment": "#228B22",
-    negative: "#C70039",
-    positive: "#008000",
-    neutral: "#808080",
-  };
-
-  const dialogicActs = [
-    {
-      label: "Procedural Act",
-      definition:
-        "Acts relating to the communicative nature of the debate, including denials/disagreements, confirmations/acknowledgements, and greetings/salutations.",
-    },
-    {
-      label: "Question",
-      definition:
-        "Any type of question directed toward the candidate, moderator(s), or candidate(s).",
-    },
-    {
-      label: "Gratitude/Congratulations",
-      definition:
-        "Expressing thankfulness to an audience or individual, acknowledging support or contributions, or presenting good wishes for contributions/achievement.",
-    },
-    {
-      label: "Self Claim",
-      definition:
-        "Asserting a truth or statement regarding the speaker's actions, past words, or track record.",
-    },
-    {
-      label: "Unattributed Claim",
-      definition:
-        "Asserting general truths about the state of the world or public opinion.",
-    },
-    {
-      label: "Attributed Claim",
-      definition:
-        "Assertions referencing individuals/groups, or data-driven claims.",
-    },
-    {
-      label: "Accusatory Claim",
-      definition:
-        "Asserting a claim about the opposing candidate's beliefs, past actions, or qualities.",
-    },
-    {
-      label: "Position Taking",
-      definition:
-        "Asserting an opinion or belief about current events, legislation, or policy.",
-    },
-    {
-      label: "Miscellaneous",
-      definition:
-        "Acts that were unable to be classified into existing categories.",
-    },
-    {
-      label: "Promise/Commitment",
-      definition: "Committing to a future action or promise.",
-    },
-    {
-      label: "negative",
-      definition: "",
-    },
-    {
-      label: "neutral",
-      definition: "",
-    },
-    {
-      label: "positive",
-      definition: "",
-    },
-  ];
-
-  const labelToDefinition = dialogicActs.reduce(
-    (acc, { label, definition }) => {
-      acc[label] = definition;
-      return acc;
-    },
-    {}
-  );
 
   useEffect(() => {
     if (viewComponent) {
