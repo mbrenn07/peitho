@@ -1,5 +1,5 @@
 import config from "./config";
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useMemo } from "react";
 import { createRoot } from "react-dom/client";
 import {
   BarChart,
@@ -18,9 +18,14 @@ import {
   ToggleButtonGroup,
   ToggleButton,
   Typography,
+  Grid,
   Box,
   Autocomplete,
   TextField,
+  Card,
+  CardContent,
+  CardMedia,
+  CardActionArea,
 } from "@mui/material";
 import axios from "axios";
 import { CustomTimeDisplay } from "./CustomTimeDisplay";
@@ -29,6 +34,7 @@ import BarChartIcon from "@mui/icons-material/BarChart";
 import { CustomPieBoth } from "./CustomPieBoth";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import { VideoLibrary, SmartDisplay, SentimentVerySatisfied, Label } from "@mui/icons-material"
+import "./content.css"
 
 const dialogicActs = [
   {
@@ -151,10 +157,12 @@ initTimeTracking();
 
 const LibraryAnalysis = ({ speakers, textColor }) => {
   const [videosWithSpeaker, setVideosWithSpeaker] = useState({
-    "overallLabel": {},
-    "overallSentiment": {},
+    overallLabel: {},
+    overallSentiment: {},
+    videos: [],
   });
   const [displaySentiment, setDisplaySentiment] = useState(false);
+  const [flippedVideos, setFlippedVideos] = useState([]);
 
   const getStatsForSpeaker = (speaker) => {
     axios
@@ -163,10 +171,135 @@ const LibraryAnalysis = ({ speakers, textColor }) => {
       })
       .then((data) => {
         setVideosWithSpeaker(data.data)
+        setFlippedVideos(Array(data.data.length).fill(false))
       })
       .catch((error) => {
         console.error(error);
       });
+  }
+
+  const VideoItem = ({ video, displaySentiment, flipped, setFlipped }) => {
+    const chartDataLabel = useMemo(() => {
+      return Object.entries(video.overallLabel).map(([key, value]) => ({
+        name: key,
+        value: value,
+        text: labelToDefinition[key],
+        color: labelToColor[key]
+      }));
+    }, [video]);
+
+    const chartDataSentiment = useMemo(() => {
+      return Object.entries(video.overallSentiment).map(([key, value]) => ({
+        name: key,
+        value: value,
+        text: labelToDefinition[key],
+        color: labelToColor[key]
+      }));
+    }, [video]);
+
+    const selectedChartData = displaySentiment ? chartDataSentiment : chartDataLabel;
+
+    const CustomTooltip = ({ active, payload }) => {
+      if (active && payload && payload.length) {
+        const label = payload[0].payload.name;
+        const definition = labelToDefinition[label];
+
+        return (
+          <div
+            style={{
+              backgroundColor: "#1e1e1e",
+              border: "1px solid #555",
+              padding: "10px",
+              borderRadius: "8px",
+              maxWidth: "300px",
+              fontSize: "0.9rem",
+              color: "#f1f1f1",
+              boxShadow: "0px 4px 12px rgba(0,0,0,0.3)",
+            }}
+          >
+            <strong style={{ color: "#fff", fontSize: "1rem" }}>{label}</strong>
+            <p style={{ marginTop: "4px", lineHeight: "1.4" }}>{definition}</p>
+          </div>
+        );
+      }
+
+      return null;
+    };
+
+    return (
+      <Grid size={6}>
+        <Card sx={{ height: 200, perspective: "1000px", backgroundColor: "rgb(33, 33, 33)", color: "white", border: "1px solid gray" }}>
+          <CardActionArea onClick={() => setFlipped(!flipped)}
+            sx={{
+              width: "100%",
+              height: "100%",
+              transformStyle: "preserve-3d",
+              transition: "transform 2s",
+              transform: flipped ? "rotateY(180deg)" : "rotateY(0deg)",
+            }}>
+            <CardMedia
+              sx={{
+                height: 100, backgroundColor: "grey", marginTop: (video.thumbnail !== "" ? undefined : "-47px"), backfaceVisibility: "hidden"
+              }}
+              src={video.thumbnail !== "" ? video.thumbnail : undefined}
+              component="img"
+            />
+            <CardContent sx={{ padding: 0, px: "4px", backfaceVisibility: "hidden" }}>
+              <Typography variant="h6" component="div" sx={{ maxHeight: 40, overflow: "hidden" }}>
+                {video.title}
+              </Typography>
+              <Typography gutterBottom variant="subtitle1" component="div">
+                {video.date}
+              </Typography>
+
+              <Typography variant="body2" sx={{ color: 'gray' }}>
+                {video.description}
+              </Typography>
+            </CardContent>
+            <CardContent
+              sx={{
+                position: "absolute",
+                top: 0,
+                left: 0,
+                width: "100%",
+                height: "100%",
+                backfaceVisibility: "hidden",
+                transform: "rotateY(180deg)",
+                padding: 0,
+              }}
+            >
+              {selectedChartData.length > 0 && (
+                <ResponsiveContainer width="100%" height={200}>
+                  <BarChart
+                    layout="vertical"
+                    data={selectedChartData}
+                    animationDuration={0}
+                  >
+                    <CartesianGrid strokeDasharray="3 3" />
+                    <XAxis type="number" />
+                    <YAxis
+                      dataKey="name"
+                      type="category"
+                      tickFormatter={(name) => name.replace(/\//g, "/ ")}
+                      tick={{ fontSize: 10 }}
+                      angle={displaySentiment ? undefined : -30}
+                      interval={displaySentiment ? undefined : 1}
+                      textAnchor="end"
+                    />
+                    <Tooltip content={<CustomTooltip />} cursor={false} />
+                    <Bar dataKey="value" isAnimationActive={false}>
+                      {selectedChartData.map((entry, index) => (
+                        <Cell key={`cell-${index}`} fill={entry.color} />
+                      ))}
+                    </Bar>
+                  </BarChart>
+                </ResponsiveContainer>
+              )}
+            </CardContent>
+          </CardActionArea>
+        </Card>
+      </Grid>
+    );
   }
 
   const CustomTooltip = ({ active, payload }) => {
@@ -184,13 +317,23 @@ const LibraryAnalysis = ({ speakers, textColor }) => {
     return null;
   };
 
-  const chartDataLabel = Object.entries(videosWithSpeaker.overallLabel).map(([key, value]) => {
-    return { name: key, value: value, text: labelToDefinition[key], color: labelToColor[key] }
-  })
+  const chartDataLabel = useMemo(() => {
+    return Object.entries(videosWithSpeaker.overallLabel).map(([key, value]) => ({
+      name: key,
+      value: value,
+      text: labelToDefinition[key],
+      color: labelToColor[key]
+    }));
+  }, [videosWithSpeaker]);
 
-  const chartDataSentiment = Object.entries(videosWithSpeaker.overallSentiment).map(([key, value]) => {
-    return { name: key, value: value, text: labelToDefinition[key], color: labelToColor[key] }
-  })
+  const chartDataSentiment = useMemo(() => {
+    return Object.entries(videosWithSpeaker.overallSentiment).map(([key, value]) => ({
+      name: key,
+      value: value,
+      text: labelToDefinition[key],
+      color: labelToColor[key]
+    }));
+  }, [videosWithSpeaker]);
 
   const selectedChartData = displaySentiment ? chartDataSentiment : chartDataLabel;
 
@@ -274,6 +417,7 @@ const LibraryAnalysis = ({ speakers, textColor }) => {
         </Stack>
         {selectedChartData.length > 0 && (
           <>
+            <h2>Overall Trends</h2>
             <ResponsiveContainer width="100%" height={300}>
               <BarChart
                 layout="vertical"
@@ -306,6 +450,13 @@ const LibraryAnalysis = ({ speakers, textColor }) => {
               width={"100%"}
               height={300}
             />
+            <h2>Per-Video Trends</h2>
+            <Grid container spacing={2}>
+              {videosWithSpeaker.videos.map((video, index) => <VideoItem key={video.title} video={video} displaySentiment={displaySentiment} flipped={flippedVideos[index]} setFlipped={() => {
+                flippedVideos[index] = !flippedVideos[index];
+                setFlippedVideos([...flippedVideos])
+              }} />)}
+            </Grid>
           </>
         )}
       </Stack>
@@ -601,6 +752,9 @@ const CustomComponent = (props) => {
       justifyContent: "flex-start",
       alignItems: "flex-start",
       gap: "1rem",
+      maxHeight: "800px",
+      overflowY: "auto",
+      overflowX: "hidden",
     },
     time: {
       color: "#3ea6ff",

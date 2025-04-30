@@ -3,12 +3,11 @@ import assemblyai as aai
 import yt_dlp
 from flask import Flask, request, jsonify
 from flask_cors import CORS
-import random
 import os
 import nltk
 import string
 import re
-import json
+import base64
 import time
 from urllib.parse import urlparse, parse_qs
 from pymongo.mongo_client import MongoClient
@@ -153,19 +152,37 @@ def get_all_videos_for_speaker():
 
     overall_label_counts = Counter()
     overall_sentiment_counts = Counter()
+    videos_data = []
 
     for doc in results:
         utterances = doc.get("utterances", [])
+
+        label_counts = Counter()
+        sentiment_counts = Counter()
+
         for u in utterances:
             label = u.get("label", "unknown")
-            overall_label_counts[label] += 1
-
             sentiment = u.get("sentiment", "unknown")
+
+            label_counts[label] += 1
+            sentiment_counts[sentiment] += 1
+
+            overall_label_counts[label] += 1
             overall_sentiment_counts[sentiment] += 1
+
+        videos_data.append({
+            "thumbnail": doc.get("thumbnail", ""),
+            "title": doc.get("title", "Unknown Title"),
+            "date": doc.get("date", "Unknown Date"),
+            "description": doc.get('description', 'No description available'),
+            "overallLabel": dict(label_counts),
+            "overallSentiment": dict(sentiment_counts)
+        })
 
     return jsonify({
         "overallLabel": dict(overall_label_counts),
-        "overallSentiment": dict(overall_sentiment_counts)
+        "overallSentiment": dict(overall_sentiment_counts),
+        "videos": videos_data
     })
 
 
@@ -268,7 +285,7 @@ def process_transcript():
 
     existing_video = videos_collection.find_one({"url": url})
     if existing_video:
-        return {"utterances": existing_video["utterances"], "speakers": existing_video["speakers"]}
+        return {"utterances": existing_video["utterances"], "speakers": existing_video["speakers"], "thumbnail": existing_video.get("thumbnail", ""), "title": existing_video.get("title", "Unknown Title"), "date": existing_video.get("date", "Unknown Date"), "description": existing_video.get('description', 'No description available')}
     options = {
         'format': 'bestaudio[ext=webm]/bestaudio/best',
         'outtmpl': 'videos/%(title)s.%(ext)s',
@@ -278,6 +295,27 @@ def process_transcript():
     with yt_dlp.YoutubeDL(options) as ydl:
         info_dict = ydl.extract_info(url, download=True)
         file_path = ydl.prepare_filename(info_dict)
+
+        # Get the title and upload date
+        title = info_dict.get('title', 'Unknown Title')
+        description = info_dict.get('description', 'No description available')
+        upload_date_raw = info_dict.get('upload_date')  # Format: YYYYMMDD
+
+        if upload_date_raw and len(upload_date_raw) == 8:
+            upload_date = f"{upload_date_raw[4:6]}/{upload_date_raw[6:]}/{upload_date_raw[:4]}"
+        else:
+            upload_date = "Unknown Date"
+
+        # Get the thumbnail URL from the metadata
+        thumbnail_url = info_dict.get('thumbnail')
+
+        base64_thumbnail = None
+        if thumbnail_url:
+            response = requests.get(thumbnail_url)
+            content_type = response.headers['Content-Type']
+            base64data = base64.b64encode(
+                response.content).decode('utf-8')
+            base64_thumbnail = f"data:{content_type};base64,{base64data}"
 
     aai.settings.api_key = os.getenv("ASSEMBLY_AI_API")
     config = aai.TranscriptionConfig(speaker_labels=True)
@@ -329,7 +367,11 @@ def process_transcript():
     video_data = {
         "url": url,
         "utterances": separated_data["utterances"],
-        "speakers": separated_data["speakers"]
+        "speakers": separated_data["speakers"],
+        "thumbnail": base64_thumbnail,
+        "title": title,
+        "date": upload_date,
+        "description": description,
     }
 
     print(video_data)
@@ -349,7 +391,7 @@ def process_transcript():
     modified_speakers = [
         f"Speaker {index + 1}" for index, _ in enumerate(separated_data['speakers'])]
 
-    return {"utterances": separated_data["utterances"], "speakers": modified_speakers}
+    return {"utterances": separated_data["utterances"], "speakers": modified_speakers, "thumbnail": base64_thumbnail, "title": title, "date": upload_date, "description": description}
 
 
 def call_dialog_classifier_batch(text_list):
