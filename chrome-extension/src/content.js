@@ -155,7 +155,7 @@ function initTimeTracking() {
 
 initTimeTracking();
 
-const LibraryAnalysis = ({ speakers, textColor }) => {
+const LibraryAnalysis = ({ speakers }) => {
   const [videosWithSpeaker, setVideosWithSpeaker] = useState({
     overallLabel: {},
     overallSentiment: {},
@@ -510,6 +510,7 @@ const CustomComponent = (props) => {
   }, [viewComponent]);
 
   useEffect(() => {
+    console.log(textColor)
     textColorRef.current = textColor;
   }, [textColor]);
 
@@ -739,13 +740,10 @@ const CustomComponent = (props) => {
   const styles = {
     container: {
       padding: "2rem",
-      color: textColor,
+      color: "rgb(241, 241, 241)",
       borderRadius: "12px",
-      border:
-        textColor === "rgb(15, 15, 15)"
-          ? "1px solid rgba(0,0,0,0.1)"
-          : "1px solid rgba(255,255,255,0.2)",
-      background: textColor === "rgb(15, 15, 15)" ? "#FFF" : "#212121",
+      border: "1px solid rgba(255,255,255,0.2)",
+      background: "#212121",
       fontFamily: "Arial, sans-serif",
       display: "flex",
       flexDirection: "column",
@@ -1128,10 +1126,7 @@ const CustomComponent = (props) => {
               mr: -2,
               padding: 1,
               "&:hover": {
-                backgroundColor:
-                  textColor === "rgb(15, 15, 15)"
-                    ? "rgba(0, 0, 0, 0.1)"
-                    : "rgba(255, 255, 255, 0.15)",
+                backgroundColor: "rgba(255, 255, 255, 0.15)",
               },
             }}
             size="large"
@@ -1151,8 +1146,8 @@ const CustomComponent = (props) => {
                 display: "inherit",
                 width: "100%",
                 height: "100%",
-                stroke: textColor === "rgb(15, 15, 15)" ? "#a2a2a2" : "#868686",
-                fill: textColor === "rgb(15, 15, 15)" ? "#0f0f0f" : "#f1f1f1",
+                stroke: "#868686",
+                fill: "#f1f1f1",
               }}
             >
               <path d="m12.71 12 8.15 8.15-.71.71L12 12.71l-8.15 8.15-.71-.71L11.29 12 3.15 3.85l.71-.71L12 11.29l8.15-8.15.71.71L12.71 12z"></path>
@@ -1498,7 +1493,7 @@ const CustomComponent = (props) => {
           {barInfo}
         </Box>
       ) : (
-        <LibraryAnalysis speakers={autofillSpeakers} textColor={textColor} />
+        <LibraryAnalysis speakers={autofillSpeakers} />
       )}
     </div>
   );
