@@ -1267,6 +1267,9 @@ const CustomComponent = (props) => {
         <Box sx={{ width: "100%", height: "100%", backgroundColor: "rgb(0, 0, 0, .8)", position: "absolute", top: 0, left: 0, zIndex: 99 }} />
       )}
       <Popover
+        PaperProps={{
+          sx: { borderRadius: 0 }
+        }}
         open={popoverOpen}
         anchorEl={anchorEl}
         onClose={closePopover}
@@ -1279,7 +1282,7 @@ const CustomComponent = (props) => {
           horizontal: 'center',
         }}
       >
-        <Box sx={{ p: 2, height: 600, backgroundColor: "#121212", color: "white" }}>
+        <Box sx={{ p: 2, height: 500, backgroundColor: "#121212", color: "white" }}>
           <Typography variant="h5">Which label is most accurate?</Typography>
           <br />
           <Autocomplete
@@ -1356,7 +1359,7 @@ const CustomComponent = (props) => {
         justifyContent="space-between"
         sx={{ width: "100%" }}
       >
-        <h1>AI Utterance Analysis</h1>
+        <h2>AI Utterance Analysis</h2>
         <Stack spacing={2} direction="row" sx={{ mt: "-6px" }}>
           <ToggleButtonGroup
             value={analysisPage}
