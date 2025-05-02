@@ -34,7 +34,6 @@ import BarChartIcon from "@mui/icons-material/BarChart";
 import { CustomPieBoth } from "./CustomPieBoth";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import { VideoLibrary, SmartDisplay, SentimentVerySatisfied, Label } from "@mui/icons-material"
-import "./content.css"
 
 const dialogicActs = [
   {
