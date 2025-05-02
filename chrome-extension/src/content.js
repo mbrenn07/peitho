@@ -27,6 +27,7 @@ import {
   CardMedia,
   CardActionArea,
   Popover,
+  Button,
 } from "@mui/material";
 import axios from "axios";
 import { CustomTimeDisplay } from "./CustomTimeDisplay";
@@ -583,6 +584,13 @@ const CustomComponent = (props) => {
     newInitialDialogicActs
   );
 
+  const atDemoURL = useMemo(() => {
+    const urlParams = new URLSearchParams(window.location.search);
+    return (
+      urlParams.get("v") === config.DEMO_URL
+    )
+  }, [window.location.search])
+
   useEffect(() => {
     if (viewComponent) {
       Array.from(recommendationBar.children).forEach((child) => {
@@ -890,6 +898,7 @@ const CustomComponent = (props) => {
       borderRadius: "4px",
       width: "fit-content",
       height: "fit-content",
+      cursor: "pointer"
     },
     utterance: { display: "flex", gap: "1rem" },
     labels: {
@@ -1453,7 +1462,9 @@ const CustomComponent = (props) => {
                   key={utterance.start}
                   style={styles.utterance}
                 >
-                  <p style={styles.time}>{formatTime(utterance.start)}</p>
+                  <p onClick={() => {
+                    handleClickPlay(utterance.start)
+                  }} style={styles.time}>{formatTime(utterance.start)}</p>
                   <h2>"{utterance.text}"</h2>
                 </div>
               ))}

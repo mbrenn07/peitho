@@ -1,6 +1,7 @@
 const config = {
   BUTTON_SELECTOR: 'button.yt-spec-button-shape-next[aria-label="Show transcript"]',
-  BACKEND_URL: "https://peitho-1095352764453.us-east4.run.app"
+  BACKEND_URL: "https://peitho-1095352764453.us-east4.run.app",
+  DEMO_URL: "WYpP-T0IcyA",
 };
 
 export default config;
