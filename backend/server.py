@@ -193,6 +193,7 @@ def autofill_speakers():
 
 @app.route("/speaker_vote", methods=["POST"])
 def speaker_vote():
+
     vote_diff = request.get_json()["vote_diff"]
     raw_url = request.get_json()["url"]
     parsed_url = urlparse(raw_url)
@@ -269,6 +270,73 @@ def speaker_vote():
         return {"message": "Video updated successfully!"}, 200
     else:
         return {"message": "No changes made to the video."}, 200
+
+
+@app.route("/utterance_vote", methods=["POST"])
+def utterance_vote():
+    data = request.get_json()
+    raw_url = data.get("url")
+    vote = data.get("vote")
+
+    if not raw_url or not vote:
+        return {"error": "Missing required data"}, 400
+
+    parsed_url = urlparse(raw_url)
+    query_params = parse_qs(parsed_url.query)
+    video_id = query_params.get("v", [None])[0]
+    if not video_id:
+        return {"error": "Invalid YouTube URL"}, 400
+
+    url = f"{parsed_url.scheme}://{parsed_url.netloc}/watch?v={video_id}"
+    video = videos_collection.find_one({"url": url})
+    if not video:
+        return {"error": "Video not yet cached"}, 400
+
+    utterances = video.get("utterances", [])
+    utt_index = vote.get("index")
+
+    if utt_index is None or utt_index >= len(utterances):
+        return {"error": "Invalid utterance index"}, 400
+
+    utterance = utterances[utt_index]
+
+    utterance.setdefault("label_votes", {})
+    utterance.setdefault("sentiment_votes", {})
+
+    def apply_vote(vote_section, field_votes):
+        add_label = vote_section.get("add", {}).get("label")
+        sub_label = vote_section.get("sub", {}).get("label")
+
+        if add_label:
+            field_votes[add_label] = field_votes.get(add_label, 0) + 1
+        if sub_label:
+            field_votes[sub_label] = max(field_votes.get(sub_label, 1) - 1, 0)
+
+        if field_votes:
+            best_label = max(field_votes.items(), key=lambda item: item[1])[0]
+            return best_label
+        return None
+
+    if "label" in vote:
+        new_label = apply_vote(vote["label"], utterance["label_votes"])
+        if new_label:
+            utterance["label"] = new_label
+
+    if "sentiment" in vote:
+        new_sentiment = apply_vote(
+            vote["sentiment"], utterance["sentiment_votes"])
+        if new_sentiment:
+            utterance["sentiment"] = new_sentiment
+
+    result = videos_collection.update_one(
+        {"url": url},
+        {"$set": {"utterances": utterances}}
+    )
+
+    if result.modified_count > 0:
+        return {"message": "Utterance updated successfully!"}, 200
+    else:
+        return {"message": "No changes made to the utterance."}, 200
 
 
 @app.route("/process_transcript", methods=["POST"])

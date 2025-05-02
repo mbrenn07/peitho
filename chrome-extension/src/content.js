@@ -26,6 +26,7 @@ import {
   CardContent,
   CardMedia,
   CardActionArea,
+  Popover,
 } from "@mui/material";
 import axios from "axios";
 import { CustomTimeDisplay } from "./CustomTimeDisplay";
@@ -33,7 +34,7 @@ import PieChartIcon from "@mui/icons-material/PieChart";
 import BarChartIcon from "@mui/icons-material/BarChart";
 import { CustomPieBoth } from "./CustomPieBoth";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
-import { VideoLibrary, SmartDisplay, SentimentVerySatisfied, Label } from "@mui/icons-material"
+import { VideoLibrary, SmartDisplay, SentimentVerySatisfied, Label, ThumbDown, ThumbUp } from "@mui/icons-material"
 
 const dialogicActs = [
   {
@@ -509,7 +510,6 @@ const CustomComponent = (props) => {
   }, [viewComponent]);
 
   useEffect(() => {
-    console.log(textColor)
     textColorRef.current = textColor;
   }, [textColor]);
 
@@ -523,6 +523,7 @@ const CustomComponent = (props) => {
         .firstChild.childNodes[3].childNodes[3].childNodes[1];
     const chip = chipContainer.childNodes[2];
     const ourChip = chip.cloneNode(true);
+
     ourChip.childNodes[5].childNodes[3].remove();
     ourChip.childNodes[5].appendChild(
       document.createTextNode("Utterance Analysis")
@@ -554,6 +555,17 @@ const CustomComponent = (props) => {
     if (textColor !== "#000") {
       addChip();
     }
+    const intervalId = setInterval(() => {
+      if (textColorRef.current !== "#000") {
+        clearInterval(intervalId);
+        return;
+      }
+
+      if (recommendationBar.childNodes[3]?.childNodes[5]?.firstChild !== null) {
+        addChip();
+        clearInterval(intervalId);
+      }
+    }, 500);
   }, [textColor]);
 
 
@@ -752,6 +764,7 @@ const CustomComponent = (props) => {
       maxHeight: "800px",
       overflowY: "auto",
       overflowX: "hidden",
+      position: "relative"
     },
     time: {
       color: "#3ea6ff",
@@ -765,7 +778,15 @@ const CustomComponent = (props) => {
       height: "fit-content",
     },
     utterance: { display: "flex", gap: "1rem" },
-    labels: { display: "flex", gap: ".5rem", flexWrap: "wrap" },
+    labels: {
+      display: "flex",
+      gap: ".5rem",
+      flexWrap: "wrap",
+      position: "relative",
+      "&:hover .thumb-buttons": {
+        display: "flex",
+      },
+    },
     label: {
       padding: "0.5rem",
       background: "#3ea6ff",
@@ -1060,7 +1081,6 @@ const CustomComponent = (props) => {
   const [charts, setCharts] = useState("bar");
   const handleCharts = (event, value) => {
     if (value !== null) {
-      console.log(value);
       setCharts(value);
     }
   };
@@ -1077,8 +1097,145 @@ const CustomComponent = (props) => {
 
   const lastUtteranceRef = useRef(null);
 
+  const [displayUtteranceThumbs, setDisplayUtteranceThumbs] = useState(false);
+  const [displaySentimentThumbs, setDisplaySentimentThumbs] = useState(false);
+  const [votingUtteranceIndex, setVotingUtteranceIndex] = useState(-1);
+  const [sentimentPopover, setSentimentPopover] = useState(false);
+
+  const containerRef = useRef();
+  const [anchorEl, setAnchorEl] = React.useState(null);
+
+  const openPopover = () => {
+    setAnchorEl(containerRef.current);
+  };
+
+  const closePopover = () => {
+    setAnchorEl(null);
+  };
+
+  const popoverOpen = Boolean(anchorEl);
+
+  const castVote = (value, isSentiment, index) => {
+    const vote = {
+      index: index ?? votingUtteranceIndex
+    }
+
+    if (isSentiment) {
+      vote.sentiment = {
+        add: {
+          label: value.label.toLowerCase()
+        }
+      }
+    } else {
+      vote.label = {
+        add: {
+          label: value.label
+        }
+      }
+    }
+
+    console.log(vote)
+
+    axios
+      .post(`${config.BACKEND_URL}/utterance_vote`, {
+        url: window.location.href,
+        vote: vote,
+      })
+      .catch((error) => {
+        console.error(error);
+      });
+  }
+
   return (
-    <div style={styles.container}>
+    <div style={styles.container} ref={containerRef}>
+      {popoverOpen && (
+        <Box sx={{ width: "100%", height: "100%", backgroundColor: "rgb(0, 0, 0, .8)", position: "absolute", top: 0, left: 0, zIndex: 99 }} />
+      )}
+      <Popover
+        open={popoverOpen}
+        anchorEl={anchorEl}
+        onClose={closePopover}
+        anchorOrigin={{
+          vertical: 'center',
+          horizontal: 'center',
+        }}
+        transformOrigin={{
+          vertical: 'center',
+          horizontal: 'center',
+        }}
+      >
+        <Box sx={{ p: 2, height: 600, backgroundColor: "#121212", color: "white" }}>
+          <Typography variant="h5">Which label is most accurate?</Typography>
+          <br />
+          <Autocomplete
+            disablePortal
+            onChange={(event, value) => {
+              castVote(value, sentimentPopover);
+            }}
+            options={sentimentPopover ? dialogicActs.filter((act) => {
+              return act.label === "negative" || act.label === "positive" || act.label === "neutral"
+            }) : dialogicActs.filter((act) => {
+              return act.label !== "negative" && act.label !== "positive" && act.label !== "neutral"
+            })}
+            getOptionLabel={(obj) => {
+              return obj.label;
+            }}
+            isOptionEqualToValue={(a, b) => {
+              return a.label === b.label;
+            }}
+            slotProps={{
+              inputLabel: {
+                color: 'gray'
+              },
+              popper: {
+                sx: {
+                  '& .MuiAutocomplete-paper': {
+                    backgroundColor: '#1e1e1e',
+                    color: '#fff',
+                  },
+                },
+              },
+            }}
+            sx={{
+              '& .MuiInputBase-root': {
+                color: 'white',
+                backgroundColor: '#1e1e1e',
+              },
+              '& .MuiOutlinedInput-notchedOutline': {
+                borderColor: 'gray',
+              },
+              '&:hover .MuiOutlinedInput-notchedOutline': {
+                borderColor: 'white',
+              },
+              '& .MuiInputLabel-root': {
+                color: 'gray',
+              },
+              width: 300,
+            }}
+            renderInput={(params) => <TextField {...params} label="Label" />}
+            renderOption={(props, option) => {
+              const { key, ...optionProps } = props;
+              return (
+                <Box
+                  key={key}
+                  component="li"
+                  sx={{ '& > img': { mr: 2, flexShrink: 0 } }}
+                  {...optionProps}
+                >
+                  <Stack direction="column" spacing={1}>
+                    <Typography variant="h5">
+                      {option.label.charAt(0).toUpperCase() + option.label.slice(1)}
+                    </Typography>
+                    <Typography variant="body2">
+                      {option.definition}
+                    </Typography>
+                  </Stack>
+                </Box>
+              );
+            }}
+          />
+        </Box>
+      </Popover>
       <Stack
         direction="row"
         justifyContent="space-between"
@@ -1212,7 +1369,12 @@ const CustomComponent = (props) => {
           {/* place holders below */}
           <h2>Current Labels:</h2>
           <Stack direction="row" spacing={1}>
-            <div style={styles.labels}>
+            <Box style={styles.labels} onMouseEnter={() => {
+              setDisplayUtteranceThumbs(true)
+            }}
+              onMouseLeave={() => {
+                setDisplayUtteranceThumbs(false)
+              }}>
               {utterances
                 .filter((utterance) => utterance.start <= currentVideoTime)
                 .slice(-1)
@@ -1224,8 +1386,54 @@ const CustomComponent = (props) => {
                     {utterance.label}
                   </button>
                 ))}
-            </div>
-            <div style={styles.labels}>
+              {displayUtteranceThumbs && (
+                <Box
+                  sx={{
+                    position: "absolute",
+                    bottom: "-10px",
+                    right: 0,
+                    gap: 1,
+                    flexDirection: "row",
+                  }}
+                >
+                  <IconButton
+                    onClick={() => {
+                      const utteranceLabel = { label: utterances.filter((utterance) => utterance.start <= currentVideoTime).slice(-1)[0].label }
+                      castVote(utteranceLabel, false, utterances.filter((utterance) => utterance.start <= currentVideoTime).length - 1)
+                    }}
+                    sx={{
+                      p: 0.5, "&:hover": {
+                        backgroundColor: "rgb(255, 255, 255)", // Change to your desired color
+                      },
+                      color: "green"
+                    }}
+                  >
+                    <ThumbUp />
+                  </IconButton>
+                  <IconButton
+                    onClick={() => {
+                      setVotingUtteranceIndex(utterances.filter((utterance) => utterance.start <= currentVideoTime).length - 1);
+                      setSentimentPopover(false);
+                      openPopover();
+                    }}
+                    sx={{
+                      p: 0.5, "&:hover": {
+                        backgroundColor: "rgb(255, 255, 255)", // Change to your desired color
+                      },
+                      color: "red"
+                    }}
+                  >
+                    <ThumbDown />
+                  </IconButton>
+                </Box>
+              )}
+            </Box>
+            <Box style={styles.labels} onMouseEnter={() => {
+              setDisplaySentimentThumbs(true)
+            }}
+              onMouseLeave={() => {
+                setDisplaySentimentThumbs(false)
+              }}>
               {utterances
                 .filter((utterance) => utterance.start <= currentVideoTime)
                 .slice(-1)
@@ -1250,7 +1458,48 @@ const CustomComponent = (props) => {
                     </button>
                   );
                 })}
-            </div>
+              {displaySentimentThumbs && (
+                <Box
+                  sx={{
+                    position: "absolute",
+                    bottom: "-10px",
+                    right: 0,
+                    gap: 1,
+                    flexDirection: "row",
+                  }}
+                >
+                  <IconButton
+                    onClick={() => {
+                      const utteranceLabel = { label: utterances.filter((utterance) => utterance.start <= currentVideoTime).slice(-1)[0].sentiment }
+                      castVote(utteranceLabel, true, utterances.filter((utterance) => utterance.start <= currentVideoTime).length - 1)
+                    }}
+                    sx={{
+                      p: 0.5, "&:hover": {
+                        backgroundColor: "rgb(255, 255, 255)", // Change to your desired color
+                      },
+                      color: "green"
+                    }}
+                  >
+                    <ThumbUp />
+                  </IconButton>
+                  <IconButton
+                    onClick={() => {
+                      setVotingUtteranceIndex(utterances.filter((utterance) => utterance.start <= currentVideoTime).length - 1);
+                      setSentimentPopover(true);
+                      openPopover();
+                    }}
+                    sx={{
+                      p: 0.5, "&:hover": {
+                        backgroundColor: "rgb(255, 255, 255)", // Change to your desired color
+                      },
+                      color: "red"
+                    }}
+                  >
+                    <ThumbDown />
+                  </IconButton>
+                </Box>
+              )}
+            </Box>
           </Stack>
           <h2>Speakers:</h2>
           <div style={styles.labels}>
