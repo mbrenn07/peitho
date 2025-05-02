@@ -33,7 +33,14 @@ import PieChartIcon from "@mui/icons-material/PieChart";
 import BarChartIcon from "@mui/icons-material/BarChart";
 import { CustomPieBoth } from "./CustomPieBoth";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
-import { VideoLibrary, SmartDisplay, SentimentVerySatisfied, Label } from "@mui/icons-material"
+import {
+  VideoLibrary,
+  SmartDisplay,
+  SentimentVerySatisfied,
+  Label,
+  Settings,
+} from "@mui/icons-material";
+import { SettingsPage } from "./SettingsPage";
 
 const dialogicActs = [
   {
@@ -99,13 +106,77 @@ const dialogicActs = [
   },
 ];
 
-const labelToDefinition = dialogicActs.reduce(
-  (acc, { label, definition }) => {
-    acc[label] = definition;
-    return acc;
+const newInitialDialogicActs = {
+  Interpersonal: {
+    definition: "",
+    labels: [
+      { label: "Denial/Disagreement", selected: true },
+      { label: "Acknowledgement", selected: true },
+      { label: "Appreciation", selected: true },
+    ],
+    color: "#FF69B4",
   },
-  {}
-);
+  "Debate Mechanics": {
+    definition: "",
+    labels: [
+      { label: "Meta-Communication", selected: true },
+      { label: "Question", selected: true },
+      { label: "Directive", selected: true },
+    ],
+    color: "#007BFF",
+  },
+  Informing: {
+    definition: "",
+    labels: [
+      { label: "Factual Claim", selected: true },
+      { label: "Statistical Claim", selected: true },
+    ],
+    color: "#228B22",
+  },
+  "Self Representation": {
+    definition: "",
+    labels: [
+      { label: "Track Record", selected: true },
+      { label: "Personal Testimony", selected: true },
+      { label: "Policy Position", selected: true },
+      { label: "Commitment", selected: true },
+    ],
+    color: "#FF8C00",
+  },
+  Accusation: {
+    definition: "",
+    labels: [
+      { label: "Policies Beliefs", selected: true },
+      { label: "Track Record", selected: true },
+      { label: "Personal Life", selected: true },
+      { label: "Other Entities", selected: true },
+    ],
+    color: "#FFD700",
+  },
+  Quoting: {
+    definition: "",
+    labels: [
+      { label: "Attributed Quote", selected: true },
+      { label: "Unattributed Quote", selected: true },
+      { label: "Self Quote", selected: true },
+      { label: "Opponent Quote", selected: true },
+    ],
+    color: "#008B8B",
+  },
+  Other: {
+    definition: "",
+    labels: [
+      { label: "Subjective Statement", selected: true },
+      { label: "Miscellaneous", selected: true },
+    ],
+    color: "#D3D3D3",
+  },
+};
+
+const labelToDefinition = dialogicActs.reduce((acc, { label, definition }) => {
+  acc[label] = definition;
+  return acc;
+}, {});
 
 const labelToColor = {
   "Procedural Act": "#FF69B4",
@@ -169,13 +240,13 @@ const LibraryAnalysis = ({ speakers }) => {
         speaker: speaker,
       })
       .then((data) => {
-        setVideosWithSpeaker(data.data)
-        setFlippedVideos(Array(data.data.length).fill(false))
+        setVideosWithSpeaker(data.data);
+        setFlippedVideos(Array(data.data.length).fill(false));
       })
       .catch((error) => {
         console.error(error);
       });
-  }
+  };
 
   const VideoItem = ({ video, displaySentiment, flipped, setFlipped }) => {
     const chartDataLabel = useMemo(() => {
@@ -183,7 +254,7 @@ const LibraryAnalysis = ({ speakers }) => {
         name: key,
         value: value,
         text: labelToDefinition[key],
-        color: labelToColor[key]
+        color: labelToColor[key],
       }));
     }, [video]);
 
@@ -192,11 +263,13 @@ const LibraryAnalysis = ({ speakers }) => {
         name: key,
         value: value,
         text: labelToDefinition[key],
-        color: labelToColor[key]
+        color: labelToColor[key],
       }));
     }, [video]);
 
-    const selectedChartData = displaySentiment ? chartDataSentiment : chartDataLabel;
+    const selectedChartData = displaySentiment
+      ? chartDataSentiment
+      : chartDataLabel;
 
     const CustomTooltip = ({ active, payload }) => {
       if (active && payload && payload.length) {
@@ -227,31 +300,50 @@ const LibraryAnalysis = ({ speakers }) => {
 
     return (
       <Grid size={6}>
-        <Card sx={{ height: 200, perspective: "1000px", backgroundColor: "rgb(33, 33, 33)", color: "white", border: "1px solid gray" }}>
-          <CardActionArea onClick={() => setFlipped(!flipped)}
+        <Card
+          sx={{
+            height: 200,
+            perspective: "1000px",
+            backgroundColor: "rgb(33, 33, 33)",
+            color: "white",
+            border: "1px solid gray",
+          }}
+        >
+          <CardActionArea
+            onClick={() => setFlipped(!flipped)}
             sx={{
               width: "100%",
               height: "100%",
               transformStyle: "preserve-3d",
               transition: "transform 2s",
               transform: flipped ? "rotateY(180deg)" : "rotateY(0deg)",
-            }}>
+            }}
+          >
             <CardMedia
               sx={{
-                height: 100, backgroundColor: "grey", marginTop: (video.thumbnail !== "" ? undefined : "-47px"), backfaceVisibility: "hidden"
+                height: 100,
+                backgroundColor: "grey",
+                marginTop: video.thumbnail !== "" ? undefined : "-47px",
+                backfaceVisibility: "hidden",
               }}
               src={video.thumbnail !== "" ? video.thumbnail : undefined}
               component="img"
             />
-            <CardContent sx={{ padding: 0, px: "4px", backfaceVisibility: "hidden" }}>
-              <Typography variant="h6" component="div" sx={{ maxHeight: 40, overflow: "hidden" }}>
+            <CardContent
+              sx={{ padding: 0, px: "4px", backfaceVisibility: "hidden" }}
+            >
+              <Typography
+                variant="h6"
+                component="div"
+                sx={{ maxHeight: 40, overflow: "hidden" }}
+              >
                 {video.title}
               </Typography>
               <Typography gutterBottom variant="subtitle1" component="div">
                 {video.date}
               </Typography>
 
-              <Typography variant="body2" sx={{ color: 'gray' }}>
+              <Typography variant="body2" sx={{ color: "gray" }}>
                 {video.description}
               </Typography>
             </CardContent>
@@ -299,7 +391,7 @@ const LibraryAnalysis = ({ speakers }) => {
         </Card>
       </Grid>
     );
-  }
+  };
 
   const CustomTooltip = ({ active, payload }) => {
     if (active && payload && payload.length) {
@@ -317,29 +409,35 @@ const LibraryAnalysis = ({ speakers }) => {
   };
 
   const chartDataLabel = useMemo(() => {
-    return Object.entries(videosWithSpeaker.overallLabel).map(([key, value]) => ({
-      name: key,
-      value: value,
-      text: labelToDefinition[key],
-      color: labelToColor[key]
-    }));
+    return Object.entries(videosWithSpeaker.overallLabel).map(
+      ([key, value]) => ({
+        name: key,
+        value: value,
+        text: labelToDefinition[key],
+        color: labelToColor[key],
+      })
+    );
   }, [videosWithSpeaker]);
 
   const chartDataSentiment = useMemo(() => {
-    return Object.entries(videosWithSpeaker.overallSentiment).map(([key, value]) => ({
-      name: key,
-      value: value,
-      text: labelToDefinition[key],
-      color: labelToColor[key]
-    }));
+    return Object.entries(videosWithSpeaker.overallSentiment).map(
+      ([key, value]) => ({
+        name: key,
+        value: value,
+        text: labelToDefinition[key],
+        color: labelToColor[key],
+      })
+    );
   }, [videosWithSpeaker]);
 
-  const selectedChartData = displaySentiment ? chartDataSentiment : chartDataLabel;
+  const selectedChartData = displaySentiment
+    ? chartDataSentiment
+    : chartDataLabel;
 
   return (
     <Box sx={{ width: "100%" }}>
       <Stack direction="column" spacing={1}>
-        <Stack direction="row" spacing={.5} justifyContent="space-between">
+        <Stack direction="row" spacing={0.5} justifyContent="space-between">
           <Autocomplete
             options={speakers}
             onChange={(event, value) => {
@@ -347,45 +445,40 @@ const LibraryAnalysis = ({ speakers }) => {
             }}
             slotProps={{
               inputLabel: {
-                color: 'gray'
+                color: "gray",
               },
               popper: {
                 sx: {
-                  '& .MuiAutocomplete-paper': {
-                    backgroundColor: '#1e1e1e',
-                    color: '#fff',
+                  "& .MuiAutocomplete-paper": {
+                    backgroundColor: "#1e1e1e",
+                    color: "#fff",
                   },
                 },
               },
             }}
             sx={{
-              '& .MuiInputBase-root': {
-                color: 'white',
-                backgroundColor: '#1e1e1e',
+              "& .MuiInputBase-root": {
+                color: "white",
+                backgroundColor: "#1e1e1e",
               },
-              '& .MuiOutlinedInput-notchedOutline': {
-                borderColor: 'gray',
+              "& .MuiOutlinedInput-notchedOutline": {
+                borderColor: "gray",
               },
-              '&:hover .MuiOutlinedInput-notchedOutline': {
-                borderColor: 'white',
+              "&:hover .MuiOutlinedInput-notchedOutline": {
+                borderColor: "white",
               },
-              '& .MuiInputLabel-root': {
-                color: 'gray',
+              "& .MuiInputLabel-root": {
+                color: "gray",
               },
-              width: "70%"
+              width: "70%",
             }}
-            renderInput={(params) => (
-              <TextField
-                {...params}
-                label="Speaker"
-              />
-            )}
+            renderInput={(params) => <TextField {...params} label="Speaker" />}
           />
           <ToggleButtonGroup
             value={displaySentiment}
             exclusive
             onChange={(event, value) => {
-              setDisplaySentiment(value)
+              setDisplaySentiment(value);
             }}
             aria-label="single or multiple video analysis"
             sx={{
@@ -451,17 +544,25 @@ const LibraryAnalysis = ({ speakers }) => {
             />
             <h2>Per-Video Trends</h2>
             <Grid container spacing={2}>
-              {videosWithSpeaker.videos.map((video, index) => <VideoItem key={video.title} video={video} displaySentiment={displaySentiment} flipped={flippedVideos[index]} setFlipped={() => {
-                flippedVideos[index] = !flippedVideos[index];
-                setFlippedVideos([...flippedVideos])
-              }} />)}
+              {videosWithSpeaker.videos.map((video, index) => (
+                <VideoItem
+                  key={video.title}
+                  video={video}
+                  displaySentiment={displaySentiment}
+                  flipped={flippedVideos[index]}
+                  setFlipped={() => {
+                    flippedVideos[index] = !flippedVideos[index];
+                    setFlippedVideos([...flippedVideos]);
+                  }}
+                />
+              ))}
             </Grid>
           </>
         )}
       </Stack>
-    </Box >
+    </Box>
   );
-}
+};
 
 const CustomComponent = (props) => {
   const { recommendationBar, container } = props;
@@ -477,6 +578,9 @@ const CustomComponent = (props) => {
   const viewComponentRef = useRef();
   const textColorRef = useRef();
   const currentChipRef = useRef();
+  const [newDialogicActs, setNewDialogicActs] = useState(
+    newInitialDialogicActs
+  );
 
   useEffect(() => {
     if (viewComponent) {
@@ -509,7 +613,7 @@ const CustomComponent = (props) => {
   }, [viewComponent]);
 
   useEffect(() => {
-    console.log(textColor)
+    console.log(textColor);
     textColorRef.current = textColor;
   }, [textColor]);
 
@@ -533,9 +637,11 @@ const CustomComponent = (props) => {
     ourChip.style.border = "double 2px transparent";
     ourChip.style.borderRadius = "10px";
 
-    ourChip.style.backgroundImage = `linear-gradient(${textColorRef.current === "rgb(15, 15, 15)" ? "#FFF" : "#171717"
-      }, ${textColorRef.current === "rgb(15, 15, 15)" ? "#FFF" : "#171717"
-      }), linear-gradient(to right, #f03 80%, #ff2791 100%)`;
+    ourChip.style.backgroundImage = `linear-gradient(${
+      textColorRef.current === "rgb(15, 15, 15)" ? "#FFF" : "#171717"
+    }, ${
+      textColorRef.current === "rgb(15, 15, 15)" ? "#FFF" : "#171717"
+    }), linear-gradient(to right, #f03 80%, #ff2791 100%)`;
     ourChip.style.backgroundOrigin = "border-box";
     ourChip.style.backgroundClip = "content-box, border-box";
     if (textColorRef.current === "rgb(15, 15, 15)") {
@@ -556,22 +662,23 @@ const CustomComponent = (props) => {
     }
   }, [textColor]);
 
-
   useEffect(() => {
     const handleResize = () => {
       if (currentChipRef.current) {
         while (currentChipRef.current.childNodes[5].firstChild) {
-          currentChipRef.current.childNodes[5].removeChild(currentChipRef.current.childNodes[5].firstChild);
+          currentChipRef.current.childNodes[5].removeChild(
+            currentChipRef.current.childNodes[5].firstChild
+          );
         }
         currentChipRef.current.childNodes[5].appendChild(
           document.createTextNode("Utterance Analysis")
         );
       }
-    }
+    };
 
-    window.addEventListener('resize', handleResize);
+    window.addEventListener("resize", handleResize);
     return () => {
-      window.removeEventListener('resize', handleResize);
+      window.removeEventListener("resize", handleResize);
     };
   }, []);
 
@@ -615,9 +722,9 @@ const CustomComponent = (props) => {
               (a, b) => a.start - b.start
             );
             setUtterances(utterances);
-            const speakersObject = {}
+            const speakersObject = {};
             data.data.speakers.forEach((speaker, index) => {
-              speakersObject[index + 1] = speaker
+              speakersObject[index + 1] = speaker;
             });
             setSpeakers(speakersObject);
           })
@@ -643,18 +750,17 @@ const CustomComponent = (props) => {
         progressBarScroller.style.background = "black";
         progressBarBackground.style.background = "transparent";
         if (progressBarBackground.children.length === 0) {
-          const gradient1Holder = document.createElement('div');
-          gradient1Holder.style.width = '100%';
-          gradient1Holder.style.height = '50%';
+          const gradient1Holder = document.createElement("div");
+          gradient1Holder.style.width = "100%";
+          gradient1Holder.style.height = "50%";
 
-          const gradient2Holder = document.createElement('div');
-          gradient2Holder.style.width = '100%';
-          gradient2Holder.style.height = '50%';
+          const gradient2Holder = document.createElement("div");
+          gradient2Holder.style.width = "100%";
+          gradient2Holder.style.height = "50%";
 
           progressBarBackground.appendChild(gradient1Holder);
           progressBarBackground.appendChild(gradient2Holder);
         }
-
 
         if (utterancesRef.current) {
           let gradient1 = "linear-gradient(90deg, ";
@@ -674,21 +780,31 @@ const CustomComponent = (props) => {
                 color = "black";
               }
 
-              const addToGradient = (stringSpeaker, potentialColor, currentPercentage) => {
-                let color1 = "transparent"
-                let color2 = "transparent"
+              const addToGradient = (
+                stringSpeaker,
+                potentialColor,
+                currentPercentage
+              ) => {
+                let color1 = "transparent";
+                let color2 = "transparent";
 
-                if (stringSpeaker === speaker1Ref.current || speaker1Ref.current === "Everyone") {
-                  color1 = potentialColor
+                if (
+                  stringSpeaker === speaker1Ref.current ||
+                  speaker1Ref.current === "Everyone"
+                ) {
+                  color1 = potentialColor;
                 }
 
-                if (stringSpeaker === speaker2Ref.current || speaker2Ref.current === "Everyone") {
-                  color2 = potentialColor
+                if (
+                  stringSpeaker === speaker2Ref.current ||
+                  speaker2Ref.current === "Everyone"
+                ) {
+                  color2 = potentialColor;
                 }
 
                 gradient1 = gradient1 + `${color1} ${currentPercentage}%, `;
                 gradient2 = gradient2 + `${color2} ${currentPercentage}%, `;
-              }
+              };
 
               if (index === 0) {
                 currentPercentage = Math.min(
@@ -892,18 +1008,19 @@ const CustomComponent = (props) => {
     axios
       .get(`${config.BACKEND_URL}/autofill_speakers`)
       .then((data) => {
-        const filteredSpeakers = data.data.map((speaker) => "" + speaker).
-          filter((speaker) => !speaker.includes("Speaker"))
+        const filteredSpeakers = data.data
+          .map((speaker) => "" + speaker)
+          .filter((speaker) => !speaker.includes("Speaker"));
         setAutofillSpeakers(filteredSpeakers);
       })
       .catch((error) => {
         console.error(error);
       });
-  }
+  };
 
   useEffect(() => {
     getAutofillSpeakers();
-  }, [])
+  }, []);
 
   const [analysisPage, setAnalysisPage] = useState("single");
 
@@ -921,7 +1038,7 @@ const CustomComponent = (props) => {
   const speaker1Ref = useRef();
   useEffect(() => {
     speaker1Ref.current = speaker1;
-  }, [speaker1])
+  }, [speaker1]);
 
   const [speaker2, setSpeaker2] = useState("1");
   const handleChangeSpeaker2 = (event) => {
@@ -930,7 +1047,7 @@ const CustomComponent = (props) => {
   const speaker2Ref = useRef();
   useEffect(() => {
     speaker2Ref.current = speaker2;
-  }, [speaker2])
+  }, [speaker2]);
 
   const [previousSpeakerName, setPreviousSpeakerName] = useState(null);
   const [editedSpeakers, setEditedSpeakers] = useState({});
@@ -1090,7 +1207,7 @@ const CustomComponent = (props) => {
             value={analysisPage}
             exclusive
             onChange={(event, value) => {
-              setAnalysisPage(value)
+              setAnalysisPage(value);
             }}
             aria-label="single or multiple video analysis"
             sx={{
@@ -1117,6 +1234,10 @@ const CustomComponent = (props) => {
 
             <ToggleButton value="library" aria-label="library">
               <VideoLibrary />
+            </ToggleButton>
+
+            <ToggleButton value="settings" aria-label="settings">
+              <Settings />
             </ToggleButton>
           </ToggleButtonGroup>
           <IconButton
@@ -1154,15 +1275,17 @@ const CustomComponent = (props) => {
           </IconButton>
         </Stack>
       </Stack>
-      {analysisPage === "single" ? (
-        <Box sx={{
-          fontFamily: "Arial, sans-serif",
-          display: "flex",
-          flexDirection: "column",
-          justifyContent: "flex-start",
-          alignItems: "flex-start",
-          gap: "1rem",
-        }}>
+      {analysisPage === "single" && (
+        <Box
+          sx={{
+            fontFamily: "Arial, sans-serif",
+            display: "flex",
+            flexDirection: "column",
+            justifyContent: "flex-start",
+            alignItems: "flex-start",
+            gap: "1rem",
+          }}
+        >
           <div style={styles.scrolllist}>
             {utterances
               .filter((utterance) => utterance.start <= currentVideoTime)
@@ -1180,7 +1303,9 @@ const CustomComponent = (props) => {
             <IconButton
               title="zoom out"
               onClick={() => {
-                lastUtteranceRef.current?.scrollIntoView({ behavior: "smooth" });
+                lastUtteranceRef.current?.scrollIntoView({
+                  behavior: "smooth",
+                });
               }}
               sx={{
                 color: "#fff",
@@ -1243,7 +1368,10 @@ const CustomComponent = (props) => {
 
                   return (
                     <button
-                      style={{ ...styles.label, backgroundColor: sentimentColor }}
+                      style={{
+                        ...styles.label,
+                        backgroundColor: sentimentColor,
+                      }}
                       onClick={() => setValuesToShow("sentiment")}
                     >
                       {sentiment}
@@ -1269,7 +1397,9 @@ const CustomComponent = (props) => {
                     width: `${(value.length || 1) + 1}ch`,
                     border:
                       utterances
-                        .filter((utterance) => utterance.start <= currentVideoTime)
+                        .filter(
+                          (utterance) => utterance.start <= currentVideoTime
+                        )
                         .slice(-1)[0]?.speaker === key
                         ? "2px solid #ffffff"
                         : "none",
@@ -1280,7 +1410,7 @@ const CustomComponent = (props) => {
                   value={value}
                   onChange={(event) => handleUpdateNickname(event, key)}
                   onFocus={() => {
-                    setPreviousSpeakerName(value)
+                    setPreviousSpeakerName(value);
                   }}
                   onBlur={() => {
                     if (value === previousSpeakerName) {
@@ -1290,21 +1420,21 @@ const CustomComponent = (props) => {
                     const vote_diff = {
                       add: {
                         index: "" + index,
-                        name: value.toLowerCase()
-                      }
-                    }
+                        name: value.toLowerCase(),
+                      },
+                    };
 
                     if (editedSpeakers[index]) {
                       vote_diff.sub = {
                         index: "" + index,
-                        name: previousSpeakerName.toLowerCase()
-                      }
+                        name: previousSpeakerName.toLowerCase(),
+                      };
                     }
 
-                    editedSpeakers[index] = true
-                    setEditedSpeakers({ ...editedSpeakers })
+                    editedSpeakers[index] = true;
+                    setEditedSpeakers({ ...editedSpeakers });
 
-                    setPreviousSpeakerName(value)
+                    setPreviousSpeakerName(value);
 
                     axios
                       .post(`${config.BACKEND_URL}/speaker_vote`, {
@@ -1323,20 +1453,22 @@ const CustomComponent = (props) => {
                 {key ===
                   String(
                     utterances
-                      .filter((utterance) => utterance.start <= currentVideoTime)
+                      .filter(
+                        (utterance) => utterance.start <= currentVideoTime
+                      )
                       .slice(-1)[0]?.speaker
                   ) && (
-                    <span
-                      style={{
-                        position: "absolute",
-                        right: "0.5rem",
-                        color: "#fff",
-                        pointerEvents: "none",
-                      }}
-                    >
-                      🔊
-                    </span>
-                  )}
+                  <span
+                    style={{
+                      position: "absolute",
+                      right: "0.5rem",
+                      color: "#fff",
+                      pointerEvents: "none",
+                    }}
+                  >
+                    🔊
+                  </span>
+                )}
               </div>
             ))}
           </div>
@@ -1405,94 +1537,106 @@ const CustomComponent = (props) => {
               ))}
             </select>
           </div>
-          {
-            charts === "bar" ? (
-              <ResponsiveContainer width="100%" height={300}>
-                <BarChart
-                  layout="vertical"
-                  width={500}
-                  height={300}
-                  data={chartData}
-                  stackOffset="sign"
-                  margin={{
-                    top: 5,
-                    right: 30,
-                    left: 20,
-                    bottom: 5,
-                  }}
-                >
-                  <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis type="number" tickFormatter={(value) => Math.abs(value)} />
-                  <YAxis
-                    dataKey="name"
-                    type="category"
-                    tickFormatter={(name) => name.replace(/\//g, "/ ")}
-                  />
-                  {/* <Tooltip />
-          <Legend /> */}
-                  <Tooltip content={<CustomTooltip />} cursor={false} />
-                  <ReferenceLine x={0} stroke="#000" />
-                  <Bar
-                    dataKey="speaker1"
-                    stackId="stack"
-                    onClick={handleBarClick}
-                    onMouseEnter={handleBarMouseEnter}
-                    onMouseLeave={handleBarMouseLeave}
-                  >
-                    {chartData.map((entry, index) => {
-                      return (
-                        <Cell key={`cell-${index}`} fill={labelToColor[entry.name]} />
-                      );
-                    })}
-                  </Bar>
-                  <Bar
-                    dataKey="speaker2"
-                    stackId="stack"
-                    onClick={handleBarClick}
-                    onMouseEnter={handleBarMouseEnter}
-                    onMouseLeave={handleBarMouseLeave}
-                  >
-                    {chartData.map((entry, index) => {
-                      return (
-                        <Cell
-                          key={`cell-${index}`}
-                          fill={darkenHexColor(labelToColor[entry.name])}
-                        />
-                      );
-                    })}
-                  </Bar>
-                </BarChart>
-              </ResponsiveContainer>
-            ) : (
-              <div style={{ width: "100%", display: "flex" }}>
-                <CustomPieBoth
-                  data1={chartData.map((l) => ({
-                    ...l,
-                    value: l.speaker1Times.length,
-                    color: labelToColor[l.name],
-                    text: labelToDefinition[l.name],
-                    speaker: speakers[speaker1],
-                  }))}
-                  data2={chartData.map((l) => ({
-                    ...l,
-                    value: l.speaker2Times.length,
-                    color: darkenHexColor(labelToColor[l.name]),
-                    text: labelToDefinition[l.name],
-                    speaker: speakers[speaker2],
-                  }))}
-                  width={"100%"}
-                  height={300}
-                  handleClick={handleBarClick}
-                  handleMouseEnter={handleBarMouseEnter}
-                  handleMouseLeave={handleBarMouseLeave}
+          {charts === "bar" ? (
+            <ResponsiveContainer width="100%" height={300}>
+              <BarChart
+                layout="vertical"
+                width={500}
+                height={300}
+                data={chartData}
+                stackOffset="sign"
+                margin={{
+                  top: 5,
+                  right: 30,
+                  left: 20,
+                  bottom: 5,
+                }}
+              >
+                <CartesianGrid strokeDasharray="3 3" />
+                <XAxis
+                  type="number"
+                  tickFormatter={(value) => Math.abs(value)}
                 />
-              </div>
-            )
-          }
+                <YAxis
+                  dataKey="name"
+                  type="category"
+                  tickFormatter={(name) => name.replace(/\//g, "/ ")}
+                />
+                {/* <Tooltip />
+          <Legend /> */}
+                <Tooltip content={<CustomTooltip />} cursor={false} />
+                <ReferenceLine x={0} stroke="#000" />
+                <Bar
+                  dataKey="speaker1"
+                  stackId="stack"
+                  onClick={handleBarClick}
+                  onMouseEnter={handleBarMouseEnter}
+                  onMouseLeave={handleBarMouseLeave}
+                >
+                  {chartData.map((entry, index) => {
+                    return (
+                      <Cell
+                        key={`cell-${index}`}
+                        fill={labelToColor[entry.name]}
+                      />
+                    );
+                  })}
+                </Bar>
+                <Bar
+                  dataKey="speaker2"
+                  stackId="stack"
+                  onClick={handleBarClick}
+                  onMouseEnter={handleBarMouseEnter}
+                  onMouseLeave={handleBarMouseLeave}
+                >
+                  {chartData.map((entry, index) => {
+                    return (
+                      <Cell
+                        key={`cell-${index}`}
+                        fill={darkenHexColor(labelToColor[entry.name])}
+                      />
+                    );
+                  })}
+                </Bar>
+              </BarChart>
+            </ResponsiveContainer>
+          ) : (
+            <div style={{ width: "100%", display: "flex" }}>
+              <CustomPieBoth
+                data1={chartData.map((l) => ({
+                  ...l,
+                  value: l.speaker1Times.length,
+                  color: labelToColor[l.name],
+                  text: labelToDefinition[l.name],
+                  speaker: speakers[speaker1],
+                }))}
+                data2={chartData.map((l) => ({
+                  ...l,
+                  value: l.speaker2Times.length,
+                  color: darkenHexColor(labelToColor[l.name]),
+                  text: labelToDefinition[l.name],
+                  speaker: speakers[speaker2],
+                }))}
+                width={"100%"}
+                height={300}
+                handleClick={handleBarClick}
+                handleMouseEnter={handleBarMouseEnter}
+                handleMouseLeave={handleBarMouseLeave}
+              />
+            </div>
+          )}
           {barInfo}
         </Box>
-      ) : (
+      )}
+      {analysisPage === "library" && (
         <LibraryAnalysis speakers={autofillSpeakers} />
+      )}
+
+      {analysisPage === "settings" && (
+        <SettingsPage
+          dialogicActs={newDialogicActs}
+          setDialogicActs={setNewDialogicActs}
+        />
       )}
     </div>
   );
