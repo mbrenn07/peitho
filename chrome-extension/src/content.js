@@ -39,10 +39,13 @@ import {
   VideoLibrary,
   SmartDisplay,
   SentimentVerySatisfied,
-  Label, ThumbDown, ThumbUp,
+  Label,
+  ThumbDown,
+  ThumbUp,
   Settings,
 } from "@mui/icons-material";
 import { SettingsPage } from "./SettingsPage";
+import { LabelVoting } from "./LabelVoting";
 
 const dialogicActs = [
   {
@@ -570,7 +573,7 @@ const CustomComponent = (props) => {
   const { recommendationBar, container } = props;
   const [currentVideoTime, setCurrentVideoTime] = useState(0);
   const [utterances, setUtterances] = useState([]);
-  const [utteranceVotes, setUtteranceVotes] = useState({})
+  const [utteranceVotes, setUtteranceVotes] = useState({});
   const [hoveredBar, setHoveredBar] = useState(null);
   const [viewComponent, setViewComponent] = useState(false);
   const [textColor, setTextColor] = useState("#000"); // fallback color
@@ -587,10 +590,8 @@ const CustomComponent = (props) => {
 
   const atDemoURL = useMemo(() => {
     const urlParams = new URLSearchParams(window.location.search);
-    return (
-      urlParams.get("v") === config.DEMO_URL
-    )
-  }, [window.location.search])
+    return urlParams.get("v") === config.DEMO_URL;
+  }, [window.location.search]);
 
   useEffect(() => {
     if (viewComponent) {
@@ -647,9 +648,11 @@ const CustomComponent = (props) => {
     ourChip.style.border = "double 2px transparent";
     ourChip.style.borderRadius = "10px";
 
-    ourChip.style.backgroundImage = `linear-gradient(${textColorRef.current === "rgb(15, 15, 15)" ? "#FFF" : "#171717"
-      }, ${textColorRef.current === "rgb(15, 15, 15)" ? "#FFF" : "#171717"
-      }), linear-gradient(to right, #f03 80%, #ff2791 100%)`;
+    ourChip.style.backgroundImage = `linear-gradient(${
+      textColorRef.current === "rgb(15, 15, 15)" ? "#FFF" : "#171717"
+    }, ${
+      textColorRef.current === "rgb(15, 15, 15)" ? "#FFF" : "#171717"
+    }), linear-gradient(to right, #f03 80%, #ff2791 100%)`;
     ourChip.style.backgroundOrigin = "border-box";
     ourChip.style.backgroundClip = "content-box, border-box";
     if (textColorRef.current === "rgb(15, 15, 15)") {
@@ -888,7 +891,7 @@ const CustomComponent = (props) => {
       maxHeight: "800px",
       overflowY: "auto",
       overflowX: "hidden",
-      position: "relative"
+      position: "relative",
     },
     time: {
       color: "#3ea6ff",
@@ -900,7 +903,7 @@ const CustomComponent = (props) => {
       borderRadius: "4px",
       width: "fit-content",
       height: "fit-content",
-      cursor: "pointer"
+      cursor: "pointer",
     },
     utterance: { display: "flex", gap: "1rem" },
     labels: {
@@ -931,6 +934,7 @@ const CustomComponent = (props) => {
       color: "#FFF",
       borderRadius: "4px",
       padding: "0.5rem",
+      border: "none",
     },
     barInfo: {
       display: "flex",
@@ -950,16 +954,23 @@ const CustomComponent = (props) => {
     },
     scrolllist: {
       overflowY: "auto",
-      maxHeight: "15rem",
+      maxHeight: "30rem",
       width: "100%",
+      display: "flex",
+      flexDirection: "column",
       gap: "1rem",
       position: "relative",
     },
     scrollListItem: {
-      position: "sticky",
-      bottom: "0",
-      right: "0",
+      display: "flex",
+      justifyContent: "space-between",
+      gap: "1rem",
     },
+    scrollListItemContainerLast: {
+      backgroundColor: "#ffffff33",
+      padding: "1rem .5rem 1rem .5rem",
+    },
+    scrollListItemContainer: { padding: "1rem .5rem 1rem .5rem" },
   };
 
   const formatTime = (ms) => {
@@ -1222,9 +1233,17 @@ const CustomComponent = (props) => {
   };
 
   const lastUtteranceRef = useRef(null);
+  const scrollListRef = useRef(null);
+  const prevUtterances = utterances.filter(
+    (utterance) => utterance.start <= currentVideoTime
+  );
+  useEffect(() => {
+    if (scrollListRef.current) {
+      scrollListRef.current.scrollTop = scrollListRef.current.scrollHeight;
+    }
+  }, [prevUtterances.length, analysisPage]);
 
-  const [displayUtteranceThumbs, setDisplayUtteranceThumbs] = useState(false);
-  const [displaySentimentThumbs, setDisplaySentimentThumbs] = useState(false);
+  
   const [votingUtteranceIndex, setVotingUtteranceIndex] = useState(-1);
   const [sentimentPopover, setSentimentPopover] = useState(false);
 
@@ -1246,19 +1265,19 @@ const CustomComponent = (props) => {
     const label = isSentiment ? value.label.toLowerCase() : value.label;
 
     const vote = {
-      index: utteranceIndex
-    }
+      index: utteranceIndex,
+    };
 
     vote[isSentiment ? "sentiment" : "label"] = {
       add: {
-        label: label
-      }
-    }
+        label: label,
+      },
+    };
 
     if (utteranceVotes[utteranceIndex]) {
       vote[isSentiment ? "sentiment" : "label"].sub = {
-        label: utteranceVotes[utteranceIndex]
-      }
+        label: utteranceVotes[utteranceIndex],
+      };
     }
 
     axios
@@ -1277,30 +1296,42 @@ const CustomComponent = (props) => {
       .catch((error) => {
         console.error(error);
       });
-  }
+  };
 
   return (
     <div style={styles.container} ref={containerRef}>
       {popoverOpen && (
-        <Box sx={{ width: "100%", height: "100%", backgroundColor: "rgb(0, 0, 0, .8)", position: "absolute", top: 0, left: 0, zIndex: 99 }} />
+        <Box
+          sx={{
+            width: "100%",
+            height: "100%",
+            backgroundColor: "rgb(0, 0, 0, .8)",
+            position: "absolute",
+            top: 0,
+            left: 0,
+            zIndex: 99,
+          }}
+        />
       )}
       <Popover
         PaperProps={{
-          sx: { borderRadius: 0 }
+          sx: { borderRadius: 0 },
         }}
         open={popoverOpen}
         anchorEl={anchorEl}
         onClose={closePopover}
         anchorOrigin={{
-          vertical: 'center',
-          horizontal: 'center',
+          vertical: "center",
+          horizontal: "center",
         }}
         transformOrigin={{
-          vertical: 'center',
-          horizontal: 'center',
+          vertical: "center",
+          horizontal: "center",
         }}
       >
-        <Box sx={{ p: 2, height: 500, backgroundColor: "#121212", color: "white" }}>
+        <Box
+          sx={{ p: 2, height: 500, backgroundColor: "#121212", color: "white" }}
+        >
           <Typography variant="h5">Which label is most accurate?</Typography>
           <br />
           <Autocomplete
@@ -1308,11 +1339,23 @@ const CustomComponent = (props) => {
             onChange={(event, value) => {
               castVote(value, sentimentPopover);
             }}
-            options={sentimentPopover ? dialogicActs.filter((act) => {
-              return act.label === "negative" || act.label === "positive" || act.label === "neutral"
-            }) : dialogicActs.filter((act) => {
-              return act.label !== "negative" && act.label !== "positive" && act.label !== "neutral"
-            })}
+            options={
+              sentimentPopover
+                ? dialogicActs.filter((act) => {
+                    return (
+                      act.label === "negative" ||
+                      act.label === "positive" ||
+                      act.label === "neutral"
+                    );
+                  })
+                : dialogicActs.filter((act) => {
+                    return (
+                      act.label !== "negative" &&
+                      act.label !== "positive" &&
+                      act.label !== "neutral"
+                    );
+                  })
+            }
             getOptionLabel={(obj) => {
               return obj.label;
             }}
@@ -1321,30 +1364,30 @@ const CustomComponent = (props) => {
             }}
             slotProps={{
               inputLabel: {
-                color: 'gray'
+                color: "gray",
               },
               popper: {
                 sx: {
-                  '& .MuiAutocomplete-paper': {
-                    backgroundColor: '#1e1e1e',
-                    color: '#fff',
+                  "& .MuiAutocomplete-paper": {
+                    backgroundColor: "#1e1e1e",
+                    color: "#fff",
                   },
                 },
               },
             }}
             sx={{
-              '& .MuiInputBase-root': {
-                color: 'white',
-                backgroundColor: '#1e1e1e',
+              "& .MuiInputBase-root": {
+                color: "white",
+                backgroundColor: "#1e1e1e",
               },
-              '& .MuiOutlinedInput-notchedOutline': {
-                borderColor: 'gray',
+              "& .MuiOutlinedInput-notchedOutline": {
+                borderColor: "gray",
               },
-              '&:hover .MuiOutlinedInput-notchedOutline': {
-                borderColor: 'white',
+              "&:hover .MuiOutlinedInput-notchedOutline": {
+                borderColor: "white",
               },
-              '& .MuiInputLabel-root': {
-                color: 'gray',
+              "& .MuiInputLabel-root": {
+                color: "gray",
               },
               width: 300,
             }}
@@ -1355,16 +1398,15 @@ const CustomComponent = (props) => {
                 <Box
                   key={key}
                   component="li"
-                  sx={{ '& > img': { mr: 2, flexShrink: 0 } }}
+                  sx={{ "& > img": { mr: 2, flexShrink: 0 } }}
                   {...optionProps}
                 >
                   <Stack direction="column" spacing={1}>
                     <Typography variant="h5">
-                      {option.label.charAt(0).toUpperCase() + option.label.slice(1)}
+                      {option.label.charAt(0).toUpperCase() +
+                        option.label.slice(1)}
                     </Typography>
-                    <Typography variant="body2">
-                      {option.definition}
-                    </Typography>
+                    <Typography variant="body2">{option.definition}</Typography>
                   </Stack>
                 </Box>
               );
@@ -1462,39 +1504,56 @@ const CustomComponent = (props) => {
             gap: "1rem",
           }}
         >
-          <div style={styles.scrolllist}>
-            {utterances
-              .filter((utterance) => utterance.start <= currentVideoTime)
-              .map((utterance, index, array) => (
+          <div ref={scrollListRef} style={styles.scrolllist}>
+            {prevUtterances.map((utterance, index, array) => (
+              <div
+                style={
+                  index === prevUtterances.length - 1
+                    ? styles.scrollListItemContainerLast
+                    : styles.scrollListItemContainer
+                }
+              >
                 <div
                   ref={index === array.length - 1 ? lastUtteranceRef : null}
                   key={utterance.start}
-                  style={styles.utterance}
+                  style={styles.scrollListItem}
                 >
-                  <p onClick={() => {
-                    handleClickPlay(utterance.start)
-                  }} style={styles.time}>{formatTime(utterance.start)}</p>
-                  <h2>"{utterance.text}"</h2>
-                </div>
-              ))}
+                  <h3
+                    onClick={() => {
+                      handleClickPlay(utterance.start);
+                    }}
+                    style={styles.time}
+                  >
+                    {formatTime(utterance.start)}
+                  </h3>
 
-            <IconButton
-              title="zoom out"
-              onClick={() => {
-                lastUtteranceRef.current?.scrollIntoView({
-                  behavior: "smooth",
-                });
-              }}
-              sx={{
-                color: "#fff",
-                backgroundColor: "#ffffff33",
-                position: "sticky",
-                bottom: "0",
-                margin: "1rem",
-              }}
-            >
-              <KeyboardArrowDownIcon />
-            </IconButton>
+                  <h3
+                    style={{
+                      ...styles.speaker,
+                    }}
+                  >
+                    {speakers[utterance.speaker]}{" "}
+                    {index === prevUtterances.length - 1 && "🔊"}
+                  </h3>
+                </div>
+                <h2 style={{ paddingTop: ".5rem", paddingBottom: ".5rem" }}>
+                  "{utterance.text}"
+                </h2>
+
+                <LabelVoting
+                  styles={styles}
+                  setValuesToShow={setValuesToShow}
+                  castVote={castVote}
+                  openPopover={openPopover}
+                  setSentimentPopover={setSentimentPopover}
+                  setVotingUtteranceIndex={setVotingUtteranceIndex}
+                  labelToColor={labelToColor}
+                  sentiment={utterance.sentiment}
+                  label={utterance.label}
+                  index={index}
+                />
+              </div>
+            ))}
           </div>
 
           {/* {utterances
@@ -1513,14 +1572,17 @@ const CustomComponent = (props) => {
           </Collapse>
         ))} */}
           {/* place holders below */}
-          <h2>Current Labels:</h2>
+          {/* <h2>Current Labels:</h2>
           <Stack direction="row" spacing={1}>
-            <Box style={styles.labels} onMouseEnter={() => {
-              setDisplayUtteranceThumbs(true)
-            }}
+            <Box
+              style={styles.labels}
+              onMouseEnter={() => {
+                setDisplayUtteranceThumbs(true);
+              }}
               onMouseLeave={() => {
-                setDisplayUtteranceThumbs(false)
-              }}>
+                setDisplayUtteranceThumbs(false);
+              }}
+            >
               {utterances
                 .filter((utterance) => utterance.start <= currentVideoTime)
                 .slice(-1)
@@ -1544,29 +1606,47 @@ const CustomComponent = (props) => {
                 >
                   <IconButton
                     onClick={() => {
-                      const utteranceLabel = { label: utterances.filter((utterance) => utterance.start <= currentVideoTime).slice(-1)[0].label }
-                      castVote(utteranceLabel, false, utterances.filter((utterance) => utterance.start <= currentVideoTime).length - 1)
+                      const utteranceLabel = {
+                        label: utterances
+                          .filter(
+                            (utterance) => utterance.start <= currentVideoTime
+                          )
+                          .slice(-1)[0].label,
+                      };
+                      castVote(
+                        utteranceLabel,
+                        false,
+                        utterances.filter(
+                          (utterance) => utterance.start <= currentVideoTime
+                        ).length - 1
+                      );
                     }}
                     sx={{
-                      p: 0.5, "&:hover": {
+                      p: 0.5,
+                      "&:hover": {
                         backgroundColor: "rgb(255, 255, 255)", // Change to your desired color
                       },
-                      color: "green"
+                      color: "green",
                     }}
                   >
                     <ThumbUp />
                   </IconButton>
                   <IconButton
                     onClick={() => {
-                      setVotingUtteranceIndex(utterances.filter((utterance) => utterance.start <= currentVideoTime).length - 1);
+                      setVotingUtteranceIndex(
+                        utterances.filter(
+                          (utterance) => utterance.start <= currentVideoTime
+                        ).length - 1
+                      );
                       setSentimentPopover(false);
                       openPopover();
                     }}
                     sx={{
-                      p: 0.5, "&:hover": {
+                      p: 0.5,
+                      "&:hover": {
                         backgroundColor: "rgb(255, 255, 255)", // Change to your desired color
                       },
-                      color: "red"
+                      color: "red",
                     }}
                   >
                     <ThumbDown />
@@ -1574,12 +1654,15 @@ const CustomComponent = (props) => {
                 </Box>
               )}
             </Box>
-            <Box style={styles.labels} onMouseEnter={() => {
-              setDisplaySentimentThumbs(true)
-            }}
+            <Box
+              style={styles.labels}
+              onMouseEnter={() => {
+                setDisplaySentimentThumbs(true);
+              }}
               onMouseLeave={() => {
-                setDisplaySentimentThumbs(false)
-              }}>
+                setDisplaySentimentThumbs(false);
+              }}
+            >
               {utterances
                 .filter((utterance) => utterance.start <= currentVideoTime)
                 .slice(-1)
@@ -1619,29 +1702,47 @@ const CustomComponent = (props) => {
                 >
                   <IconButton
                     onClick={() => {
-                      const utteranceLabel = { label: utterances.filter((utterance) => utterance.start <= currentVideoTime).slice(-1)[0].sentiment }
-                      castVote(utteranceLabel, true, utterances.filter((utterance) => utterance.start <= currentVideoTime).length - 1)
+                      const utteranceLabel = {
+                        label: utterances
+                          .filter(
+                            (utterance) => utterance.start <= currentVideoTime
+                          )
+                          .slice(-1)[0].sentiment,
+                      };
+                      castVote(
+                        utteranceLabel,
+                        true,
+                        utterances.filter(
+                          (utterance) => utterance.start <= currentVideoTime
+                        ).length - 1
+                      );
                     }}
                     sx={{
-                      p: 0.5, "&:hover": {
+                      p: 0.5,
+                      "&:hover": {
                         backgroundColor: "rgb(255, 255, 255)", // Change to your desired color
                       },
-                      color: "green"
+                      color: "green",
                     }}
                   >
                     <ThumbUp />
                   </IconButton>
                   <IconButton
                     onClick={() => {
-                      setVotingUtteranceIndex(utterances.filter((utterance) => utterance.start <= currentVideoTime).length - 1);
+                      setVotingUtteranceIndex(
+                        utterances.filter(
+                          (utterance) => utterance.start <= currentVideoTime
+                        ).length - 1
+                      );
                       setSentimentPopover(true);
                       openPopover();
                     }}
                     sx={{
-                      p: 0.5, "&:hover": {
+                      p: 0.5,
+                      "&:hover": {
                         backgroundColor: "rgb(255, 255, 255)", // Change to your desired color
                       },
-                      color: "red"
+                      color: "red",
                     }}
                   >
                     <ThumbDown />
@@ -1728,20 +1829,20 @@ const CustomComponent = (props) => {
                       )
                       .slice(-1)[0]?.speaker
                   ) && (
-                    <span
-                      style={{
-                        position: "absolute",
-                        right: "0.5rem",
-                        color: "#fff",
-                        pointerEvents: "none",
-                      }}
-                    >
-                      🔊
-                    </span>
-                  )}
+                  <span
+                    style={{
+                      position: "absolute",
+                      right: "0.5rem",
+                      color: "#fff",
+                      pointerEvents: "none",
+                    }}
+                  >
+                    🔊
+                  </span>
+                )}
               </div>
             ))}
-          </div>
+          </div> */}
           <div style={styles.speakerSelect}>
             <select
               value={speaker1}
@@ -1906,6 +2007,17 @@ const CustomComponent = (props) => {
         <SettingsPage
           dialogicActs={newDialogicActs}
           setDialogicActs={setNewDialogicActs}
+          styles={styles}
+          speakers={speakers}
+          utterances={utterances}
+          currentVideoTime={currentVideoTime}
+          editedSpeakers={editedSpeakers}
+          setEditedSpeakers={setEditedSpeakers}
+          getAutofillSpeakers={getAutofillSpeakers}
+          setPreviousSpeakerName={setPreviousSpeakerName}
+          previousSpeakerName={previousSpeakerName}
+          handleUpdateNickname={handleUpdateNickname}
+          config={config}
         />
       )}
     </div>
