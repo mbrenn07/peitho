@@ -570,6 +570,7 @@ const CustomComponent = (props) => {
   const { recommendationBar, container } = props;
   const [currentVideoTime, setCurrentVideoTime] = useState(0);
   const [utterances, setUtterances] = useState([]);
+  const [utteranceVotes, setUtteranceVotes] = useState({})
   const [hoveredBar, setHoveredBar] = useState(null);
   const [viewComponent, setViewComponent] = useState(false);
   const [textColor, setTextColor] = useState("#000"); // fallback color
@@ -728,6 +729,7 @@ const CustomComponent = (props) => {
       "Speaker B": "Nickname B",
       "Speaker C": "Nickname C",
     });
+    setUtteranceVotes({});
     chrome.runtime.sendMessage({ action: "getYouTubeCookies" }, (response) => {
       if (viewComponent && response?.cookies) {
         axios
@@ -1240,30 +1242,37 @@ const CustomComponent = (props) => {
   const popoverOpen = Boolean(anchorEl);
 
   const castVote = (value, isSentiment, index) => {
+    const utteranceIndex = index ?? votingUtteranceIndex;
+    const label = isSentiment ? value.label.toLowerCase() : value.label;
+
     const vote = {
-      index: index ?? votingUtteranceIndex
+      index: utteranceIndex
     }
 
-    if (isSentiment) {
-      vote.sentiment = {
-        add: {
-          label: value.label.toLowerCase()
-        }
-      }
-    } else {
-      vote.label = {
-        add: {
-          label: value.label
-        }
+    vote[isSentiment ? "sentiment" : "label"] = {
+      add: {
+        label: label
       }
     }
 
-    console.log(vote)
+    if (utteranceVotes[utteranceIndex]) {
+      vote[isSentiment ? "sentiment" : "label"].sub = {
+        label: utteranceVotes[utteranceIndex]
+      }
+    }
 
     axios
       .post(`${config.BACKEND_URL}/utterance_vote`, {
         url: window.location.href,
         vote: vote,
+      })
+      .then(() => {
+        utteranceVotes[utteranceIndex] = label;
+        setUtteranceVotes({ ...utteranceVotes });
+
+        if (popoverOpen) {
+          closePopover();
+        }
       })
       .catch((error) => {
         console.error(error);
