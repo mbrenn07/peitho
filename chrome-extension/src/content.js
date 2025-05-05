@@ -400,16 +400,28 @@ const LibraryAnalysis = ({ speakers }) => {
 
   const CustomTooltip = ({ active, payload }) => {
     if (active && payload && payload.length) {
-      const data = payload[0].payload;
-      const value = payload[0].value;
+      const label = payload[0].payload.name;
+      const definition = labelToDefinition[label];
 
       return (
-        <div className="bg-white p-2 border border-gray-300 shadow-lg rounded">
-          <p className="font-bold">{data.name}</p>
-          <p>Value: {value}</p>
+        <div
+          style={{
+            backgroundColor: "#1e1e1e",
+            border: "1px solid #555",
+            padding: "10px",
+            borderRadius: "8px",
+            maxWidth: "250px",
+            fontSize: "0.9rem",
+            color: "#f1f1f1",
+            boxShadow: "0px 4px 12px rgba(0,0,0,0.3)",
+          }}
+        >
+          <strong style={{ color: "#fff", fontSize: "1rem" }}>{label}</strong>
+          <p style={{ marginTop: "4px", lineHeight: "1.4" }}>{definition}</p>
         </div>
       );
     }
+
     return null;
   };
 
@@ -648,11 +660,9 @@ const CustomComponent = (props) => {
     ourChip.style.border = "double 2px transparent";
     ourChip.style.borderRadius = "10px";
 
-    ourChip.style.backgroundImage = `linear-gradient(${
-      textColorRef.current === "rgb(15, 15, 15)" ? "#FFF" : "#171717"
-    }, ${
-      textColorRef.current === "rgb(15, 15, 15)" ? "#FFF" : "#171717"
-    }), linear-gradient(to right, #f03 80%, #ff2791 100%)`;
+    ourChip.style.backgroundImage = `linear-gradient(${textColorRef.current === "rgb(15, 15, 15)" ? "#FFF" : "#171717"
+      }, ${textColorRef.current === "rgb(15, 15, 15)" ? "#FFF" : "#171717"
+      }), linear-gradient(to right, #f03 80%, #ff2791 100%)`;
     ourChip.style.backgroundOrigin = "border-box";
     ourChip.style.backgroundClip = "content-box, border-box";
     if (textColorRef.current === "rgb(15, 15, 15)") {
@@ -1243,7 +1253,7 @@ const CustomComponent = (props) => {
     }
   }, [prevUtterances.length, analysisPage]);
 
-  
+
   const [votingUtteranceIndex, setVotingUtteranceIndex] = useState(-1);
   const [sentimentPopover, setSentimentPopover] = useState(false);
 
@@ -1342,19 +1352,19 @@ const CustomComponent = (props) => {
             options={
               sentimentPopover
                 ? dialogicActs.filter((act) => {
-                    return (
-                      act.label === "negative" ||
-                      act.label === "positive" ||
-                      act.label === "neutral"
-                    );
-                  })
+                  return (
+                    act.label === "negative" ||
+                    act.label === "positive" ||
+                    act.label === "neutral"
+                  );
+                })
                 : dialogicActs.filter((act) => {
-                    return (
-                      act.label !== "negative" &&
-                      act.label !== "positive" &&
-                      act.label !== "neutral"
-                    );
-                  })
+                  return (
+                    act.label !== "negative" &&
+                    act.label !== "positive" &&
+                    act.label !== "neutral"
+                  );
+                })
             }
             getOptionLabel={(obj) => {
               return obj.label;
