@@ -449,13 +449,13 @@ def process_transcript():
     print(separated_data)
     # Call classification APIs for each utterance
     utterance_texts = [utt["text"] for utt in separated_data["utterances"]]
-    dialog_preds = call_dialog_classifier_batch(utterance_texts)
+    dialog_preds = call_dialog_classifier_batch(separated_data["utterances"])
     print(dialog_preds)
     sentiment_preds = call_sentiment_classifier_batch(utterance_texts)
     print(sentiment_preds)
 
     for i, utterance in enumerate(separated_data["utterances"]):
-        utterance["label"] = dialog_preds[i]
+        utterance["labels"] = [label_info["label"] for label_info in dialog_preds[i]]
         utterance["sentiment"] = sentiment_preds[i]
 
     video_data = {
@@ -488,29 +488,44 @@ def process_transcript():
     return {"utterances": separated_data["utterances"], "speakers": modified_speakers, "thumbnail": base64_thumbnail, "title": title, "date": upload_date, "description": description}
 
 
-def call_dialog_classifier_batch(text_list):
-    data = {"inputs": text_list}
-    response = requests.post(DIALOG_CLASSIFIER_URL,
-                             headers=hf_headers, json=data)
+def call_dialog_classifier_batch(utterance_list, context_window=2):
+    context_encoded_inputs = []
+
+    for i, curr_utt in enumerate(utterance_list):
+        current_text = curr_utt["text"]
+        current_speaker = curr_utt["speaker"]
+
+        # Get previous utterances from same video, regardless of speaker
+        prev = []
+        for j in range(i - context_window, i):
+            if j >= 0:
+                speaker = utterance_list[j]["speaker"]
+                text = utterance_list[j]["text"]
+                prev.append(f"{speaker}: {text}")
+
+        context_str = " [SEP] ".join(prev)
+        if context_str:
+            full_text = f"{context_str} [CURRENT SPEAKER: {current_speaker}] {current_text}"
+        else:
+            full_text = f"[CURRENT SPEAKER: {current_speaker}] {current_text}"
+
+        context_encoded_inputs.append(full_text)
+
+    data = {"inputs": context_encoded_inputs}
+    response = requests.post(DIALOG_CLASSIFIER_URL, headers=hf_headers, json=data)
 
     print("Dialog classifier batch response status:", response.status_code)
 
     if response.status_code == 200:
-        try:
+        try: 
             predictions = response.json()
-            if isinstance(predictions, dict) and "predictions" in predictions:
-                return [p["label"] for p in predictions["predictions"]]
-            elif isinstance(predictions, list) and "label" in predictions[0]:
-                return [p["label"] for p in predictions]
-            raise ValueError(
-                f"Unexpected dialog classifier format: {predictions}")
+            if "predictions" in predictions:
+                return [p["predicted_labels"] for p in predictions["predictions"]]  # multilabel
         except Exception as e:
             print("Error parsing dialog classifier response:", e)
-            return ["Miscellaneous"] * len(text_list)
-    else:
-        print(
-            f"Dialog classification failed: {response.status_code}, {response.text}")
-        return ["Miscellaneous"] * len(text_list)
+
+    print("Dialog classification failed or format unexpected")
+    return [[] for _ in utterance_list]  # return empty multilabel predictions if fail
 
 
 def call_sentiment_classifier_batch(text_list):
