@@ -1256,6 +1256,7 @@ const CustomComponent = (props) => {
 
 
   const [votingUtteranceIndex, setVotingUtteranceIndex] = useState(-1);
+  const [utteranceLabelsIndex, setUtteranceLabelsIndex] = useState(-1);
   const [sentimentPopover, setSentimentPopover] = useState(false);
 
   const containerRef = useRef();
@@ -1271,8 +1272,9 @@ const CustomComponent = (props) => {
 
   const popoverOpen = Boolean(anchorEl);
 
-  const castVote = (value, isSentiment, index) => {
+  const castVote = (value, isSentiment, index, labelsIndex) => {
     const utteranceIndex = index ?? votingUtteranceIndex;
+    const currLabelsIndex = (labelsIndex ?? utteranceLabelsIndex) ?? -1;
     const label = isSentiment ? value.label.toLowerCase() : value.label;
 
     const vote = {
@@ -1285,10 +1287,33 @@ const CustomComponent = (props) => {
       },
     };
 
-    if (utteranceVotes[utteranceIndex]) {
-      vote[isSentiment ? "sentiment" : "label"].sub = {
-        label: utteranceVotes[utteranceIndex],
+    if (isSentiment) {
+      vote["sentiment"] = {
+        add: {
+          label: label,
+        },
       };
+    } else {
+      vote["label"] = {
+        add: {
+          label: label,
+          index: currLabelsIndex,
+        },
+      };
+    }
+
+    if (utteranceVotes[utteranceIndex + "," + currLabelsIndex + "," + isSentiment]) {
+      if (isSentiment) {
+        vote["sentiment"].sub = {
+          label: utteranceVotes[utteranceIndex + "," + currLabelsIndex + "," + isSentiment],
+        };
+
+      } else {
+        vote["label"].sub = {
+          label: utteranceVotes[utteranceIndex + "," + currLabelsIndex + "," + isSentiment],
+          index: currLabelsIndex,
+        };
+      }
     }
 
     axios
@@ -1297,7 +1322,7 @@ const CustomComponent = (props) => {
         vote: vote,
       })
       .then(() => {
-        utteranceVotes[utteranceIndex] = label;
+        utteranceVotes[utteranceIndex + "," + currLabelsIndex + "," + isSentiment] = label;
         setUtteranceVotes({ ...utteranceVotes });
 
         if (popoverOpen) {
@@ -1558,9 +1583,10 @@ const CustomComponent = (props) => {
                   openPopover={openPopover}
                   setSentimentPopover={setSentimentPopover}
                   setVotingUtteranceIndex={setVotingUtteranceIndex}
+                  setUtteranceLabelsIndex={setUtteranceLabelsIndex}
                   labelToColor={labelToColor}
                   sentiment={utterance.sentiment}
-                  label={utterance.label}
+                  labels={utterance.labels}
                   index={index}
                 />
               </div>

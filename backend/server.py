@@ -1,3 +1,4 @@
+from flask import request
 from collections import Counter
 import assemblyai as aai
 import yt_dlp
@@ -299,34 +300,59 @@ def utterance_vote():
         return {"error": "Invalid utterance index"}, 400
 
     utterance = utterances[utt_index]
-
     utterance.setdefault("label_votes", {})
     utterance.setdefault("sentiment_votes", {})
-
-    def apply_vote(vote_section, field_votes):
-        add_label = vote_section.get("add", {}).get("label")
-        sub_label = vote_section.get("sub", {}).get("label")
-
-        if add_label:
-            field_votes[add_label] = field_votes.get(add_label, 0) + 1
-        if sub_label:
-            field_votes[sub_label] = max(field_votes.get(sub_label, 1) - 1, 0)
-
-        if field_votes:
-            best_label = max(field_votes.items(), key=lambda item: item[1])[0]
-            return best_label
-        return None
+    labels = utterance["labels"]
 
     if "label" in vote:
-        new_label = apply_vote(vote["label"], utterance["label_votes"])
-        if new_label:
-            utterance["label"] = new_label
+        label_vote = vote["label"]
+
+        for action in ["add", "sub"]:
+            label_info = label_vote.get(action)
+            if not label_info:
+                continue
+
+            label_str = label_info.get("label")
+            label_index = label_info.get("index")
+
+            if label_index is None or label_str is None:
+                return {"error": f"Missing label or index in '{action}'"}, 400
+
+            label_votes = utterance["label_votes"]
+            index_votes = label_votes.setdefault(label_index, {})
+            current_count = index_votes.get(label_str, 0)
+
+            if action == "add":
+                index_votes[label_str] = current_count + 1
+            elif action == "sub":
+                index_votes[label_str] = max(current_count - 1, 0)
+
+        for label_index, index_votes in utterance["label_votes"].items():
+            best_label = max(index_votes.items(), key=lambda item: item[1])[0]
+            labels[label_index] = best_label
 
     if "sentiment" in vote:
-        new_sentiment = apply_vote(
-            vote["sentiment"], utterance["sentiment_votes"])
-        if new_sentiment:
-            utterance["sentiment"] = new_sentiment
+        sentiment_votes = utterance["sentiment_votes"]
+
+        def update_sentiment_votes(action):
+            section = vote["sentiment"].get(action)
+            if not section:
+                return
+            label = section.get("label")
+            if not label:
+                return
+            current_count = sentiment_votes.get(label, 0)
+            if action == "add":
+                sentiment_votes[label] = current_count + 1
+            elif action == "sub":
+                sentiment_votes[label] = max(current_count - 1, 0)
+
+        update_sentiment_votes("add")
+        update_sentiment_votes("sub")
+
+        if sentiment_votes:
+            utterance["sentiment"] = max(
+                sentiment_votes.items(), key=lambda x: x[1])[0]
 
     result = videos_collection.update_one(
         {"url": url},
