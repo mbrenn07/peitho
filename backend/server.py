@@ -383,7 +383,7 @@ def process_transcript():
     options = {
         'format': 'bestaudio[ext=webm]/bestaudio/best',
         'outtmpl': 'videos/%(title)s.%(ext)s',
-        'cookiefile': 'cookies.txt'
+        'cookiefile': 'cookies.txt',
     }
 
     with yt_dlp.YoutubeDL(options) as ydl:
@@ -455,13 +455,17 @@ def process_transcript():
     print(sentiment_preds)
 
     for i, utterance in enumerate(separated_data["utterances"]):
-        utterance["labels"] = [label_info["label"] for label_info in dialog_preds[i]]
-        utterance["sentiment"] = sentiment_preds[i]
+        utterance["labels"] = [label_info["label"]
+                               for label_info in dialog_preds[i]]
+        utterance["sentiment"] = [sentiment_preds[i]]
+
+    modified_speakers = [
+        f"Speaker {index + 1}" for index, _ in enumerate(separated_data['speakers'])]
 
     video_data = {
         "url": url,
         "utterances": separated_data["utterances"],
-        "speakers": separated_data["speakers"],
+        "speakers": modified_speakers,
         "thumbnail": base64_thumbnail,
         "title": title,
         "date": upload_date,
@@ -481,9 +485,6 @@ def process_transcript():
         os.remove("cookies.txt")
     except Exception as e:
         print(f"An error occurred: {e}")
-
-    modified_speakers = [
-        f"Speaker {index + 1}" for index, _ in enumerate(separated_data['speakers'])]
 
     return {"utterances": separated_data["utterances"], "speakers": modified_speakers, "thumbnail": base64_thumbnail, "title": title, "date": upload_date, "description": description}
 
@@ -512,20 +513,23 @@ def call_dialog_classifier_batch(utterance_list, context_window=2):
         context_encoded_inputs.append(full_text)
 
     data = {"inputs": context_encoded_inputs}
-    response = requests.post(DIALOG_CLASSIFIER_URL, headers=hf_headers, json=data)
+    response = requests.post(DIALOG_CLASSIFIER_URL,
+                             headers=hf_headers, json=data)
 
     print("Dialog classifier batch response status:", response.status_code)
 
     if response.status_code == 200:
-        try: 
+        try:
             predictions = response.json()
             if "predictions" in predictions:
-                return [p["predicted_labels"] for p in predictions["predictions"]]  # multilabel
+                # multilabel
+                return [p["predicted_labels"] for p in predictions["predictions"]]
         except Exception as e:
             print("Error parsing dialog classifier response:", e)
 
     print("Dialog classification failed or format unexpected")
-    return [[] for _ in utterance_list]  # return empty multilabel predictions if fail
+    # return empty multilabel predictions if fail
+    return [[] for _ in utterance_list]
 
 
 def call_sentiment_classifier_batch(text_list):

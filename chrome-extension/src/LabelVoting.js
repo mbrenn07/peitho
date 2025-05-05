@@ -10,7 +10,7 @@ export function LabelVoting({
   setSentimentPopover,
   setVotingUtteranceIndex,
   setUtteranceLabelsIndex,
-  labelToColor,
+  getLabelCategoryColor,
   sentiment,
   labels,
   index,
@@ -101,7 +101,7 @@ export function LabelVoting({
         <button
           style={{
             ...styles.label,
-            backgroundColor: labelToColor[sentiment],
+            backgroundColor: getLabelCategoryColor(sentiment),
           }}
           onClick={() => setValuesToShow("sentiment")}
         >

@@ -47,157 +47,229 @@ import {
 import { SettingsPage } from "./SettingsPage";
 import { LabelVoting } from "./LabelVoting";
 
-const dialogicActs = [
-  {
-    label: "Procedural Act",
-    definition:
-      "Acts relating to the communicative nature of the debate, including denials/disagreements, confirmations/acknowledgements, and greetings/salutations.",
-  },
-  {
-    label: "Question",
-    definition:
-      "Any type of question directed toward the candidate, moderator(s), or candidate(s).",
-  },
-  {
-    label: "Gratitude/Congratulations",
-    definition:
-      "Expressing thankfulness to an audience or individual, acknowledging support or contributions, or presenting good wishes for contributions/achievement.",
-  },
-  {
-    label: "Self Claim",
-    definition:
-      "Asserting a truth or statement regarding the speaker's actions, past words, or track record.",
-  },
-  {
-    label: "Unattributed Claim",
-    definition:
-      "Asserting general truths about the state of the world or public opinion.",
-  },
-  {
-    label: "Attributed Claim",
-    definition:
-      "Assertions referencing individuals/groups, or data-driven claims.",
-  },
-  {
-    label: "Accusatory Claim",
-    definition:
-      "Asserting a claim about the opposing candidate's beliefs, past actions, or qualities.",
-  },
-  {
-    label: "Position Taking",
-    definition:
-      "Asserting an opinion or belief about current events, legislation, or policy.",
-  },
-  {
-    label: "Miscellaneous",
-    definition:
-      "Acts that were unable to be classified into existing categories.",
-  },
-  {
-    label: "Promise/Commitment",
-    definition: "Committing to a future action or promise.",
-  },
-  {
-    label: "negative",
-    definition: "",
-  },
-  {
-    label: "neutral",
-    definition: "",
-  },
-  {
-    label: "positive",
-    definition: "",
-  },
-];
-
-const newInitialDialogicActs = {
+const initialDialogicActs = {
   Interpersonal: {
     definition: "",
     labels: [
-      { label: "Denial/Disagreement", selected: true },
-      { label: "Acknowledgement", selected: true },
-      { label: "Appreciation", selected: true },
+      {
+        label: "Denial/Disagreement",
+        definition: "Direct or implied rejection of a prior claim or characterization.",
+        selected: true
+      },
+      {
+        label: "Confirmation/Acknowledgement",
+        definition: "Affirmation or acknowledgment of another speaker's statement.",
+        selected: true
+      },
+      {
+        label: "Gratitude/Congratulations",
+        definition: "Expressions of thanks, praise, or goodwill.",
+        selected: true
+      }
     ],
-    color: "#FF69B4",
+    color: "#FF69B4"
   },
   "Debate Mechanics": {
     definition: "",
     labels: [
-      { label: "Meta-Communication", selected: true },
-      { label: "Question", selected: true },
-      { label: "Directive", selected: true },
+      {
+        label: "Communicative Metareference",
+        definition: "Comments on debate format, structure, or speaking order.",
+        selected: true
+      },
+      {
+        label: "Question",
+        definition: "Requests for info, clarification, or accountability (often ends with '?').",
+        selected: true
+      },
+      {
+        label: "Directive",
+        definition: "Commands or instructions to the audience, opponent, or moderator.",
+        selected: true
+      }
     ],
-    color: "#007BFF",
+    color: "#007BFF"
   },
   Informing: {
     definition: "",
     labels: [
-      { label: "Factual Claim", selected: true },
-      { label: "Statistical Claim", selected: true },
+      {
+        label: "Factual Claim",
+        definition: "Objective, testable statement about the world.",
+        selected: true
+      },
+      {
+        label: "Statistical Claim",
+        definition: "Numerically grounded or quantified assertion.",
+        selected: true
+      }
     ],
-    color: "#228B22",
+    color: "#228B22"
   },
   "Self Representation": {
     definition: "",
     labels: [
-      { label: "Track Record", selected: true },
-      { label: "Personal Testimony", selected: true },
-      { label: "Policy Position", selected: true },
-      { label: "Commitment", selected: true },
+      {
+        label: "Self Track Record",
+        definition: "Claim about speaker's past leadership or achievements.",
+        selected: true
+      },
+      {
+        label: "Personal Testimony",
+        definition: "Statements about personal life or lived experience.",
+        selected: true
+      },
+      {
+        label: "Policy Position",
+        definition: "Stance or proposal on a political issue or legislation.",
+        selected: true
+      },
+      {
+        label: "Commitment",
+        definition: "Pledge or promise to take a future action.",
+        selected: true
+      }
     ],
-    color: "#FF8C00",
+    color: "#FF8C00"
   },
   Accusation: {
     definition: "",
     labels: [
-      { label: "Policies Beliefs", selected: true },
-      { label: "Track Record", selected: true },
-      { label: "Personal Life", selected: true },
-      { label: "Other Entities", selected: true },
+      {
+        label: "Accu Policies and Beliefs",
+        definition: "Assertions about an opponent's political views or stances.",
+        selected: true
+      },
+      {
+        label: "Accu Track Record",
+        definition: "Critiques of opponent''s past political or professional actions.",
+        selected: true
+      },
+      {
+        label: "Accu Personal Life",
+        definition: "Claims about an opponent's family, finances, or conduct.",
+        selected: true
+      },
+      {
+        label: "Accu Other Entities",
+        definition: "Criticism of non-candidates like media, corporations, or governments.",
+        selected: true
+      }
     ],
-    color: "#FFD700",
+    color: "#FFD700"
   },
   Quoting: {
     definition: "",
     labels: [
-      { label: "Attributed Quote", selected: true },
-      { label: "Unattributed Quote", selected: true },
-      { label: "Self Quote", selected: true },
-      { label: "Opponent Quote", selected: true },
+      {
+        label: "Attributed Quote",
+        definition: "Statement cited to a named person, group, or organization.",
+        selected: true
+      },
+      {
+        label: "Unattributed Quote",
+        definition: "Quote from anonymous or vague sources like 'people say'.",
+        selected: true
+      },
+      {
+        label: "Self Quote",
+        definition: "Speaker quoting their own past remarks or campaign.",
+        selected: true
+      },
+      {
+        label: "Opponent Quote",
+        definition: "Quoting the opponent or their campaign directly or indirectly.",
+        selected: true
+      }
     ],
-    color: "#008B8B",
+    color: "#008B8B"
   },
   Other: {
     definition: "",
     labels: [
-      { label: "Subjective Statement", selected: true },
-      { label: "Miscellaneous", selected: true },
+      {
+        label: "Subjective Statement",
+        definition: "Evaluative or emotional characterization of events or people.",
+        selected: true
+      },
+      {
+        label: "Miscellaneous",
+        definition: "Unclassifiable speech such as interruptions or incomplete phrases.",
+        selected: true
+      }
     ],
-    color: "#D3D3D3",
+    color: "#D3D3D3"
   },
+  Sentiment: {
+    definition: "",
+    labels: [
+      {
+        label: "neutral",
+        definition: "",
+        selected: true
+      },
+      {
+        label: "positive",
+        definition: "",
+        selected: true
+      },
+      {
+        label: "negative",
+        definition: "",
+        selected: true
+      },
+    ],
+    color: "#A9A9A9"
+  }
 };
 
-const labelToDefinition = dialogicActs.reduce((acc, { label, definition }) => {
-  acc[label] = definition;
-  return acc;
-}, {});
+function flattenDialogicActs(data, includeCategory = false) {
+  const result = [];
 
-const labelToColor = {
-  "Procedural Act": "#FF69B4",
-  Question: "#007BFF",
-  "Gratitude/Congratulations": "#800080",
-  "Self Claim": "#DC143C",
-  "Unattributed Claim": "#FFD700",
-  "Attributed Claim": "#008B8B",
-  "Accusatory Claim": "#8B0000",
-  "Position Taking": "#FF8C00",
-  Miscellaneous: "#D3D3D3",
-  "Promise/Commitment": "#228B22",
-  negative: "#C70039",
-  positive: "#008000",
-  neutral: "#808080",
-};
+  for (const [category, categoryData] of Object.entries(data)) {
+    for (const labelObj of categoryData.labels) {
+      const flattenedLabel = includeCategory
+        ? { ...labelObj, category }
+        : { ...labelObj };
+
+      result.push(flattenedLabel);
+    }
+  }
+
+  return result;
+}
+
+
+function getLabelDefinition(labelName) {
+  for (const categoryData of Object.values(initialDialogicActs)) {
+    for (const labelObj of categoryData.labels) {
+      if (labelObj.label === labelName) {
+        return labelObj.definition;
+      }
+    }
+  }
+  return null;
+}
+
+function getLabelCategoryColor(labelName) {
+  if (labelName === "negative") {
+    return "#C70039";
+  } else if (labelName === "positive") {
+    return "#008000";
+  } else if (labelName === "neutral") {
+    return "#808080";
+  }
+
+  for (const [categoryName, categoryData] of Object.entries(initialDialogicActs)) {
+    for (const labelObj of categoryData.labels) {
+      if (labelObj.label === labelName) {
+        return categoryData.color;
+      }
+    }
+  }
+  return null;
+}
+
 
 function getCurrentVideoTime() {
   const videoElement = document.querySelector("video");
@@ -258,8 +330,8 @@ const LibraryAnalysis = ({ speakers }) => {
       return Object.entries(video.overallLabel).map(([key, value]) => ({
         name: key,
         value: value,
-        text: labelToDefinition[key],
-        color: labelToColor[key],
+        text: getLabelDefinition(key),
+        color: getLabelCategoryColor(key),
       }));
     }, [video]);
 
@@ -267,8 +339,8 @@ const LibraryAnalysis = ({ speakers }) => {
       return Object.entries(video.overallSentiment).map(([key, value]) => ({
         name: key,
         value: value,
-        text: labelToDefinition[key],
-        color: labelToColor[key],
+        text: getLabelDefinition(key),
+        color: getLabelCategoryColor(key),
       }));
     }, [video]);
 
@@ -279,7 +351,7 @@ const LibraryAnalysis = ({ speakers }) => {
     const CustomTooltip = ({ active, payload }) => {
       if (active && payload && payload.length) {
         const label = payload[0].payload.name;
-        const definition = labelToDefinition[label];
+        const definition = getLabelDefinition(label);
 
         return (
           <div
@@ -402,7 +474,7 @@ const LibraryAnalysis = ({ speakers }) => {
   const CustomTooltip = ({ active, payload }) => {
     if (active && payload && payload.length) {
       const label = payload[0].payload.name;
-      const definition = labelToDefinition[label];
+      const definition = getLabelDefinition(label);
 
       return (
         <div
@@ -431,8 +503,8 @@ const LibraryAnalysis = ({ speakers }) => {
       ([key, value]) => ({
         name: key,
         value: value,
-        text: labelToDefinition[key],
-        color: labelToColor[key],
+        text: getLabelDefinition(key),
+        color: getLabelCategoryColor(key),
       })
     );
   }, [videosWithSpeaker]);
@@ -442,8 +514,8 @@ const LibraryAnalysis = ({ speakers }) => {
       ([key, value]) => ({
         name: key,
         value: value,
-        text: labelToDefinition[key],
-        color: labelToColor[key],
+        text: getLabelDefinition(key),
+        color: getLabelCategoryColor(key),
       })
     );
   }, [videosWithSpeaker]);
@@ -598,7 +670,7 @@ const CustomComponent = (props) => {
   const textColorRef = useRef();
   const currentChipRef = useRef();
   const [newDialogicActs, setNewDialogicActs] = useState(
-    newInitialDialogicActs
+    initialDialogicActs
   );
 
   const atDemoURL = useMemo(() => {
@@ -806,7 +878,7 @@ const CustomComponent = (props) => {
               const stringSpeaker = "" + item.speaker;
               const length = item.end - item.start;
               const percentage = (length / currentVideoTimeRef.current) * 100;
-              let color = labelToColor[item.label];
+              let color = getLabelCategoryColor(item.label);
               if (
                 hoveredBarRef?.current &&
                 hoveredBarRef.current !== item.label
@@ -1116,8 +1188,8 @@ const CustomComponent = (props) => {
         formatTime={formatTime}
         styles={styles}
         speakers={speakers}
-        color1={labelToColor[data.name]}
-        color2={darkenHexColor(labelToColor[data.name], 0.6)}
+        color1={getLabelCategoryColor(data.name)}
+        color2={darkenHexColor(getLabelCategoryColor(data.name), 0.6)}
         clickPlay={handleClickPlay}
         valuesToShow={valuesToShow}
       />
@@ -1131,13 +1203,15 @@ const CustomComponent = (props) => {
       video.play();
     }
   };
-  const [valuesToShow, setValuesToShow] = useState("label");
+  const [valuesToShow, setValuesToShow] = useState("labels");
 
-  const chartData = utterances
+  let chartData = utterances
     .filter((utterance) => utterance.start <= currentVideoTime)
     .map((utterance) => utterance[valuesToShow])
+    .flat()
     .filter((label, index, self) => self.indexOf(label) === index)
-    .map((label) => ({
+    .map((label) =>
+    ({
       name: label,
       speaker1:
         utterances
@@ -1147,7 +1221,9 @@ const CustomComponent = (props) => {
               ? true
               : String(utterance.speaker) === String(speaker1)
           )
-          .filter((utterance) => utterance[valuesToShow] === label).length * -1,
+          .filter((utterance) =>
+            utterance[valuesToShow].includes(label)
+          ).length * -1,
       speaker2: utterances
         .filter((utterance) => utterance.start <= currentVideoTime)
         .filter((utterance) =>
@@ -1155,7 +1231,9 @@ const CustomComponent = (props) => {
             ? true
             : String(utterance.speaker) === String(speaker2)
         )
-        .filter((utterance) => utterance[valuesToShow] === label).length,
+        .filter((utterance) =>
+          utterance[valuesToShow].includes(label)
+        ).length,
       speaker1Times: utterances
         .filter((utterance) => utterance.start <= currentVideoTime)
         .filter((utterance) =>
@@ -1163,7 +1241,9 @@ const CustomComponent = (props) => {
             ? true
             : String(utterance.speaker) === String(speaker1)
         )
-        .filter((utterance) => utterance[valuesToShow] === label)
+        .filter((utterance) =>
+          utterance[valuesToShow].includes(label)
+        )
         .map((utterance) => utterance.start),
       speaker2Times: utterances
         .filter((utterance) => utterance.start <= currentVideoTime)
@@ -1172,15 +1252,19 @@ const CustomComponent = (props) => {
             ? true
             : String(utterance.speaker) === String(speaker2)
         )
-        .filter((utterance) => utterance[valuesToShow] === label)
+        .filter((utterance) =>
+          utterance[valuesToShow].includes(label)
+        )
         .map((utterance) => utterance.start),
     }))
-    .sort((a, b) => a.speaker1 - b.speaker1);
+    .filter((item) => item.speaker1 !== 0 || item.speaker2 !== 0)
+    .sort((a, b) => a.speaker1 - b.speaker1)
+
 
   const CustomTooltip = ({ active, payload }) => {
     if (active && payload && payload.length) {
       const label = payload[0].payload.name;
-      const definition = labelToDefinition[label];
+      const definition = getLabelDefinition(label);
 
       return (
         <div
@@ -1377,14 +1461,14 @@ const CustomComponent = (props) => {
             }}
             options={
               sentimentPopover
-                ? dialogicActs.filter((act) => {
+                ? flattenDialogicActs(initialDialogicActs).filter((act) => {
                   return (
                     act.label === "negative" ||
                     act.label === "positive" ||
                     act.label === "neutral"
                   );
                 })
-                : dialogicActs.filter((act) => {
+                : flattenDialogicActs(initialDialogicActs).filter((act) => {
                   return (
                     act.label !== "negative" &&
                     act.label !== "positive" &&
@@ -1584,7 +1668,7 @@ const CustomComponent = (props) => {
                   setSentimentPopover={setSentimentPopover}
                   setVotingUtteranceIndex={setVotingUtteranceIndex}
                   setUtteranceLabelsIndex={setUtteranceLabelsIndex}
-                  labelToColor={labelToColor}
+                  getLabelCategoryColor={getLabelCategoryColor}
                   sentiment={utterance.sentiment}
                   labels={utterance.labels}
                   index={index}
@@ -1985,7 +2069,7 @@ const CustomComponent = (props) => {
                     return (
                       <Cell
                         key={`cell-${index}`}
-                        fill={labelToColor[entry.name]}
+                        fill={getLabelCategoryColor(entry.name)}
                       />
                     );
                   })}
@@ -2001,7 +2085,7 @@ const CustomComponent = (props) => {
                     return (
                       <Cell
                         key={`cell-${index}`}
-                        fill={darkenHexColor(labelToColor[entry.name])}
+                        fill={darkenHexColor(getLabelCategoryColor(entry.name))}
                       />
                     );
                   })}
@@ -2014,15 +2098,15 @@ const CustomComponent = (props) => {
                 data1={chartData.map((l) => ({
                   ...l,
                   value: l.speaker1Times.length,
-                  color: labelToColor[l.name],
-                  text: labelToDefinition[l.name],
+                  color: getLabelCategoryColor(l.name),
+                  text: getLabelDefinition(l.name),
                   speaker: speakers[speaker1],
                 }))}
                 data2={chartData.map((l) => ({
                   ...l,
                   value: l.speaker2Times.length,
-                  color: darkenHexColor(labelToColor[l.name]),
-                  text: labelToDefinition[l.name],
+                  color: darkenHexColor(getLabelCategoryColor(l.name)),
+                  text: getLabelDefinition(l.name),
                   speaker: speakers[speaker2],
                 }))}
                 width={"100%"}
