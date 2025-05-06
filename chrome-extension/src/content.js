@@ -231,6 +231,18 @@ const initialDialogicActs = {
   },
 };
 
+const getCategoryOfLabel = (label) => {
+  for (const category in initialDialogicActs) {
+    const labels = initialDialogicActs[category].labels;
+    for (const labelObj of labels) {
+      if (labelObj.label === label) {
+        return category;
+      }
+    }
+  }
+  return null;
+};
+
 function flattenDialogicActs(data, includeCategory = false) {
   const result = [];
 
@@ -331,18 +343,6 @@ const LibraryAnalysis = ({ speakers }) => {
       .catch((error) => {
         console.error(error);
       });
-  };
-
-  const getCategoryOfLabel = (label) => {
-    for (const category in initialDialogicActs) {
-      const labels = initialDialogicActs[category].labels;
-      for (const labelObj of labels) {
-        if (labelObj.label === label) {
-          return category;
-        }
-      }
-    }
-    return null;
   };
 
   const VideoItem = ({ video, displaySentiment, flipped, setFlipped }) => {
@@ -534,8 +534,12 @@ const LibraryAnalysis = ({ speakers }) => {
         value: value,
         text: getLabelDefinition(key),
         color: getLabelCategoryColor(key),
+        category: getCategoryOfLabel(key),
       })
-    );
+    ).sort((a, b) => {
+      if (a.category === b.category) return 0;
+      return a.category.localeCompare(b.category);
+    });
   }, [videosWithSpeaker]);
 
   const chartDataSentiment = useMemo(() => {
@@ -1871,15 +1875,23 @@ const CustomComponent = (props) => {
                       value: l.speaker1Times.length,
                       color: getLabelCategoryColor(l.name),
                       text: getLabelDefinition(l.name),
+                      category: getCategoryOfLabel(l.name),
                       speaker: speakers[speaker1],
-                    }))}
+                    })).sort((a, b) => {
+                      if (a.category === b.category) return 0;
+                      return a.category.localeCompare(b.category);
+                    })}
                     data2={chartData.map((l) => ({
                       ...l,
                       value: l.speaker2Times.length,
                       color: darkenHexColor(getLabelCategoryColor(l.name)),
                       text: getLabelDefinition(l.name),
+                      category: getCategoryOfLabel(l.name),
                       speaker: speakers[speaker2],
-                    }))}
+                    })).sort((a, b) => {
+                      if (a.category === b.category) return 0;
+                      return a.category.localeCompare(b.category);
+                    })}
                     width={"100%"}
                     height={300}
                     handleClick={handleBarClick}

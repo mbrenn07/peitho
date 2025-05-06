@@ -156,8 +156,9 @@ def get_all_videos_for_speaker():
     videos_data = []
 
     for doc in results:
+        speakers = doc.get("speakers", [])
         utterances = [u for u in doc.get(
-            "initial_utterances", []) if str(u.get("speaker")) == str(speaker)]
+            "utterances", []) if speakers[u.get("speaker") - 1] == str(speaker)]
 
         label_counts = Counter()
         sentiment_counts = Counter()
