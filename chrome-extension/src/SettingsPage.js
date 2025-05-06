@@ -36,6 +36,8 @@ export function SettingsPage({
   previousSpeakerName,
   handleUpdateNickname,
   config,
+  shouldShimmerSpeakers,
+  shimmerStyles
 }) {
   const handleToggle = (category, index) => () => {
     setDialogicActs((prev) => {
@@ -67,6 +69,7 @@ export function SettingsPage({
               position: "relative",
               display: "inline-flex",
               alignItems: "center",
+              ...(shouldShimmerSpeakers ? shimmerStyles() : {})
             }}
           >
             <input
@@ -132,17 +135,17 @@ export function SettingsPage({
                   .filter((utterance) => utterance.start <= currentVideoTime)
                   .slice(-1)[0]?.speaker
               ) && (
-              <span
-                style={{
-                  position: "absolute",
-                  right: "0.5rem",
-                  color: "#fff",
-                  pointerEvents: "none",
-                }}
-              >
-                🔊
-              </span>
-            )}
+                <span
+                  style={{
+                    position: "absolute",
+                    right: "0.5rem",
+                    color: "#fff",
+                    pointerEvents: "none",
+                  }}
+                >
+                  🔊
+                </span>
+              )}
           </div>
         ))}
       </div>

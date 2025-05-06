@@ -29,6 +29,8 @@ export function CustomTimeDisplay({
   color2,
   clickPlay,
   valuesToShow,
+  shouldShimmer,
+  shimmerStyles,
 }) {
   const sliderSpeaker1 = data.speaker1Times.map((time, i) => {
     const utteranceText =
@@ -140,7 +142,7 @@ export function CustomTimeDisplay({
   };
 
   return (
-    <div style={styles.barInfo}>
+    <div style={{ ...styles.barInfo, ...(shouldShimmer ? shimmerStyles(3, "rgba(255, 255, 255, 0.1)") : {}) }}>
       <div style={{ position: "absolute", top: "0", right: "0", zIndex: 1 }}>
         <CustomPie
           data={[

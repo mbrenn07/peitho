@@ -14,6 +14,8 @@ export function LabelVoting({
   sentiment,
   labels,
   index,
+  displayVotingDemo,
+  shimmerStyles,
 }) {
   const [displayUtteranceThumbs, setDisplayUtteranceThumbs] = useState([
     false,
@@ -45,12 +47,13 @@ export function LabelVoting({
               style={{
                 ...styles.label,
                 backgroundColor: getLabelCategoryColor(label),
+                ...(displayVotingDemo ? shimmerStyles() : {})
               }}
               onClick={() => setValuesToShow("labels")}
             >
               {label}
             </button>
-            {displayUtteranceThumbs[j] && (
+            {(displayUtteranceThumbs[j] || displayVotingDemo) && (
               <Box
                 sx={{
                   position: "absolute",
@@ -70,7 +73,7 @@ export function LabelVoting({
                   sx={{
                     p: 0.5,
                     "&:hover": {
-                      backgroundColor: "rgb(255, 255, 255)", // Change to your desired color
+                      backgroundColor: "rgb(255, 255, 255)",
                     },
                     color: "green",
                   }}
@@ -87,7 +90,7 @@ export function LabelVoting({
                   sx={{
                     p: 0.5,
                     "&:hover": {
-                      backgroundColor: "rgb(255, 255, 255)", // Change to your desired color
+                      backgroundColor: "rgb(255, 255, 255)",
                     },
                     color: "red",
                   }}
@@ -112,13 +115,14 @@ export function LabelVoting({
           style={{
             ...styles.label,
             backgroundColor: getLabelCategoryColor(sentiment[0]),
+            ...(displayVotingDemo ? shimmerStyles() : {})
           }}
           onClick={() => setValuesToShow("sentiment")}
         >
           {sentiment[0]}
         </button>
 
-        {displaySentimentThumbs && (
+        {(displaySentimentThumbs || displayVotingDemo) && (
           <Box
             sx={{
               position: "absolute",
@@ -138,7 +142,7 @@ export function LabelVoting({
               sx={{
                 p: 0.5,
                 "&:hover": {
-                  backgroundColor: "rgb(255, 255, 255)", // Change to your desired color
+                  backgroundColor: "rgb(255, 255, 255)",
                 },
                 color: "green",
               }}
@@ -155,7 +159,7 @@ export function LabelVoting({
               sx={{
                 p: 0.5,
                 "&:hover": {
-                  backgroundColor: "rgb(255, 255, 255)", // Change to your desired color
+                  backgroundColor: "rgb(255, 255, 255)",
                 },
                 color: "red",
               }}

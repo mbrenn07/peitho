@@ -44,6 +44,13 @@ import {
 import { SettingsPage } from "./SettingsPage";
 import { LabelVoting } from "./LabelVoting";
 
+const shimmerStyles = (duration = 1.5, highlightColor = 'rgba(255, 255, 255, 0.3)') => ({
+  animation: `shimmer ${duration}s linear infinite both`,
+  backgroundImage: `linear-gradient(90deg, transparent 0%, ${highlightColor} 50%, transparent 100%)`,
+  backgroundRepeat: 'repeat',
+  backgroundSize: '200% 100%',
+});
+
 const initialDialogicActs = {
   Interpersonal: {
     definition: "",
@@ -322,7 +329,7 @@ function initTimeTracking() {
 
 initTimeTracking();
 
-const LibraryAnalysis = ({ speakers }) => {
+const LibraryAnalysis = ({ speakers, shouldGetStats, shouldShimmer, shimmerCard, shouldDisplaySentiment }) => {
   const [videosWithSpeaker, setVideosWithSpeaker] = useState({
     overallLabel: {},
     overallSentiment: {},
@@ -330,6 +337,16 @@ const LibraryAnalysis = ({ speakers }) => {
   });
   const [displaySentiment, setDisplaySentiment] = useState(false);
   const [flippedVideos, setFlippedVideos] = useState([]);
+
+  useEffect(() => {
+    if (shouldGetStats) {
+      getStatsForSpeaker("Peitho Dev")
+    }
+
+    if (shouldDisplaySentiment) {
+      setDisplaySentiment(true);
+    }
+  }, [shouldGetStats, shouldDisplaySentiment])
 
   const getStatsForSpeaker = (speaker) => {
     axios
@@ -345,7 +362,7 @@ const LibraryAnalysis = ({ speakers }) => {
       });
   };
 
-  const VideoItem = ({ video, displaySentiment, flipped, setFlipped }) => {
+  const VideoItem = ({ video, displaySentiment, flipped, setFlipped, shimmerCard }) => {
     const chartDataLabel = useMemo(() => {
       const categoryData = {};
       Object.entries(video.overallLabel).forEach(([key, value]) => {
@@ -406,6 +423,8 @@ const LibraryAnalysis = ({ speakers }) => {
       return null;
     };
 
+    console.log(shimmerCard)
+
     return (
       <Grid size={6}>
         <Card
@@ -416,6 +435,7 @@ const LibraryAnalysis = ({ speakers }) => {
             color: "white",
             border: "1px solid gray",
           }}
+          style={{ ...(shimmerCard ? shimmerStyles(1.5, "rgba(255, 255, 255, 0.1)") : {}) }}
         >
           <CardActionArea
             onClick={() => setFlipped(!flipped)}
@@ -631,7 +651,7 @@ const LibraryAnalysis = ({ speakers }) => {
           </ToggleButtonGroup>
         </Stack>
         {selectedChartData.length > 0 && (
-          <>
+          <Box style={{ ...(shouldShimmer ? shimmerStyles(3, "rgba(255, 255, 255, 0.1)") : {}) }}>
             <h2>Overall Trends</h2>
             <ResponsiveContainer width="100%" height={300}>
               <BarChart
@@ -669,6 +689,7 @@ const LibraryAnalysis = ({ speakers }) => {
             <Grid container spacing={2}>
               {videosWithSpeaker.videos.map((video, index) => (
                 <VideoItem
+                  shimmerCard={shimmerCard}
                   key={video.title}
                   video={video}
                   displaySentiment={displaySentiment}
@@ -680,7 +701,7 @@ const LibraryAnalysis = ({ speakers }) => {
                 />
               ))}
             </Grid>
-          </>
+          </Box>
         )}
       </Stack>
     </Box>
@@ -703,11 +724,312 @@ const CustomComponent = (props) => {
   const textColorRef = useRef();
   const currentChipRef = useRef();
   const [newDialogicActs, setNewDialogicActs] = useState(initialDialogicActs);
+  const [charts, setCharts] = useState("bar");
+  const [barInfo, setBarInfo] = useState("");
+  const [analysisPage, setAnalysisPage] = useState("single");
+
+  const metareferenceBar = useRef();
+
+  // utterances, speaker1, speaker2, formatTime, setBarInfo, styles, speakers
+  const handleBarClick = (data, shouldShimmer = false) => {
+    setBarInfo(
+      <CustomTimeDisplay
+        data={data}
+        utterances={utterances}
+        speaker1={speaker1}
+        speaker2={speaker2}
+        formatTime={formatTime}
+        styles={styles}
+        shouldShimmer={shouldShimmer}
+        shimmerStyles={shimmerStyles}
+        speakers={speakers}
+        color1={getLabelCategoryColor(data.name)}
+        color2={darkenHexColor(getLabelCategoryColor(data.name), 0.6)}
+        clickPlay={handleClickPlay}
+        valuesToShow={valuesToShow}
+      />
+    );
+  };
 
   const atDemoURL = useMemo(() => {
     const urlParams = new URLSearchParams(window.location.search);
     return urlParams.get("v") === config.DEMO_URL;
   }, [window.location.search]);
+
+  useEffect(() => {
+    if (atDemoURL) {
+      setViewComponent(true);
+    }
+  }, [atDemoURL])
+
+  useEffect(() => {
+    if (atDemoURL) {
+      if (currentVideoTime > 81000 && currentVideoTime < 82000) {
+        setAnalysisPage("library");
+      } else if (currentVideoTime > 107000 && currentVideoTime < 108000) {
+        setAnalysisPage("settings");
+      } else if (currentVideoTime > 112000 && currentVideoTime < 113000) {
+        setNewDialogicActs((prev) => {
+          const updated = { ...prev };
+          updated["Debate Mechanics"].labels.map((labels) => (labels.selected = false));
+          return { ...updated };
+        })
+      } else if (currentVideoTime > 112500 && currentVideoTime < 113500) {
+        setNewDialogicActs((prev) => {
+          const updated = { ...prev };
+          updated["Debate Mechanics"].labels[0].selected =
+            !updated["Debate Mechanics"].labels[0].selected;
+          return { ...updated };
+        })
+      } else if (currentVideoTime > 114500 && currentVideoTime < 115000) {
+        setNewDialogicActs((prev) => {
+          const updated = { ...prev };
+          updated["Debate Mechanics"].labels.map((labels) => (labels.selected = false));
+          return { ...updated };
+        })
+      } else if (currentVideoTime > 118000 && currentVideoTime < 119000) {
+        setAnalysisPage("single");
+      } else if (currentVideoTime > 126000 && currentVideoTime < 127000) {
+        setAnalysisPage("settings");
+      } else if (currentVideoTime > 132000 && currentVideoTime < 133000) {
+        setAnalysisPage("single");
+      } else if (currentVideoTime > 141000 && currentVideoTime < 142000) {
+        setAnalysisPage("settings");
+      } else if (currentVideoTime > 145000 && currentVideoTime < 146000) {
+        setAnalysisPage("library");
+      }
+
+      if (currentVideoTime > 60000 && currentVideoTime < 67000) {
+        setCharts("pie");
+      } else if (currentVideoTime > 67000 && currentVideoTime < 68000) {
+        setCharts("bar");
+      } else if (currentVideoTime > 70000 && currentVideoTime < 71000) {
+        handleBarClick({
+          "name": "Communicative Metareference",
+          "speaker1": -9,
+          "speaker2": 9,
+          "speaker1Times": [
+            560,
+            952,
+            8120,
+            19472,
+            30272,
+            39480,
+            52272,
+            60432,
+            67840
+          ],
+          "speaker2Times": [
+            560,
+            952,
+            8120,
+            19472,
+            30272,
+            39480,
+            52272,
+            60432,
+            67840
+          ],
+          "category": "Debate Mechanics",
+          "x": 205,
+          "y": 148,
+          "width": -112.5,
+          "height": 104,
+          "value": [
+            0,
+            -9
+          ],
+          "payload": {
+            "name": "Communicative Metareference",
+            "speaker1": -9,
+            "speaker2": 9,
+            "speaker1Times": [
+              560,
+              952,
+              8120,
+              19472,
+              30272,
+              39480,
+              52272,
+              60432,
+              67840
+            ],
+            "speaker2Times": [
+              560,
+              952,
+              8120,
+              19472,
+              30272,
+              39480,
+              52272,
+              60432,
+              67840
+            ],
+            "category": "Debate Mechanics"
+          },
+          "background": {
+            "x": 80,
+            "y": 148,
+            "width": 250,
+            "height": 104
+          },
+          "fill": "#007BFF",
+          "tooltipPayload": [
+            {
+              "dataKey": "speaker1",
+              "name": "speaker1",
+              "value": -9,
+              "payload": {
+                "name": "Communicative Metareference",
+                "speaker1": -9,
+                "speaker2": 9,
+                "speaker1Times": [
+                  560,
+                  952,
+                  8120,
+                  19472,
+                  30272,
+                  39480,
+                  52272,
+                  60432,
+                  67840
+                ],
+                "speaker2Times": [
+                  560,
+                  952,
+                  8120,
+                  19472,
+                  30272,
+                  39480,
+                  52272,
+                  60432,
+                  67840
+                ],
+                "category": "Debate Mechanics"
+              },
+              "hide": false
+            }
+          ],
+          "tooltipPosition": {
+            "x": 148.75,
+            "y": 200
+          }
+        }, true);
+      } else if (currentVideoTime > 78000 && currentVideoTime < 79000) {
+        handleBarClick({
+          "name": "Communicative Metareference",
+          "speaker1": -9,
+          "speaker2": 9,
+          "speaker1Times": [
+            560,
+            952,
+            8120,
+            19472,
+            30272,
+            39480,
+            52272,
+            60432,
+            67840
+          ],
+          "speaker2Times": [
+            560,
+            952,
+            8120,
+            19472,
+            30272,
+            39480,
+            52272,
+            60432,
+            67840
+          ],
+          "category": "Debate Mechanics",
+          "x": 205,
+          "y": 148,
+          "width": -112.5,
+          "height": 104,
+          "value": [
+            0,
+            -9
+          ],
+          "payload": {
+            "name": "Communicative Metareference",
+            "speaker1": -9,
+            "speaker2": 9,
+            "speaker1Times": [
+              560,
+              952,
+              8120,
+              19472,
+              30272,
+              39480,
+              52272,
+              60432,
+              67840
+            ],
+            "speaker2Times": [
+              560,
+              952,
+              8120,
+              19472,
+              30272,
+              39480,
+              52272,
+              60432,
+              67840
+            ],
+            "category": "Debate Mechanics"
+          },
+          "background": {
+            "x": 80,
+            "y": 148,
+            "width": 250,
+            "height": 104
+          },
+          "fill": "#007BFF",
+          "tooltipPayload": [
+            {
+              "dataKey": "speaker1",
+              "name": "speaker1",
+              "value": -9,
+              "payload": {
+                "name": "Communicative Metareference",
+                "speaker1": -9,
+                "speaker2": 9,
+                "speaker1Times": [
+                  560,
+                  952,
+                  8120,
+                  19472,
+                  30272,
+                  39480,
+                  52272,
+                  60432,
+                  67840
+                ],
+                "speaker2Times": [
+                  560,
+                  952,
+                  8120,
+                  19472,
+                  30272,
+                  39480,
+                  52272,
+                  60432,
+                  67840
+                ],
+                "category": "Debate Mechanics"
+              },
+              "hide": false
+            }
+          ],
+          "tooltipPosition": {
+            "x": 148.75,
+            "y": 200
+          }
+        }, false);
+      }
+    }
+  }, [atDemoURL, currentVideoTime])
 
   useEffect(() => {
     if (viewComponent) {
@@ -1184,7 +1506,6 @@ const CustomComponent = (props) => {
     getAutofillSpeakers();
   }, []);
 
-  const [analysisPage, setAnalysisPage] = useState("single");
 
   const handleUpdateNickname = (event, speaker) => {
     setSpeakers((prevSpeakers) => ({
@@ -1213,26 +1534,6 @@ const CustomComponent = (props) => {
 
   const [previousSpeakerName, setPreviousSpeakerName] = useState(null);
   const [editedSpeakers, setEditedSpeakers] = useState({});
-
-  const [barInfo, setBarInfo] = useState("");
-  // utterances, speaker1, speaker2, formatTime, setBarInfo, styles, speakers
-  const handleBarClick = (data) => {
-    setBarInfo(
-      <CustomTimeDisplay
-        data={data}
-        utterances={utterances}
-        speaker1={speaker1}
-        speaker2={speaker2}
-        formatTime={formatTime}
-        styles={styles}
-        speakers={speakers}
-        color1={getLabelCategoryColor(data.name)}
-        color2={darkenHexColor(getLabelCategoryColor(data.name), 0.6)}
-        clickPlay={handleClickPlay}
-        valuesToShow={valuesToShow}
-      />
-    );
-  };
 
   const handleClickPlay = (time) => {
     const video = document.querySelector("video");
@@ -1363,7 +1664,6 @@ const CustomComponent = (props) => {
       .padStart(2, "0")}${b.toString(16).padStart(2, "0")}`;
   };
 
-  const [charts, setCharts] = useState("bar");
   const handleCharts = (event, value) => {
     if (value !== null) {
       setCharts(value);
@@ -1708,6 +2008,7 @@ const CustomComponent = (props) => {
                       <h3
                         style={{
                           ...styles.speaker,
+                          ...((atDemoURL && currentVideoTime > 17000 && currentVideoTime < 20000) || (atDemoURL && currentVideoTime > 132000 && currentVideoTime < 140000) ? shimmerStyles() : {})
                         }}
                       >
                         {speakers[utterance.speaker]}{" "}
@@ -1730,6 +2031,8 @@ const CustomComponent = (props) => {
                       sentiment={utterance.sentiment}
                       labels={utterance.labels}
                       index={index}
+                      displayVotingDemo={atDemoURL && index === array.length - 1 && currentVideoTime > 20000 && currentVideoTime < 38000}
+                      shimmerStyles={shimmerStyles}
                     />
                   </div>
                 ))}
@@ -1750,7 +2053,7 @@ const CustomComponent = (props) => {
               value={speaker1}
               label="speaker"
               onChange={handleChangeSpeaker1}
-              style={styles.select}
+              style={{ ...styles.select, ...(atDemoURL && currentVideoTime > 56000 && currentVideoTime < 60000 ? shimmerStyles() : {}) }}
             >
               <option value={"Everyone"} style={styles.option}>
                 All Speakers
@@ -1789,7 +2092,7 @@ const CustomComponent = (props) => {
                 <BarChartIcon />
               </ToggleButton>
 
-              <ToggleButton value="pie" aria-label="pie">
+              <ToggleButton value="pie" aria-label="pie" style={{ ...(atDemoURL && currentVideoTime > 60000 && currentVideoTime < 66000 ? shimmerStyles() : {}) }}>
                 <PieChartIcon />
               </ToggleButton>
             </ToggleButtonGroup>
@@ -1798,7 +2101,7 @@ const CustomComponent = (props) => {
               value={speaker2}
               label="speaker"
               onChange={handleChangeSpeaker2}
-              style={styles.select}
+              style={{ ...styles.select, ...(atDemoURL && currentVideoTime > 56000 && currentVideoTime < 60000 ? shimmerStyles() : {}) }}
             >
               <option value={"Everyone"} style={styles.option}>
                 All Speakers
@@ -1813,7 +2116,7 @@ const CustomComponent = (props) => {
           {chartData.length > 0 ? (
             <>
               {charts === "bar" ? (
-                <ResponsiveContainer width="100%" height={300}>
+                <ResponsiveContainer width="100%" height={300} style={{ ...((atDemoURL && currentVideoTime > 39000 && currentVideoTime < 56000) || (atDemoURL && currentVideoTime > 119000 && currentVideoTime < 127000) ? shimmerStyles(3, "rgba(255, 255, 255, 0.1)") : {}) }}>
                   <BarChart
                     layout="vertical"
                     width={500}
@@ -1874,7 +2177,7 @@ const CustomComponent = (props) => {
                   </BarChart>
                 </ResponsiveContainer>
               ) : (
-                <div style={{ width: "100%", display: "flex" }}>
+                <div style={{ width: "100%", display: "flex", ...(currentVideoTime > 60000 && currentVideoTime < 67000 && atDemoURL ? shimmerStyles(3, "rgba(255, 255, 255, 0.1)") : {}) }}>
                   <CustomPieBoth
                     data1={chartData.map((l) => ({
                       ...l,
@@ -1916,7 +2219,7 @@ const CustomComponent = (props) => {
       }
       {
         analysisPage === "library" && (
-          <LibraryAnalysis speakers={autofillSpeakers} />
+          <LibraryAnalysis speakers={autofillSpeakers} shouldGetStats={(atDemoURL && currentVideoTime > 83500 && currentVideoTime < 84000) || (atDemoURL && currentVideoTime > 146000 && currentVideoTime < 146500)} shouldShimmer={atDemoURL && currentVideoTime > 84000 && currentVideoTime < 107000} shimmerCard={atDemoURL && currentVideoTime > 99000 && currentVideoTime < 101000} shouldDisplaySentiment={atDemoURL && currentVideoTime > 103000 && currentVideoTime < 107000} />
         )
       }
 
@@ -1930,6 +2233,8 @@ const CustomComponent = (props) => {
             utterances={utterances}
             currentVideoTime={currentVideoTime}
             editedSpeakers={editedSpeakers}
+            shouldShimmerSpeakers={atDemoURL && currentVideoTime > 126000 && currentVideoTime < 132000}
+            shimmerStyles={shimmerStyles}
             setEditedSpeakers={setEditedSpeakers}
             getAutofillSpeakers={getAutofillSpeakers}
             setPreviousSpeakerName={setPreviousSpeakerName}
@@ -1961,6 +2266,15 @@ const recommendationObserver = new MutationObserver((mutations, obs) => {
         container={container}
       />
     );
+
+    const style = document.createElement('style');
+    style.innerHTML = `
+    @keyframes shimmer {
+      0% { background-position: -100% 0; }
+      100% { background-position: 100% 0; }
+    }
+  `;
+    document.head.appendChild(style);
 
     obs.disconnect();
   }
