@@ -1304,9 +1304,15 @@ const CustomComponent = (props) => {
             utterance[valuesToShow].includes(label) && checkLabelSelected(label)
         )
         .map((utterance) => utterance.start),
+      category: getCategoryOfLabel(label)
     }))
     .filter((item) => item.speaker1 !== 0 || item.speaker2 !== 0)
-    .sort((a, b) => a.speaker1 - b.speaker1);
+    .sort((a, b) => {
+      if (a.category === b.category) {
+        return a.speaker1 - b.speaker1
+      };
+      return a.category.localeCompare(b.category);
+    });
 
   const CustomTooltip = ({ active, payload }) => {
     if (active && payload && payload.length) {
