@@ -905,9 +905,9 @@ const CustomComponent = (props) => {
           let currentPercentage = 0;
           utterancesRef.current
             .filter((item) => item.start <= currentVideoTimeRef.current)
-            .forEach((item, index) => {
+            .forEach((item, index, arr) => {
               const stringSpeaker = "" + item.speaker;
-              const length = item.end - item.start;
+              const length = (arr[index + 1]?.start ?? item.end) - item.start;
               const percentage = (length / currentVideoTimeRef.current) * 100;
               let color = Object.values(initialDialogicActs).some((group) =>
                 group.labels.some(
