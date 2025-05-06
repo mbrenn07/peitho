@@ -162,13 +162,14 @@ def get_all_videos_for_speaker():
         sentiment_counts = Counter()
 
         for u in utterances:
-            label = u.get("label", "unknown")
-            sentiment = u.get("sentiment", "unknown")
+            labels = u.get("labels", [])
+            sentiment = u.get("sentiment", "unknown")[0]
 
-            label_counts[label] += 1
+            for label in labels:
+                label_counts[label] += 1
+                overall_label_counts[label] += 1
+
             sentiment_counts[sentiment] += 1
-
-            overall_label_counts[label] += 1
             overall_sentiment_counts[sentiment] += 1
 
         videos_data.append({
@@ -313,7 +314,7 @@ def utterance_vote():
                 continue
 
             label_str = label_info.get("label")
-            label_index = label_info.get("index")
+            label_index = str(label_info.get("index"))
 
             if label_index is None or label_str is None:
                 return {"error": f"Missing label or index in '{action}'"}, 400
@@ -329,7 +330,7 @@ def utterance_vote():
 
         for label_index, index_votes in utterance["label_votes"].items():
             best_label = max(index_votes.items(), key=lambda item: item[1])[0]
-            labels[label_index] = best_label
+            labels[int(label_index)] = best_label
 
     if "sentiment" in vote:
         sentiment_votes = utterance["sentiment_votes"]
@@ -351,8 +352,10 @@ def utterance_vote():
         update_sentiment_votes("sub")
 
         if sentiment_votes:
-            utterance["sentiment"] = max(
-                sentiment_votes.items(), key=lambda x: x[1])[0]
+            utterance["sentiment"] = [max(
+                sentiment_votes.items(), key=lambda x: x[1])[0]]
+
+    print(utterance["label_votes"])
 
     result = videos_collection.update_one(
         {"url": url},

@@ -37,7 +37,7 @@ export function LabelVoting({
               });
             }}
           >
-            <button style={styles.label} onClick={() => setValuesToShow("label")}>
+            <button style={styles.label} onClick={() => setValuesToShow("labels")}>
               {label}
             </button>
             {displayUtteranceThumbs[j] && (
@@ -101,11 +101,11 @@ export function LabelVoting({
         <button
           style={{
             ...styles.label,
-            backgroundColor: getLabelCategoryColor(sentiment),
+            backgroundColor: getLabelCategoryColor(sentiment[0]),
           }}
           onClick={() => setValuesToShow("sentiment")}
         >
-          {sentiment}
+          {sentiment[0]}
         </button>
 
         {displaySentimentThumbs && (
@@ -121,9 +121,9 @@ export function LabelVoting({
             <IconButton
               onClick={() => {
                 const utteranceLabel = {
-                  label: sentiment,
+                  label: sentiment[0],
                 };
-                castVote(utteranceLabel, true, index);
+                castVote(utteranceLabel, true, index, 0);
               }}
               sx={{
                 p: 0.5,
@@ -138,7 +138,7 @@ export function LabelVoting({
             <IconButton
               onClick={() => {
                 setVotingUtteranceIndex(index);
-                setUtteranceLabelsIndex(null);
+                setUtteranceLabelsIndex(0);
                 setSentimentPopover(true);
                 openPopover();
               }}

@@ -325,14 +325,37 @@ const LibraryAnalysis = ({ speakers }) => {
       });
   };
 
+  const getCategoryOfLabel = (label) => {
+    for (const category in initialDialogicActs) {
+      const labels = initialDialogicActs[category].labels;
+      for (const labelObj of labels) {
+        if (labelObj.label === label) {
+          return category;
+        }
+      }
+    }
+    return null;
+  }
+
   const VideoItem = ({ video, displaySentiment, flipped, setFlipped }) => {
     const chartDataLabel = useMemo(() => {
-      return Object.entries(video.overallLabel).map(([key, value]) => ({
-        name: key,
-        value: value,
-        text: getLabelDefinition(key),
-        color: getLabelCategoryColor(key),
-      }));
+      const categoryData = {};
+      Object.entries(video.overallLabel).forEach(([key, value]) => {
+        const category = getCategoryOfLabel(key);
+        if (categoryData[category]) {
+          categoryData[category] = categoryData[category] + value;
+        } else {
+          categoryData[category] = value
+        }
+      })
+
+      return Object.entries(categoryData)
+        .map(([key, value]) => ({
+          name: key,
+          value: value,
+          text: initialDialogicActs[key].definition,
+          color: initialDialogicActs[key].color,
+        }));
     }, [video]);
 
     const chartDataSentiment = useMemo(() => {
@@ -452,7 +475,6 @@ const LibraryAnalysis = ({ speakers }) => {
                       tickFormatter={(name) => name.replace(/\//g, "/ ")}
                       tick={{ fontSize: 10 }}
                       angle={displaySentiment ? undefined : -30}
-                      interval={displaySentiment ? undefined : 1}
                       textAnchor="end"
                     />
                     <Tooltip content={<CustomTooltip />} cursor={false} />
@@ -878,10 +900,10 @@ const CustomComponent = (props) => {
               const stringSpeaker = "" + item.speaker;
               const length = item.end - item.start;
               const percentage = (length / currentVideoTimeRef.current) * 100;
-              let color = getLabelCategoryColor(item.label);
+              let color = getLabelCategoryColor(item.labels[0]);
               if (
                 hoveredBarRef?.current &&
-                hoveredBarRef.current !== item.label
+                hoveredBarRef.current !== item.labels[0]
               ) {
                 color = "black";
               }
@@ -1365,12 +1387,6 @@ const CustomComponent = (props) => {
       index: utteranceIndex,
     };
 
-    vote[isSentiment ? "sentiment" : "label"] = {
-      add: {
-        label: label,
-      },
-    };
-
     if (isSentiment) {
       vote["sentiment"] = {
         add: {
@@ -1399,6 +1415,8 @@ const CustomComponent = (props) => {
         };
       }
     }
+
+    console.log(vote)
 
     axios
       .post(`${config.BACKEND_URL}/utterance_vote`, {
