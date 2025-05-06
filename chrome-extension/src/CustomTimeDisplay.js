@@ -28,15 +28,15 @@ export function CustomTimeDisplay({
   color1,
   color2,
   clickPlay,
-  valuesToShow
+  valuesToShow,
 }) {
   const sliderSpeaker1 = data.speaker1Times.map((time, i) => {
     const utteranceText =
       utterances.find((u) => {
         return (
           u.start === time &&
-          u[valuesToShow] === data.name &&
-          String(u.speaker) === String(speaker1)
+          u[valuesToShow].includes(data.name) &&
+          (speaker1 === "Everyone" || String(u.speaker) === String(speaker1))
         );
       })?.text || "";
     return {
@@ -53,8 +53,8 @@ export function CustomTimeDisplay({
       utterances.find((u) => {
         return (
           u.start === time &&
-          u[valuesToShow] === data.name &&
-          String(u.speaker) === String(speaker2)
+          u[valuesToShow].includes(data.name) &&
+          (speaker2 === "Everyone" || String(u.speaker) === String(speaker2))
         );
       })?.text || "";
     return {
@@ -145,7 +145,7 @@ export function CustomTimeDisplay({
         <CustomPie
           data={[
             {
-              name: speakers[speaker1],
+              name: speakers[speaker1] ?? "All Speakers",
               value: sliderSpeaker1
                 .filter((e) =>
                   xDomain[0] === "auto" ? true : e.value >= xDomain[0]
@@ -156,7 +156,7 @@ export function CustomTimeDisplay({
               color: color1,
             },
             {
-              name: speakers[speaker2],
+              name: speakers[speaker2] ?? "All Speakers",
               value: sliderSpeaker2
                 .filter((e) =>
                   xDomain[0] === "auto" ? true : e.value >= xDomain[0]
@@ -241,13 +241,13 @@ export function CustomTimeDisplay({
             />
             <Legend />
             <Scatter
-              name={speakers[speaker1]}
+              name={speakers[speaker1] ?? "All Speakers"}
               data={sliderSpeaker1}
               fill={color1}
               onMouseDown={handleScatterClick}
             />
             <Scatter
-              name={speakers[speaker2]}
+              name={speakers[speaker2] ?? "All Speakers"}
               data={sliderSpeaker2}
               fill={color2}
               onMouseDown={handleScatterClick}

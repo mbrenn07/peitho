@@ -49,18 +49,12 @@ export function SettingsPage({
   const handleToggleAll = (category) => () => {
     setDialogicActs((prev) => {
       const allSelected = prev[category].labels.every((item) => item.selected);
-      const updated = {
-        ...prev,
-        [category]: {
-          ...prev[category],
-          labels: prev[category].labels.map((item) => ({
-            ...item,
-            selected: !allSelected,
-          })),
-        },
-      };
-      return updated;
+      const updated = { ...prev };
+      updated[category].labels.map((labels) => (labels.selected = !allSelected));
+      console.log("Updated dialogicActs:", updated);
+      return { ...updated };
     });
+    console.log(dialogicActs);
   };
   return (
     <Box>
