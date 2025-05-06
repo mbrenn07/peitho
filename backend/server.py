@@ -446,7 +446,10 @@ def process_transcript():
     for utterance in separated_data["utterances"]:
         utterance_length = len(utterance["text"].split())
 
-        utterance["start"] = transcript.words[word_index].start
+        if word_index < len(transcript.words):
+            utterance["start"] = transcript.words[word_index].start
+        else:
+            utterance["start"] = transcript.words[-1].start
         word_index = word_index + utterance_length - 1
         if word_index < len(transcript.words):
             utterance["end"] = transcript.words[word_index].end
