@@ -53,21 +53,23 @@ const initialDialogicActs = {
     labels: [
       {
         label: "Denial/Disagreement",
-        definition: "Direct or implied rejection of a prior claim or characterization.",
-        selected: true
+        definition:
+          "Direct or implied rejection of a prior claim or characterization.",
+        selected: true,
       },
       {
         label: "Confirmation/Acknowledgement",
-        definition: "Affirmation or acknowledgment of another speaker's statement.",
-        selected: true
+        definition:
+          "Affirmation or acknowledgment of another speaker's statement.",
+        selected: true,
       },
       {
         label: "Gratitude/Congratulations",
         definition: "Expressions of thanks, praise, or goodwill.",
-        selected: true
-      }
+        selected: true,
+      },
     ],
-    color: "#FF69B4"
+    color: "#FF69B4",
   },
   "Debate Mechanics": {
     definition: "",
@@ -75,20 +77,22 @@ const initialDialogicActs = {
       {
         label: "Communicative Metareference",
         definition: "Comments on debate format, structure, or speaking order.",
-        selected: true
+        selected: true,
       },
       {
         label: "Question",
-        definition: "Requests for info, clarification, or accountability (often ends with '?').",
-        selected: true
+        definition:
+          "Requests for info, clarification, or accountability (often ends with '?').",
+        selected: true,
       },
       {
         label: "Directive",
-        definition: "Commands or instructions to the audience, opponent, or moderator.",
-        selected: true
-      }
+        definition:
+          "Commands or instructions to the audience, opponent, or moderator.",
+        selected: true,
+      },
     ],
-    color: "#007BFF"
+    color: "#007BFF",
   },
   Informing: {
     definition: "",
@@ -96,15 +100,15 @@ const initialDialogicActs = {
       {
         label: "Factual Claim",
         definition: "Objective, testable statement about the world.",
-        selected: true
+        selected: true,
       },
       {
         label: "Statistical Claim",
         definition: "Numerically grounded or quantified assertion.",
-        selected: true
-      }
+        selected: true,
+      },
     ],
-    color: "#228B22"
+    color: "#228B22",
   },
   "Self Representation": {
     definition: "",
@@ -112,93 +116,100 @@ const initialDialogicActs = {
       {
         label: "Self Track Record",
         definition: "Claim about speaker's past leadership or achievements.",
-        selected: true
+        selected: true,
       },
       {
         label: "Personal Testimony",
         definition: "Statements about personal life or lived experience.",
-        selected: true
+        selected: true,
       },
       {
         label: "Policy Position",
         definition: "Stance or proposal on a political issue or legislation.",
-        selected: true
+        selected: true,
       },
       {
         label: "Commitment",
         definition: "Pledge or promise to take a future action.",
-        selected: true
-      }
+        selected: true,
+      },
     ],
-    color: "#FF8C00"
+    color: "#FF8C00",
   },
   Accusation: {
     definition: "",
     labels: [
       {
         label: "Accu Policies and Beliefs",
-        definition: "Assertions about an opponent's political views or stances.",
-        selected: true
+        definition:
+          "Assertions about an opponent's political views or stances.",
+        selected: true,
       },
       {
         label: "Accu Track Record",
-        definition: "Critiques of opponent''s past political or professional actions.",
-        selected: true
+        definition:
+          "Critiques of opponent''s past political or professional actions.",
+        selected: true,
       },
       {
         label: "Accu Personal Life",
         definition: "Claims about an opponent's family, finances, or conduct.",
-        selected: true
+        selected: true,
       },
       {
         label: "Accu Other Entities",
-        definition: "Criticism of non-candidates like media, corporations, or governments.",
-        selected: true
-      }
+        definition:
+          "Criticism of non-candidates like media, corporations, or governments.",
+        selected: true,
+      },
     ],
-    color: "#FFD700"
+    color: "#FFD700",
   },
   Quoting: {
     definition: "",
     labels: [
       {
         label: "Attributed Quote",
-        definition: "Statement cited to a named person, group, or organization.",
-        selected: true
+        definition:
+          "Statement cited to a named person, group, or organization.",
+        selected: true,
       },
       {
         label: "Unattributed Quote",
         definition: "Quote from anonymous or vague sources like 'people say'.",
-        selected: true
+        selected: true,
       },
       {
         label: "Self Quote",
         definition: "Speaker quoting their own past remarks or campaign.",
-        selected: true
+        selected: true,
       },
       {
         label: "Opponent Quote",
-        definition: "Quoting the opponent or their campaign directly or indirectly.",
-        selected: true
-      }
+        definition:
+          "Quoting the opponent or their campaign directly or indirectly.",
+        selected: true,
+      },
     ],
-    color: "#008B8B"
+    color: "#008B8B",
   },
   Other: {
     definition: "",
     labels: [
       {
         label: "Subjective Statement",
-        definition: "Evaluative or emotional characterization of events or people.",
-        selected: true
+        definition:
+          "Evaluative or emotional characterization of events or people.",
+        selected: true,
       },
       {
         label: "Miscellaneous",
-        definition: "Unclassifiable speech such as interruptions or incomplete phrases.",
-        selected: true
-      }
+        definition:
+          "Unclassifiable speech such as interruptions or incomplete phrases.",
+        selected: true,
+      },
     ],
-    color: "#D3D3D3"
+    color: "#808080",
   },
   Sentiment: {
     definition: "",
@@ -206,21 +217,21 @@ const initialDialogicActs = {
       {
         label: "neutral",
         definition: "",
-        selected: true
+        selected: true,
       },
       {
         label: "positive",
         definition: "",
-        selected: true
+        selected: true,
       },
       {
         label: "negative",
         definition: "",
-        selected: true
+        selected: true,
       },
     ],
-    color: "#A9A9A9"
-  }
+    color: "#A9A9A9",
+  },
 };
 
 function flattenDialogicActs(data, includeCategory = false) {
@@ -238,7 +249,6 @@ function flattenDialogicActs(data, includeCategory = false) {
 
   return result;
 }
-
 
 function getLabelDefinition(labelName) {
   for (const categoryData of Object.values(initialDialogicActs)) {
@@ -260,7 +270,9 @@ function getLabelCategoryColor(labelName) {
     return "#808080";
   }
 
-  for (const [categoryName, categoryData] of Object.entries(initialDialogicActs)) {
+  for (const [categoryName, categoryData] of Object.entries(
+    initialDialogicActs
+  )) {
     for (const labelObj of categoryData.labels) {
       if (labelObj.label === labelName) {
         return categoryData.color;
@@ -269,7 +281,6 @@ function getLabelCategoryColor(labelName) {
   }
   return null;
 }
-
 
 function getCurrentVideoTime() {
   const videoElement = document.querySelector("video");
@@ -335,7 +346,7 @@ const LibraryAnalysis = ({ speakers }) => {
       }
     }
     return null;
-  }
+  };
 
   const VideoItem = ({ video, displaySentiment, flipped, setFlipped }) => {
     const chartDataLabel = useMemo(() => {
@@ -345,17 +356,16 @@ const LibraryAnalysis = ({ speakers }) => {
         if (categoryData[category]) {
           categoryData[category] = categoryData[category] + value;
         } else {
-          categoryData[category] = value
+          categoryData[category] = value;
         }
-      })
+      });
 
-      return Object.entries(categoryData)
-        .map(([key, value]) => ({
-          name: key,
-          value: value,
-          text: initialDialogicActs[key].definition,
-          color: initialDialogicActs[key].color,
-        }));
+      return Object.entries(categoryData).map(([key, value]) => ({
+        name: key,
+        value: value,
+        text: initialDialogicActs[key].definition,
+        color: initialDialogicActs[key].color,
+      }));
     }, [video]);
 
     const chartDataSentiment = useMemo(() => {
@@ -691,9 +701,7 @@ const CustomComponent = (props) => {
   const viewComponentRef = useRef();
   const textColorRef = useRef();
   const currentChipRef = useRef();
-  const [newDialogicActs, setNewDialogicActs] = useState(
-    initialDialogicActs
-  );
+  const [newDialogicActs, setNewDialogicActs] = useState(initialDialogicActs);
 
   const atDemoURL = useMemo(() => {
     const urlParams = new URLSearchParams(window.location.search);
@@ -755,9 +763,11 @@ const CustomComponent = (props) => {
     ourChip.style.border = "double 2px transparent";
     ourChip.style.borderRadius = "10px";
 
-    ourChip.style.backgroundImage = `linear-gradient(${textColorRef.current === "rgb(15, 15, 15)" ? "#FFF" : "#171717"
-      }, ${textColorRef.current === "rgb(15, 15, 15)" ? "#FFF" : "#171717"
-      }), linear-gradient(to right, #f03 80%, #ff2791 100%)`;
+    ourChip.style.backgroundImage = `linear-gradient(${
+      textColorRef.current === "rgb(15, 15, 15)" ? "#FFF" : "#171717"
+    }, ${
+      textColorRef.current === "rgb(15, 15, 15)" ? "#FFF" : "#171717"
+    }), linear-gradient(to right, #f03 80%, #ff2791 100%)`;
     ourChip.style.backgroundOrigin = "border-box";
     ourChip.style.backgroundClip = "content-box, border-box";
     if (textColorRef.current === "rgb(15, 15, 15)") {
@@ -850,6 +860,7 @@ const CustomComponent = (props) => {
               (a, b) => a.start - b.start
             );
             setUtterances(utterances);
+            console.log(utterances);
             const speakersObject = {};
             data.data.speakers.forEach((speaker, index) => {
               speakersObject[index + 1] = speaker;
@@ -900,7 +911,14 @@ const CustomComponent = (props) => {
               const stringSpeaker = "" + item.speaker;
               const length = item.end - item.start;
               const percentage = (length / currentVideoTimeRef.current) * 100;
-              let color = getLabelCategoryColor(item.labels[0]);
+              let color = Object.values(initialDialogicActs).some((group) =>
+                group.labels.some(
+                  (labelObj) =>
+                    labelObj.label === item.labels[0] && labelObj.selected
+                )
+              )
+                ? getLabelCategoryColor(item.labels[0])
+                : "transparent";
               if (
                 hoveredBarRef?.current &&
                 hoveredBarRef.current !== item.labels[0]
@@ -1177,7 +1195,7 @@ const CustomComponent = (props) => {
     }));
   };
 
-  const [speaker1, setSpeaker1] = useState("2");
+  const [speaker1, setSpeaker1] = useState("Everyone");
   const handleChangeSpeaker1 = (event) => {
     setSpeaker1(event.target.value);
   };
@@ -1186,7 +1204,7 @@ const CustomComponent = (props) => {
     speaker1Ref.current = speaker1;
   }, [speaker1]);
 
-  const [speaker2, setSpeaker2] = useState("1");
+  const [speaker2, setSpeaker2] = useState("Everyone");
   const handleChangeSpeaker2 = (event) => {
     setSpeaker2(event.target.value);
   };
@@ -1227,13 +1245,18 @@ const CustomComponent = (props) => {
   };
   const [valuesToShow, setValuesToShow] = useState("labels");
 
+  const checkLabelSelected = (label) => {
+    return Object.values(initialDialogicActs).some((group) =>
+      group.labels.some((item) => item.label === label && item.selected)
+    );
+  };
+
   let chartData = utterances
     .filter((utterance) => utterance.start <= currentVideoTime)
     .map((utterance) => utterance[valuesToShow])
     .flat()
     .filter((label, index, self) => self.indexOf(label) === index)
-    .map((label) =>
-    ({
+    .map((label) => ({
       name: label,
       speaker1:
         utterances
@@ -1243,8 +1266,10 @@ const CustomComponent = (props) => {
               ? true
               : String(utterance.speaker) === String(speaker1)
           )
-          .filter((utterance) =>
-            utterance[valuesToShow].includes(label)
+          .filter(
+            (utterance) =>
+              utterance[valuesToShow].includes(label) &&
+              checkLabelSelected(label)
           ).length * -1,
       speaker2: utterances
         .filter((utterance) => utterance.start <= currentVideoTime)
@@ -1253,8 +1278,9 @@ const CustomComponent = (props) => {
             ? true
             : String(utterance.speaker) === String(speaker2)
         )
-        .filter((utterance) =>
-          utterance[valuesToShow].includes(label)
+        .filter(
+          (utterance) =>
+            utterance[valuesToShow].includes(label) && checkLabelSelected(label)
         ).length,
       speaker1Times: utterances
         .filter((utterance) => utterance.start <= currentVideoTime)
@@ -1263,8 +1289,9 @@ const CustomComponent = (props) => {
             ? true
             : String(utterance.speaker) === String(speaker1)
         )
-        .filter((utterance) =>
-          utterance[valuesToShow].includes(label)
+        .filter(
+          (utterance) =>
+            utterance[valuesToShow].includes(label) && checkLabelSelected(label)
         )
         .map((utterance) => utterance.start),
       speaker2Times: utterances
@@ -1274,14 +1301,14 @@ const CustomComponent = (props) => {
             ? true
             : String(utterance.speaker) === String(speaker2)
         )
-        .filter((utterance) =>
-          utterance[valuesToShow].includes(label)
+        .filter(
+          (utterance) =>
+            utterance[valuesToShow].includes(label) && checkLabelSelected(label)
         )
         .map((utterance) => utterance.start),
     }))
     .filter((item) => item.speaker1 !== 0 || item.speaker2 !== 0)
-    .sort((a, b) => a.speaker1 - b.speaker1)
-
+    .sort((a, b) => a.speaker1 - b.speaker1);
 
   const CustomTooltip = ({ active, payload }) => {
     if (active && payload && payload.length) {
@@ -1360,7 +1387,6 @@ const CustomComponent = (props) => {
     }
   }, [prevUtterances.length, analysisPage]);
 
-
   const [votingUtteranceIndex, setVotingUtteranceIndex] = useState(-1);
   const [utteranceLabelsIndex, setUtteranceLabelsIndex] = useState(-1);
   const [sentimentPopover, setSentimentPopover] = useState(false);
@@ -1380,7 +1406,7 @@ const CustomComponent = (props) => {
 
   const castVote = (value, isSentiment, index, labelsIndex) => {
     const utteranceIndex = index ?? votingUtteranceIndex;
-    const currLabelsIndex = (labelsIndex ?? utteranceLabelsIndex) ?? -1;
+    const currLabelsIndex = labelsIndex ?? utteranceLabelsIndex ?? -1;
     const label = isSentiment ? value.label.toLowerCase() : value.label;
 
     const vote = {
@@ -1402,21 +1428,28 @@ const CustomComponent = (props) => {
       };
     }
 
-    if (utteranceVotes[utteranceIndex + "," + currLabelsIndex + "," + isSentiment]) {
+    if (
+      utteranceVotes[utteranceIndex + "," + currLabelsIndex + "," + isSentiment]
+    ) {
       if (isSentiment) {
         vote["sentiment"].sub = {
-          label: utteranceVotes[utteranceIndex + "," + currLabelsIndex + "," + isSentiment],
+          label:
+            utteranceVotes[
+              utteranceIndex + "," + currLabelsIndex + "," + isSentiment
+            ],
         };
-
       } else {
         vote["label"].sub = {
-          label: utteranceVotes[utteranceIndex + "," + currLabelsIndex + "," + isSentiment],
+          label:
+            utteranceVotes[
+              utteranceIndex + "," + currLabelsIndex + "," + isSentiment
+            ],
           index: currLabelsIndex,
         };
       }
     }
 
-    console.log(vote)
+    console.log(vote);
 
     axios
       .post(`${config.BACKEND_URL}/utterance_vote`, {
@@ -1424,7 +1457,9 @@ const CustomComponent = (props) => {
         vote: vote,
       })
       .then(() => {
-        utteranceVotes[utteranceIndex + "," + currLabelsIndex + "," + isSentiment] = label;
+        utteranceVotes[
+          utteranceIndex + "," + currLabelsIndex + "," + isSentiment
+        ] = label;
         setUtteranceVotes({ ...utteranceVotes });
 
         if (popoverOpen) {
@@ -1480,19 +1515,19 @@ const CustomComponent = (props) => {
             options={
               sentimentPopover
                 ? flattenDialogicActs(initialDialogicActs).filter((act) => {
-                  return (
-                    act.label === "negative" ||
-                    act.label === "positive" ||
-                    act.label === "neutral"
-                  );
-                })
+                    return (
+                      act.label === "negative" ||
+                      act.label === "positive" ||
+                      act.label === "neutral"
+                    );
+                  })
                 : flattenDialogicActs(initialDialogicActs).filter((act) => {
-                  return (
-                    act.label !== "negative" &&
-                    act.label !== "positive" &&
-                    act.label !== "neutral"
-                  );
-                })
+                    return (
+                      act.label !== "negative" &&
+                      act.label !== "positive" &&
+                      act.label !== "neutral"
+                    );
+                  })
             }
             getOptionLabel={(obj) => {
               return obj.label;

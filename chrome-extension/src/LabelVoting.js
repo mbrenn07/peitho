@@ -15,7 +15,11 @@ export function LabelVoting({
   labels,
   index,
 }) {
-  const [displayUtteranceThumbs, setDisplayUtteranceThumbs] = useState([false, false, false]);
+  const [displayUtteranceThumbs, setDisplayUtteranceThumbs] = useState([
+    false,
+    false,
+    false,
+  ]);
   const [displaySentimentThumbs, setDisplaySentimentThumbs] = useState(false);
 
   return (
@@ -27,17 +31,23 @@ export function LabelVoting({
             onMouseEnter={() => {
               setDisplayUtteranceThumbs((oldDisplayUtteranceThumbs) => {
                 oldDisplayUtteranceThumbs[j] = true;
-                return [...oldDisplayUtteranceThumbs]
+                return [...oldDisplayUtteranceThumbs];
               });
             }}
             onMouseLeave={() => {
               setDisplayUtteranceThumbs((oldDisplayUtteranceThumbs) => {
                 oldDisplayUtteranceThumbs[j] = false;
-                return [...oldDisplayUtteranceThumbs]
+                return [...oldDisplayUtteranceThumbs];
               });
             }}
           >
-            <button style={styles.label} onClick={() => setValuesToShow("labels")}>
+            <button
+              style={{
+                ...styles.label,
+                backgroundColor: getLabelCategoryColor(label),
+              }}
+              onClick={() => setValuesToShow("labels")}
+            >
               {label}
             </button>
             {displayUtteranceThumbs[j] && (
