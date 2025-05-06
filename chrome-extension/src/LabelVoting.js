@@ -23,7 +23,7 @@ export function LabelVoting({
   const [displaySentimentThumbs, setDisplaySentimentThumbs] = useState(false);
 
   return (
-    <Stack direction="row" spacing={1}>
+    <Stack direction="row" spacing={1} sx={{ flexWrap: "wrap", rowGap: 1 }}>
       {labels.map((label, j) => {
         return (
           <Box
