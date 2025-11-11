@@ -29,4 +29,4 @@ then run `shell start.sh` from the main folder
 
 ## 🎥 Video Demonstration
 
-[![Watch the demo on YouTube](https://img.youtube.com/vi/-jeB-W_zmRI/0.jpg)](https://www.youtube.com/watch?v=-jeB-W_zmRI)
+[![Watch the demo on YouTube](https://img.youtube.com/vi/-jeB-W_zmRI/maxresdefault.jpg)](https://www.youtube.com/watch?v=-jeB-W_zmRI)
